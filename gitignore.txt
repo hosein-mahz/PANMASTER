@@ -1,0 +1,26 @@
+# ===== Backend / Python =====
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+
+# ===== دیتابیس محلی =====
+*.db
+*.sqlite
+*.sqlite3
+panmaster.db
+
+# ===== اطلاعات حساس =====
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+
+# ===== سیستم‌عامل و ادیتور =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

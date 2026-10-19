@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بازی | PanMaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0a0a; color: white; font-family: 'Vazirmatn', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; margin-bottom: 20px; background: #1a1a1a; padding: 10px 20px; border-radius: 10px; box-sizing: border-box;}
+        .stats { display: flex; gap: 15px; font-weight: bold; }
+        .score { color: #C99B6E; }
+        .combo { color: #60a5fa; }
+        canvas { background: #111; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 100%; max-width: 800px;}
+        #fallingCanvas { height: 300px; }
+        #handpanCanvas { height: 300px; cursor: pointer; }
+        .btn { background: #333; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="login.html" class="btn">خروج</a>
+        <h2 id="songTitle">در حال بارگذاری...</h2>
+        <div class="stats">
+            <span class="score">امتیاز: <span id="scoreDisplay">0</span></span>
+            <span class="combo">کمبو: <span id="comboDisplay">0</span></span>
+        </div>
+    </div>
+
+    <!-- بوم نت‌های در حال سقوط -->
+    <canvas id="fallingCanvas" width="800" height="300"></canvas>
+    
+    <!-- بوم هنگ‌درام -->
+    <canvas id="handpanCanvas" width="800" height="300"></canvas>
+
+    <script src="js/game-engine.js"></script>
+</body>
+</html>
