@@ -10,9 +10,20 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     coins = Column(Integer, default=0)
+    xp = Column(Integer, default=0, nullable=False)
+    owned_skins = Column(String, default="[]", nullable=False)
+    extra_notes = Column(Integer, default=0, nullable=False)
     is_vip = Column(Boolean, default=False)
     vip_expire_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # ===== تنظیمات =====
+    language = Column(String, default="fa", nullable=False)
+    fall_speed = Column(Integer, default=200, nullable=False)        # 100-500
+    note_size = Column(Float, default=1.0, nullable=False)           # 0.7-1.5
+    font_family = Column(String, default="Vazirmatn", nullable=False)
+    sound_volume = Column(Float, default=0.5, nullable=False)        # 0-1
+    avatar_url = Column(String, nullable=True)
 
 
 class Song(Base):
@@ -52,7 +63,7 @@ class PracticeHistory(Base):
     __tablename__ = "practice_history"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    song_id = Column(Integer, ForeignKey("songs.id"), nullable=False)
+    song_id = Column(Integer, ForeignKey("songs.id"), nullable=True)
     score = Column(Integer, default=0)
     accuracy = Column(Float, default=0.0)
     played_at = Column(DateTime(timezone=True), server_default=func.now())
