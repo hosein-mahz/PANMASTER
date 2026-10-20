@@ -1,14 +1,20 @@
 :root {
-    --bg-main: #0f172a;       /* سرمه‌ای تیره */
-    --bg-card: #1e293b;       /* کمی روشن‌تر برای کارت‌ها */
-    --primary: #38bdf8;       /* آبی فیروزه‌ای */
-    --secondary: #818cf8;     /* بنفش ملایم */
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --primary: #38bdf8;
+    --secondary: #818cf8;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border: #334155;
+    --app-font: 'Vazirmatn', sans-serif;   /* ← این خط اضافه شود */
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--app-font);          /* ← تغییر کرد */
+}
 
 body { background: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
@@ -71,3 +77,26 @@ body { background: var(--bg-main); color: var(--text-main); display: flex; justi
     height: 28px;
     margin-left: 6px;
 }
+
+/* ===== نوار XP در هدر و پروفایل ===== */
+.coin-icon { display: inline-block; vertical-align: middle; object-fit: contain; }
+.coin-md { width: 28px; height: 28px; }
+
+.token-badge {
+    background: #1e293b; border: 1px solid #fbbf24; color: #fbbf24;
+    padding: 4px 12px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 6px; line-height: 1;
+}
+.token-badge img { display: block; width: 22px; height: 22px; }
+
+.result-token {
+    font-size: 20px; color: #fbbf24; margin: 20px 0;
+    font-weight: bold; text-align: center; line-height: 1.8;
+}
+.result-token img { display: inline-block; vertical-align: middle; width: 28px; height: 28px; margin-left: 6px; }
+
+/* ===== سازگاری LTR ===== */
+[dir="ltr"] .input-group,
+[dir="ltr"] .settings-block { text-align: left; }
+[dir="ltr"] .error { text-align: left; }
+
