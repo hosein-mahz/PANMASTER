@@ -23,6 +23,7 @@ class User(Base):
     note_size = Column(Float, default=1.0, nullable=False)           # 0.7-1.5
     font_family = Column(String, default="Vazirmatn", nullable=False)
     sound_volume = Column(Float, default=0.5, nullable=False)        # 0-1
+    note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم، شکل، رنگی
     avatar_url = Column(String, nullable=True)
 
 

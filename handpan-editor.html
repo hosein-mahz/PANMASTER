@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>🎨 Handpan Layout Editor</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+  body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 15px; }
+  h1 { color: #38bdf8; font-size: 20px; margin-bottom: 15px; text-align: center; }
+  #app { display: grid; grid-template-columns: 1fr 380px; gap: 15px; max-width: 1280px; margin: 0 auto; }
+  @media (max-width: 900px) { #app { grid-template-columns: 1fr; } }
+  .panel { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 15px; }
+  .left { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  canvas { max-width: 100%; height: auto; background: #0f172a; border-radius: 12px; cursor: crosshair; touch-action: none; }
+  .hint { font-size: 12px; color: #94a3b8; text-align: center; }
+  
+  .right h2 { color: #38bdf8; font-size: 15px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155; }
+  .right h3 { color: #38bdf8; font-size: 13px; margin: 15px 0 8px; }
+  .empty { color: #64748b; font-size: 13px; text-align: center; padding: 20px; }
+  
+  label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+  label input[type="text"], label input[type="number"] {
+    width: 100%; padding: 8px 10px; margin-top: 4px; background: #0f172a; border: 1px solid #334155;
+    border-radius: 8px; color: #f8fafc; font-size: 13px; outline: none;
+  }
+  label input:focus { border-color: #38bdf8; }
+  input[type="range"] { width: 100%; margin-top: 4px; accent-color: #38bdf8; }
+  input[type="color"] { width: 100%; height: 36px; margin-top: 4px; background: transparent; border: 1px solid #334155; border-radius: 8px; cursor: pointer; }
+  input[type="file"] { width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-size: 12px; margin-top: 6px; }
+  
+  button { width: 100%; padding: 10px; margin-top: 8px; background: #334155; color: #f8fafc; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+  button:hover { background: #475569; }
+  button.primary { background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; }
+  button.primary:hover { opacity: 0.9; }
+  button.danger { background: #dc2626; }
+  button.danger:hover { background: #b91c1c; }
+  
+  textarea { width: 100%; padding: 10px; margin-top: 8px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #38bdf8; font-family: monospace; font-size: 11px; resize: vertical; }
+  
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  
+  #shapePreviewWrap { display: flex; justify-content: center; padding: 10px; background: #0f172a; border-radius: 8px; margin-top: 6px; border: 1px dashed #334155; min-height: 60px; align-items: center; }
+  #shapePreview { max-width: 80px; max-height: 80px; }
+  #shapeEmpty { color: #475569; font-size: 11px; }
+  
+  .notes-list { max-height: 150px; overflow-y: auto; margin-top: 8px; background: #0f172a; border-radius: 8px; padding: 6px; }
+  .notes-list .item { display: flex; justify-content: space-between; padding: 6px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #cbd5e1; }
+  .notes-list .item:hover { background: #1e293b; }
+  .notes-list .item.active { background: #38bdf8; color: #fff; }
+  .notes-list .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 6px; }
+  
+  hr { border: none; border-top: 1px solid #334155; margin: 15px 0; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer; }
+  .checkbox-row input { width: auto; }
+</style>
+</head>
+<body>
+
+<h1>🎨 ادیتور چیدمان هنگ‌درام</h1>
+
+<div id="app">
+  <div class="panel left">
+    <canvas id="editor" width="820" height="500"></canvas>
+    <div class="hint">🖱️ روی هر نت کلیک و درگ کنید | ⌨️ با کلیدهای جهت‌دار جابه‌جا کنید (Shift = 5px)</div>
+  </div>
+
+  <div class="panel right">
+    <h2>⚙️ نت انتخاب‌شده</h2>
+    <div id="noSelection" class="empty">یک نت را روی صفحه انتخاب کنید</div>
+    <div id="properties" style="display:none">
+      <label>نام نت
+        <input type="text" id="propName">
+      </label>
+      <div class="row">
+        <label>X
+          <input type="number" id="propX">
+        </label>
+        <label>Y
+          <input type="number" id="propY">
+        </label>
+      </div>
+      <label>اندازه (شعاع): <span id="propRval" style="color:#38bdf8;font-weight:bold;">38</span>
+        <input type="range" id="propR" min="15" max="80" step="1">
+      </label>
+      <label>رنگ نت
+        <input type="color" id="propColor">
+      </label>
+
+      <h3>🖼️ شکل کلاویه</h3>
+      <div id="shapePreviewWrap">
+        <span id="shapeEmpty">آپلود نشده</span>
+        <img id="shapePreview" style="display:none;">
+      </div>
+      <input type="file" id="shapeUpload" accept="image/*">
+      <button id="clearShape">حذف شکل</button>
+
+      <hr>
+      <button id="deleteNote" class="danger">🗑 حذف این نت</button>
+    </div>
+
+    <hr>
+    <button id="addNote" class="primary">➕ افزودن نت جدید</button>
+    <button id="resetNotes">🔄 بازگشت به ۹ نت پیش‌فرض</button>
+
+    <h3>📋 لیست نت‌ها</h3>
+    <div class="notes-list" id="notesList"></div>
+
+    <hr>
+    <h3>📤 خروجی JSON</h3>
+    <label class="checkbox-row">
+      <input type="checkbox" id="embedImages">
+      تصاویر را در JSON جاسازی کن (base64 — حجم را زیاد می‌کند)
+    </label>
+    <button id="exportJson" class="primary">📋 تولید JSON</button>
+    <button id="downloadJson">💾 دانلود فایل .json</button>
+    <button id="downloadShapes">🖼️ دانلود همه‌ی شکل‌ها</button>
+    <textarea id="output" rows="14" readonly placeholder="خروجی اینجا نمایش داده می‌شود..."></textarea>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// داده‌های اولیه
+// ============================================================
+const W = 820, H = 500, CX = 410, CY = 250, BODY_R = 220;
+
+const DEFAULT_NOTES = () => [
+  { name: 'D',   x: 410, y: 250, r: 58, color: '#60a5fa', shapeData: '', shapePath: '' },
+  { name: 'A1',  x: 461, y: 374, r: 38, color: '#f472b6', shapeData: '', shapePath: '' },
+  { name: 'D2',  x: 359, y: 374, r: 38, color: '#34d399', shapeData: '', shapePath: '' },
+  { name: 'C3',  x: 536, y: 300, r: 38, color: '#38bdf8', shapeData: '', shapePath: '' },
+  { name: 'E4',  x: 284, y: 300, r: 38, color: '#2dd4bf', shapeData: '', shapePath: '' },
+  { name: 'F5',  x: 536, y: 199, r: 38, color: '#818cf8', shapeData: '', shapePath: '' },
+  { name: 'Bb6', x: 284, y: 199, r: 38, color: '#fbbf24', shapeData: '', shapePath: '' },
+  { name: 'G7',  x: 461, y: 128, r: 38, color: '#a78bfa', shapeData: '', shapePath: '' },
+  { name: 'A8',  x: 359, y: 128, r: 38, color: '#fb7185', shapeData: '', shapePath: '' }
+];
+
+let notes = DEFAULT_NOTES();
+let selectedIndex = -1;
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+const imageCache = {};
+
+// ============================================================
+// Canvas
+// ============================================================
+const canvas = document.getElementById('editor');
+const ctx = canvas.getContext('2d');
+
+function loadImage(note) {
+  const src = note.shapeData || note.shapePath;
+  if (!src) return null;
+  if (imageCache[src]) return imageCache[src];
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => draw();
+  img.onerror = () => console.warn('تصویر لود نشد:', src);
+  img.src = src;
+  imageCache[src] = img;
+  return img;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // بدنه
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath(); ctx.arc(CX, CY, BODY_R, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
+
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath(); ctx.arc(CX, CY, BODY_R - 10, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+
+  // نت‌ها
+  notes.forEach((note, i) => {
+    const isSel = i === selectedIndex;
+
+    ctx.beginPath(); ctx.arc(note.x, note.y, note.r + 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#000'; ctx.fill();
+
+    ctx.beginPath(); ctx.arc(note.x, note.y, note.r, 0, Math.PI * 2);
+    ctx.fillStyle = isSel ? 'rgba(56,189,248,0.15)' : '#1e293b'; ctx.fill();
+    ctx.strokeStyle = note.color; ctx.lineWidth = 2; ctx.stroke();
+
+    const img = loadImage(note);
+    if (img && img.complete && img.naturalWidth > 0) {
+      const sz = note.r * 1.3;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(note.x, note.y, note.r - 2, 0, Math.PI * 2); ctx.clip();
+      ctx.drawImage(img, note.x - sz / 2, note.y - sz / 2, sz, sz);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#fff';
+      const fs = note.r >= 50 ? 28 : (note.r >= 32 ? 20 : 14);
+      ctx.font = `bold ${fs}px Arial`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(note.name, note.x, note.y);
+    }
+
+    if (isSel) {
+      ctx.beginPath(); ctx.arc(note.x, note.y, note.r + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+  });
+}
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) };
+}
+
+function hitTest(pos) {
+  for (let i = notes.length - 1; i >= 0; i--) {
+    if (Math.hypot(pos.x - notes[i].x, pos.y - notes[i].y) <= notes[i].r) return i;
+  }
+  return -1;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  const pos = getPos(e);
+  const idx = hitTest(pos);
+  selectedIndex = idx;
+  if (idx !== -1) {
+    dragOffset = { x: pos.x - notes[idx].x, y: pos.y - notes[idx].y };
+    isDragging = true;
+  }
+  updateUI();
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDragging || selectedIndex === -1) return;
+  const pos = getPos(e);
+  notes[selectedIndex].x = Math.round(pos.x - dragOffset.x);
+  notes[selectedIndex].y = Math.round(pos.y - dragOffset.y);
+  updateUI();
+});
+
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+canvas.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 0) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const r = canvas.getBoundingClientRect();
+  const pos = { x: (t.clientX - r.left) * (W / r.width), y: (t.clientY - r.top) * (H / r.height) };
+  const idx = hitTest(pos);
+  selectedIndex = idx;
+  if (idx !== -1) {
+    dragOffset = { x: pos.x - notes[idx].x, y: pos.y - notes[idx].y };
+    isDragging = true;
+  }
+  updateUI();
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  if (!isDragging || selectedIndex === -1 || e.touches.length === 0) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const r = canvas.getBoundingClientRect();
+  const pos = { x: (t.clientX - r.left) * (W / r.width), y: (t.clientY - r.top) * (H / r.height) };
+  notes[selectedIndex].x = Math.round(pos.x - dragOffset.x);
+  notes[selectedIndex].y = Math.round(pos.y - dragOffset.y);
+  updateUI();
+}, { passive: false });
+
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+// ============================================================
+// کیبورد
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if (selectedIndex === -1) return;
+  if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+  const step = e.shiftKey ? 5 : 1;
+  const n = notes[selectedIndex];
+  if (e.key === 'ArrowLeft')  { n.x -= step; e.preventDefault(); }
+  if (e.key === 'ArrowRight') { n.x += step; e.preventDefault(); }
+  if (e.key === 'ArrowUp')    { n.y -= step; e.preventDefault(); }
+  if (e.key === 'ArrowDown')  { n.y += step; e.preventDefault(); }
+  updateUI();
+});
+
+// ============================================================
+// پنل تنظیمات
+// ============================================================
+const $ = id => document.getElementById(id);
+
+function updateUI() {
+  draw();
+  renderNotesList();
+
+  if (selectedIndex === -1) {
+    $('properties').style.display = 'none';
+    $('noSelection').style.display = 'block';
+    return;
+  }
+
+  const n = notes[selectedIndex];
+  $('properties').style.display = 'block';
+  $('noSelection').style.display = 'none';
+  $('propName').value = n.name;
+  $('propX').value = n.x;
+  $('propY').value = n.y;
+  $('propR').value = n.r;
+  $('propRval').innerText = n.r;
+  $('propColor').value = n.color;
+
+  const src = n.shapeData || n.shapePath;
+  if (src) {
+    $('shapePreview').src = src;
+    $('shapePreview').style.display = 'block';
+    $('shapeEmpty').style.display = 'none';
+  } else {
+    $('shapePreview').style.display = 'none';
+    $('shapeEmpty').style.display = 'block';
+  }
+}
+
+function renderNotesList() {
+  const list = $('notesList');
+  list.innerHTML = '';
+  notes.forEach((n, i) => {
+    const item = document.createElement('div');
+    item.className = 'item' + (i === selectedIndex ? ' active' : '');
+    item.innerHTML = `<span><span class="dot" style="background:${n.color}"></span>${n.name}</span><span>${n.r}</span>`;
+    item.onclick = () => { selectedIndex = i; updateUI(); };
+    list.appendChild(item);
+  });
+}
+
+$('propName').oninput = (e) => { notes[selectedIndex].name = e.target.value; updateUI(); };
+$('propX').oninput = (e) => { notes[selectedIndex].x = parseInt(e.target.value) || 0; updateUI(); };
+$('propY').oninput = (e) => { notes[selectedIndex].y = parseInt(e.target.value) || 0; updateUI(); };
+$('propR').oninput = (e) => {
+  notes[selectedIndex].r = parseInt(e.target.value);
+  $('propRval').innerText = e.target.value;
+  draw();
+};
+$('propColor').oninput = (e) => { notes[selectedIndex].color = e.target.value; updateUI(); };
+
+$('shapeUpload').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    notes[selectedIndex].shapeData = ev.target.result;
+    const ext = file.name.split('.').pop();
+    notes[selectedIndex].shapePath = `/assets/shapes/${notes[selectedIndex].name}.${ext}`;
+    updateUI();
+  };
+  reader.readAsDataURL(file);
+};
+
+$('clearShape').onclick = () => {
+  notes[selectedIndex].shapeData = '';
+  notes[selectedIndex].shapePath = '';
+  updateUI();
+};
+
+$('deleteNote').onclick = () => {
+  if (!confirm('این نت حذف شود؟')) return;
+  notes.splice(selectedIndex, 1);
+  selectedIndex = -1;
+  updateUI();
+};
+
+$('addNote').onclick = () => {
+  const name = prompt('نام نت جدید:', 'N' + (notes.length + 1));
+  if (!name) return;
+  notes.push({
+    name: name.trim(),
+    x: CX + 100, y: CY + 100,
+    r: 30, color: '#94a3b8',
+    shapeData: '', shapePath: ''
+  });
+  selectedIndex = notes.length - 1;
+  updateUI();
+};
+
+$('resetNotes').onclick = () => {
+  if (!confirm('همه‌ی نت‌ها به حالت اولیه برمی‌گردند. مطمئنی؟')) return;
+  notes = DEFAULT_NOTES();
+  selectedIndex = -1;
+  updateUI();
+};
+
+// ============================================================
+// خروجی
+// ============================================================
+$('exportJson').onclick = () => {
+  const embed = $('embedImages').checked;
+  const out = { version: 1, layout: {}, colors: {}, shapes: {} };
+
+  notes.forEach(n => {
+    out.layout[n.name] = [n.x, n.y, n.r];
+    out.colors[n.name] = n.color;
+    const src = embed ? n.shapeData : n.shapePath;
+    if (src) out.shapes[n.name] = src;
+  });
+
+  $('output').value = JSON.stringify(out, null, 2);
+  $('output').select();
+};
+
+$('downloadJson').onclick = () => {
+  const embed = $('embedImages').checked;
+  const out = { version: 1, layout: {}, colors: {}, shapes: {} };
+  notes.forEach(n => {
+    out.layout[n.name] = [n.x, n.y, n.r];
+    out.colors[n.name] = n.color;
+    const src = embed ? n.shapeData : n.shapePath;
+    if (src) out.shapes[n.name] = src;
+  });
+  downloadText(JSON.stringify(out, null, 2), 'handpan-layout.json', 'application/json');
+};
+
+function downloadText(text, filename, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$('downloadShapes').onclick = async () => {
+  const withShape = notes.filter(n => n.shapeData);
+  if (withShape.length === 0) { alert('هیچ شکلی آپلود نشده'); return; }
+  for (const n of withShape) {
+    const ext = (n.shapeData.match(/^data:image\/([a-z]+)/) || [,'png'])[1];
+    const a = document.createElement('a');
+    a.href = n.shapeData;
+    a.download = `${n.name}.${ext}`;
+    a.click();
+    await new Promise(r => setTimeout(r, 300));
+  }
+};
+
+// ============================================================
+// شروع
+// ============================================================
+updateUI();
+</script>
+</body>
+</html>

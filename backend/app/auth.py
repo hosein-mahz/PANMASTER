@@ -99,6 +99,7 @@ def _build_user_out(user: models.User) -> dict:
         "note_size": user.note_size or 1.0,
         "font_family": user.font_family or "Vazirmatn",
         "sound_volume": user.sound_volume or 0.5,
+        "note_display_mode": user.note_display_mode or "number",
     }
 
 
@@ -198,6 +199,7 @@ def update_settings(
     if data.note_size is not None: current_user.note_size = data.note_size
     if data.font_family is not None: current_user.font_family = data.font_family
     if data.sound_volume is not None: current_user.sound_volume = data.sound_volume
+    if data.note_display_mode is not None: current_user.note_display_mode = data.note_display_mode
     db.commit(); db.refresh(current_user)
     return schemas.SettingsOut(
         language=current_user.language,
@@ -205,6 +207,7 @@ def update_settings(
         note_size=current_user.note_size,
         font_family=current_user.font_family,
         sound_volume=current_user.sound_volume,
+        note_display_mode=current_user.note_display_mode,
     )
 
 

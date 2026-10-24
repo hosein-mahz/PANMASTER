@@ -29,6 +29,9 @@ class UserOut(BaseModel):
     note_size: float = 1.0
     font_family: str = "Vazirmatn"
     sound_volume: float = 0.5
+    note_display_mode: str = "number" # در UserOut و SettingsOut
+    # در SettingsUpdate به صورت Optional:
+    note_display_mode: Optional[str] = None
 
 
 # ===== Token =====
@@ -65,6 +68,9 @@ class SettingsUpdate(BaseModel):
     note_size: Optional[float] = Field(None, ge=0.7, le=1.5)
     font_family: Optional[str] = None
     sound_volume: Optional[float] = Field(None, ge=0.0, le=1.0)
+    note_display_mode: str = "number" # در UserOut و SettingsOut
+    # در SettingsUpdate به صورت Optional:
+    note_display_mode: Optional[str] = None
 
 class SettingsOut(BaseModel):
     language: str
@@ -72,6 +78,9 @@ class SettingsOut(BaseModel):
     note_size: float
     font_family: str
     sound_volume: float
+    note_display_mode: str = "number" # در UserOut و SettingsOut
+    # در SettingsUpdate به صورت Optional:
+    note_display_mode: Optional[str] = None
 
 
 # ===== Buy Coins =====

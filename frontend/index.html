@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PanMaster</title>
+    <link rel="icon" href="data:,">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
@@ -25,7 +26,42 @@
         .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 10px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--border); border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; display: block; text-align: center; }
         .menu-btn:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--primary); transform: translateY(-2px); }
         .menu-btn img { display: inline-block; vertical-align: middle; width: 20px; height: 20px; margin: 0 4px; }
-        #handpanCanvasFree { width: 100%; max-width: 820px; height: 90%; cursor: pointer; touch-action: manipulation; }
+         /* کانواس بداهه‌نوازی */
+        #handpanCanvasFree {
+            width: 100%;
+            max-width: 820px;
+            aspect-ratio: 820 / 500;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* کانواس هنگ‌درام مرحله تستی */
+        #handpanCanvasFalling {
+            width: 100%;
+            max-width: 820px;
+            aspect-ratio: 820 / 500;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* کانواس قطره‌های در حال سقوط */
+        #fallingCanvas {
+            width: 100%;
+            max-width: 820px;
+            aspect-ratio: 820 / 280;
+            height: auto;
+            display: block;
+            margin: 0 auto 5px auto;
+            background: #0b1320;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
         .back-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10; transition: 0.3s; }
         .back-btn:hover { border-color: var(--primary); color: var(--primary); }
         #handpanCanvasFalling { width: 100%; max-width: 820px; height: 60%; cursor: pointer; touch-action: manipulation; }
@@ -259,6 +295,13 @@
                 <div class="settings-block">
                     <h3 data-i18n="settings.appearance">🎨 ظاهر بازی</h3>
                     <div class="setting-row">
+                        <label data-i18n="settings.note_display">حالت نمایش نت‌ها</label>
+                        <select id="setNoteDisplay">
+                            <option value="number" data-i18n="display.number">عدد</option>
+                            <option value="name" data-i18n="display.name">حروف (اسم نت)</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
                         <label data-i18n="settings.language">زبان</label>
                         <select id="setLanguage" onchange="onLanguageChange(this.value)">
                             <option value="fa">فارسی</option>
@@ -302,6 +345,6 @@
         </div>
     </div>
 
-    <script src="/js/game-engine.js?v=16"></script>
+    <script src="/js/game-engine.js?v=26"></script>
 </body>
 </html>
