@@ -23,7 +23,8 @@ class User(Base):
     note_size = Column(Float, default=1.0, nullable=False)           # 0.7-1.5
     font_family = Column(String, default="Vazirmatn", nullable=False)
     sound_volume = Column(Float, default=0.5, nullable=False)        # 0-1
-    note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم، شکل، رنگی
+    note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم
+    active_skin = Column(String, default="default", nullable=False)
     avatar_url = Column(String, nullable=True)
 
 
@@ -68,6 +69,7 @@ class PracticeHistory(Base):
     score = Column(Integer, default=0)
     accuracy = Column(Float, default=0.0)
     played_at = Column(DateTime(timezone=True), server_default=func.now())
+    mode = Column(String, default="falling", nullable=False)
 
 
 class CoinTransaction(Base):

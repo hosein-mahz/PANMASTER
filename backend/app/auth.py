@@ -2,7 +2,7 @@ import json
 import os
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -100,6 +100,7 @@ def _build_user_out(user: models.User) -> dict:
         "font_family": user.font_family or "Vazirmatn",
         "sound_volume": user.sound_volume or 0.5,
         "note_display_mode": user.note_display_mode or "number",
+        "active_skin": user.active_skin or "default",
     }
 
 
@@ -200,6 +201,7 @@ def update_settings(
     if data.font_family is not None: current_user.font_family = data.font_family
     if data.sound_volume is not None: current_user.sound_volume = data.sound_volume
     if data.note_display_mode is not None: current_user.note_display_mode = data.note_display_mode
+    if data.active_skin is not None: current_user.active_skin = data.active_skin
     db.commit(); db.refresh(current_user)
     return schemas.SettingsOut(
         language=current_user.language,
@@ -208,6 +210,7 @@ def update_settings(
         font_family=current_user.font_family,
         sound_volume=current_user.sound_volume,
         note_display_mode=current_user.note_display_mode,
+        active_skin=current_user.active_skin,
     )
 
 
@@ -297,14 +300,18 @@ def game_reward(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    if reward.tokens_earned > 0:
-        current_user.coins = (current_user.coins or 0) + reward.tokens_earned
+    # ۱. اعمال پاداش یا جریمه (tokens_earned می‌تونه منفی باشه)
+    current_user.coins = (current_user.coins or 0) + reward.tokens_earned
+    if current_user.coins < 0:
+        current_user.coins = 0 # جلوگیری از منفی شدن سکه
 
+    # ۲. اعمال XP فقط اگر دقت ۷۵ یا بالاتر باشد
     xp_gained = 0
-    if reward.accuracy >= 80:
+    if reward.accuracy >= 75:
         xp_gained = 20
         current_user.xp = (current_user.xp or 0) + xp_gained
 
+    # ۳. بررسی Level-up
     old_level = get_level_from_xp((current_user.xp or 0) - xp_gained)
     new_level = get_level_from_xp(current_user.xp or 0)
 
@@ -346,7 +353,6 @@ def game_reward(
         progress_percent=round(progress_percent, 1),
     )
 
-
 # ===== Legacy =====
 @router.post("/add-tokens", response_model=schemas.TokenBalance)
 def add_tokens(amount: schemas.TokenAmount, current_user: models.User = Depends(get_current_user),
@@ -365,3 +371,13 @@ def spend_tokens(amount: schemas.TokenAmount, current_user: models.User = Depend
     current_user.coins = (current_user.coins or 0) - amount.amount
     db.commit(); db.refresh(current_user)
     return schemas.TokenBalance(new_balance=current_user.coins)
+
+@router.post("/practice-history", response_model=schemas.PracticeHistoryOut)
+def save_practice_history(data: schemas.PracticeHistoryCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):
+    entry = models.PracticeHistory(user_id=current_user.id, mode=data.mode, score=data.score, accuracy=data.accuracy)
+    db.add(entry); db.commit(); db.refresh(entry)
+    return entry
+
+@router.get("/practice-history", response_model=List[schemas.PracticeHistoryOut])
+def get_practice_history(limit: int = 10, current_user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):
+    return db.query(models.PracticeHistory).filter(models.PracticeHistory.user_id == current_user.id).order_by(models.PracticeHistory.played_at.desc()).limit(limit).all()

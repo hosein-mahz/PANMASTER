@@ -258,6 +258,12 @@
                     <div class="stat"><span data-i18n="profile.extra_notes">هنگ‌درام‌های اضافی</span><span id="profileNotes">0</span></div>
                     <div class="stat"><span data-i18n="profile.skins">اسکین‌های باز‌شده</span><span id="profileSkins">0</span></div>
                 </div>
+                
+                <!-- تاریخچه تمرین -->
+                <div style="margin-top: 20px; text-align: right;">
+                    <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
+                    <div id="historyList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
+                </div>
             </div>
         </div>
 
@@ -300,6 +306,10 @@
                             <option value="number" data-i18n="display.number">عدد</option>
                             <option value="name" data-i18n="display.name">حروف (اسم نت)</option>
                         </select>
+                    </div>
+                    <div class="setting-row">
+                        <label data-i18n="settings.active_skin">طرح هنگ‌درام (اسکین)</label>
+                        <select id="activeSkinSelect"></select>
                     </div>
                     <div class="setting-row">
                         <label data-i18n="settings.language">زبان</label>
@@ -345,6 +355,6 @@
         </div>
     </div>
 
-    <script src="/js/game-engine.js?v=26"></script>
+    <script src="/js/game-engine.js?v=28"></script>
 </body>
 </html>

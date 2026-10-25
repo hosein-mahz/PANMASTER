@@ -7,9 +7,9 @@ const I18N = {
     fa: {
         "auth.identifier":"ایمیل یا نام کاربری","auth.password":"رمز عبور","auth.login_btn":"ورود به استودیو","auth.no_account":"حساب ندارید؟ ثبت‌نام کنید","auth.username":"نام کاربری","auth.email":"ایمیل","auth.register_btn":"ساخت حساب","auth.have_account":"قبلاً ثبت‌نام کرده‌اید؟ وارد شوید",
         "header.logout":"خروج","header.level_prefix":"Lvl",
-        "menu.title":"یک حالت را انتخاب کنید","menu.free_play":"🎵 بداهه‌نوازی (رایگان)","menu.trial":"🌧️ مرحله تستی (ورود: ۱۰","menu.wallet":"💰 کیف پول","menu.profile":"👤 پروفایل","menu.settings":"⚙️ تنظیمات","menu.hint":"💡 دقت بالای ۸۰٪ = ۲۰ XP + جایزه مرحله",
+        "menu.title":"یک حالت را انتخاب کنید","menu.free_play":"🎵 بداهه‌نوازی (رایگان)","menu.trial":"🌧️ مرحله تستی (ورود: ۱۰","menu.wallet":"💰 کیف پول","menu.profile":"👤 پروفایل","menu.settings":"⚙️ تنظیمات","menu.hint":"💡 دقت بالای ۷۵٪ = ۲۰ XP + جایزه مرحله",
         "game.ready":"آماده باش...","game.end":"پایان تمرین","game.back":"← بازگشت",
-        "result.title":"🎉 نتیجه تمرین","result.score":"امتیاز:","result.hits":"ضربه درست:","result.misses":"خطا:","result.accuracy":"دقت:","result.xp":"XP کسب‌شده:","result.back":"بازگشت به منو","result.reward_full":"عالی! پاداش کامل","result.reward_ok":"خوب! هزینه‌ات جبران شد","result.reward_low":"نیاز به تمرین بیشتر داری","result.reward_prefix":"پاداش شما:",
+        "result.title":"🎉 نتیجه تمرین","result.score":"امتیاز:","result.hits":"ضربه درست:","result.misses":"خطا:","result.accuracy":"دقت:","result.xp":"XP کسب‌شده:","result.back":"بازگشت به منو","result.reward_full":"عالی! پاداش کامل + ۲۰ XP (بالای ۷۵٪)","result.reward_ok":"خوب! ۱۰ سکه پاداش (بین ۵۰ تا ۷۵٪)","result.reward_none":"بدون پاداش (بین ۲۵ تا ۵۰٪)","result.reward_penalty":"جریمه ۵ سکه (زیر ۲۵٪)","result.reward_prefix":"جایزه دریافتی :",
         "wallet.title":"💰 موجودی کیف پول","wallet.hint":"سکه‌های شما برای ورود به بازی‌ها و خرید استفاده می‌شوند","wallet.buy":"🛒 خرید سکه","wallet.pkg_starter":"بسته شروع","wallet.pkg_standard":"بسته استاندارد","wallet.pkg_premium":"بسته پریمیوم","wallet.pkg_ultimate":"بسته نهایی",
         "profile.coins":"سکه","profile.total_xp":"مجموع XP","profile.extra_notes":"هنگ‌درام‌های اضافی","profile.skins":"اسکین‌های باز‌شده",
         "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت سقوط نت‌ها","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها",
@@ -23,7 +23,7 @@ const I18N = {
         "header.logout":"Logout","header.level_prefix":"Lvl",
         "menu.title":"Choose a mode","menu.free_play":"🎵 Free Play","menu.trial":"🌧️ Trial Mode (Entry: 10","menu.wallet":"💰 Wallet","menu.profile":"👤 Profile","menu.settings":"⚙️ Settings","menu.hint":"💡 Accuracy above 80% = 20 XP + level reward",
         "game.ready":"Get ready...","game.end":"End Practice","game.back":"← Back",
-        "result.title":"🎉 Practice Result","result.score":"Score:","result.hits":"Correct Hits:","result.misses":"Misses:","result.accuracy":"Accuracy:","result.xp":"XP Earned:","result.back":"Back to Menu","result.reward_full":"Excellent! Full reward","result.reward_ok":"Good! Entry cost refunded","result.reward_low":"Keep practicing","result.reward_prefix":"Your reward:",
+        "result.title":"🎉 Practice Result","result.score":"Score:","result.hits":"Correct Hits:","result.misses":"Misses:","result.accuracy":"Accuracy:","result.xp":"XP Earned:","result.back":"Back to Menu","result.reward_full":"Excellent! Full reward + 20 XP (Above 75%)","result.reward_ok":"Good! 10 coin reward (50-75%)","result.reward_none":"No reward (25-50%)","result.reward_penalty":"5 coin penalty (Below 25%)","result.reward_prefix":"Your reward:",
         "wallet.title":"💰 Wallet Balance","wallet.hint":"Your coins are used for game entries and purchases","wallet.buy":"🛒 Buy Coins","wallet.pkg_starter":"Starter Pack","wallet.pkg_standard":"Standard Pack","wallet.pkg_premium":"Premium Pack","wallet.pkg_ultimate":"Ultimate Pack",
         "profile.coins":"Coins","profile.total_xp":"Total XP","profile.extra_notes":"Extra Handpans","profile.skins":"Unlocked Skins",
         "settings.title":"⚙️ Settings","settings.account":"📝 Account Info","settings.username":"Username","settings.email":"Email","settings.save_profile":"Save Changes","settings.password":"🔒 Change Password","settings.current_password":"Current Password","settings.new_password":"New Password (min 6 chars)","settings.change_password":"Change Password","settings.avatar":"🖼️ Profile Picture","settings.choose_image":"Choose Image","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.font":"Display Font","settings.fall_speed":"Note Fall Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.font_vazir":"Vazirmatn (default)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "Note Display Mode",
@@ -52,6 +52,18 @@ const HANDPAN_LAYOUT_9 = {
     "1": [461, 374, 38], "2": [359, 374, 38], "3": [536, 300, 38],
     "4": [284, 300, 38], "5": [536, 199, 38], "6": [284, 199, 38],
     "7": [461, 128, 38], "8": [359, 128, 38]
+};
+const SKINS = {
+    default: { 
+        name: "پیش‌فرض", 
+        bodyColor: "#1e293b", 
+        edgeColor: "#475569", 
+        innerColor: "#0f172a", 
+        innerRingColor: "#334155", 
+        noteDefaultFill: "#1e293b", 
+        noteDefaultEdge: "#475569", 
+        noteHighlightFill: "#1e3a8a" 
+    }
 };
 
 const KEY_TO_NAME = {
@@ -99,6 +111,7 @@ const coinIconSVG = `<img src="/assets/coin.svg" alt="سکه" style="width:28px;
 function applyUserAssets(){
     const extra = currentUser?.extra_notes || 0;
     ACTIVE_LAYOUT = getLayoutForNotes(9 + extra);
+    ACTIVE_SKIN = SKINS[currentUser?.active_skin] || SKINS.default;
 }
 function getNoteRadius(baseR){ return baseR * (currentUser?.note_size || 1.0); }
 
@@ -274,6 +287,7 @@ async function fetchUserProfile(){
 
 function updateUIFromUser(d){
     applyLanguage();
+    loadPracticeHistory();
     if(d.font_family) applyFont(d.font_family);
 
     document.getElementById('tokenDisplay').innerText = d.coins;
@@ -293,8 +307,10 @@ function updateUIFromUser(d){
     const pc=document.getElementById('profileCoins'); if(pc) pc.innerText=d.coins;
     const ptx=document.getElementById('profileTotalXp'); if(ptx) ptx.innerText=d.xp;
     const pnot=document.getElementById('profileNotes'); if(pnot) pnot.innerText=d.extra_notes;
-    const psk=document.getElementById('profileSkins'); if(psk) psk.innerText=d.owned_skins.length;
-
+    const SKINS = {
+    // فقط اسکین پیش‌فرض اینجاست. بقیه رو خودت اینجا با رنگ‌های دلخواهت اضافه کن
+    default: { name: "پیش‌فرض", bodyColor: "#1e293b", edgeColor: "#475569", innerColor: "#0f172a", innerRingColor: "#334155", noteDefaultFill: "#1e293b", noteDefaultEdge: "#475569", noteHighlightFill: "#1e3a8a" }
+    };
     const pw=document.getElementById('profileAvatarWrap');
     if(pw) pw.innerHTML = d.avatar_url ? `<img src="${d.avatar_url}?t=${Date.now()}" class="avatar-big" alt="avatar">` : `<div class="avatar-placeholder-big">${d.username.charAt(0).toUpperCase()}</div>`;
 
@@ -313,6 +329,7 @@ function applySettingsToUI(d){
     const sfs=document.getElementById('setFallSpeed'); if(sfs){ sfs.value=d.fall_speed; document.getElementById('fallSpeedVal').innerText=d.fall_speed; }
     const sns=document.getElementById('setNoteSize'); if(sns){ sns.value=d.note_size; document.getElementById('noteSizeVal').innerText=d.note_size.toFixed(2); }
     const ssv=document.getElementById('setSoundVolume'); if(ssv){ ssv.value=d.sound_volume; document.getElementById('soundVolVal').innerText=d.sound_volume.toFixed(2); }
+    const sas = document.getElementById('activeSkinSelect'); if(sas) { sas.innerHTML = ''; const owned = ['default', ...(d.owned_skins || [])]; owned.forEach(skinId => { const skin = SKINS[skinId]; if (!skin) return; const opt = document.createElement('option'); opt.value = skinId; opt.innerText = skin.name; sas.appendChild(opt); }); sas.value = d.active_skin || 'default'; }
 }
 
 function applyLanguage(){
@@ -375,7 +392,8 @@ function previewFont(f){ applyFont(f); }
 // ==========================================================
 function drawHandpan(ctx, highlight=null){
     const W=820,H=500; ctx.clearRect(0,0,W,H);
-    const cx=410,cy=250,r=220; 
+    const cx=410,cy=250,r=220;
+    const s = ACTIVE_SKIN || SKINS.default; 
     const mode = currentUser?.note_display_mode || 'number';
     
     // بدنه
@@ -496,41 +514,96 @@ function checkEndGame(){ if(totalSpawned>=MAX_NOTES && fallingNotes.length===0 &
 function stopFallingGame(){ isGameRunning=false; if(animationId) cancelAnimationFrame(animationId); }
 
 async function endFallingGame(){
-    isGameRunning=false; if(animationId) cancelAnimationFrame(animationId);
-    const att=hits+misses; const acc=att>0?Math.round((hits/att)*100):0;
-    let earned=0, key='';
-    if(acc>=80){ earned=15; key='result.reward_full'; }
-    else if(acc>=50){ earned=10; key='result.reward_ok'; }
-    else { earned=5; key='result.reward_low'; }
+    isGameRunning=false; 
+    if(animationId) cancelAnimationFrame(animationId);
+    
+    const att=hits+misses; 
+    const acc=att>0?Math.round((hits/att)*100):0;
+    
+    let earned = 0;
+    let key = '';
+    let xpStr = '0';
 
-    document.getElementById('resScore').innerText=score;
-    document.getElementById('resHits').innerText=hits;
-    document.getElementById('resMisses').innerText=misses;
-    document.getElementById('resAcc').innerText=acc+'%';
-    document.getElementById('resXp').innerText = acc>=80?'+20':'0';
+    // منطق پاداش و جریمه جدید
+    if (acc >= 75) {
+        earned = 15;
+        key = 'result.reward_full';
+        xpStr = '+20';
+    } else if (acc >= 50) {
+        earned = 10;
+        key = 'result.reward_ok';
+    } else if (acc >= 25) {
+        earned = 0;
+        key = 'result.reward_none';
+    } else {
+        earned = -5; // جریمه ۵ سکه
+        key = 'result.reward_penalty';
+    }
 
-    window._lastResult={earned,key};
+    // نمایش در صفحه نتیجه
+    document.getElementById('resScore').innerText = score;
+    document.getElementById('resHits').innerText = hits;
+    document.getElementById('resMisses').innerText = misses;
+    document.getElementById('resAcc').innerText = acc + '%';
+    document.getElementById('resXp').innerText = xpStr;
+
+    window._lastResult = {earned, key};
     renderResultToken(window._lastResult);
     showView('result-view');
 
-    const token=localStorage.getItem('pm_token');
-    try{
-        const res=await fetch('/api/users/game-reward',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({tokens_earned:earned,accuracy:acc,score})});
-        if(res.ok){
-            const d=await res.json();
-            userTokens=d.new_balance;
-            document.getElementById('tokenDisplay').innerText=d.new_balance;
-            document.getElementById('levelBadge').innerText=`${t('header.level_prefix')} ${d.level}`;
-            document.getElementById('xpProgressFill').style.width=`${d.progress_percent}%`;
-            document.getElementById('xpText').innerText=`${d.xp_in_level} / ${d.xp_needed} XP`;
-            if(d.leveled_up && d.rewards_granted?.length){ window._lastRewards=d.rewards_granted; showRewardModal(d.rewards_granted); }
+    // ارسال به بک‌اند
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/game-reward', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+            body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score})
+        });
+        
+        if(res.ok) {
+            const d = await res.json();
+            userTokens = d.new_balance;
+            document.getElementById('tokenDisplay').innerText = d.new_balance;
+            document.getElementById('levelBadge').innerText = `${t('header.level_prefix')} ${d.level}`;
+            document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
+            document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
+            
+            if(d.leveled_up && d.rewards_granted?.length) { 
+                window._lastRewards = d.rewards_granted; 
+                showRewardModal(d.rewards_granted); 
+            }
         }
-    }catch(e){ console.error(e); }
+
+        // ذخیره تاریخچه تمرین
+        await fetch('/api/users/practice-history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ mode: 'falling', score: score, accuracy: acc })
+        });
+
+    } catch(e) { 
+        console.error("Error saving game data: ", e); 
+    }
 }
 
 function renderResultToken(r){
-    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${t('result.reward_prefix')} <span style="color:#38bdf8;font-size:24px;">${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
+    const isPenalty = r.earned < 0;
+    const color = isPenalty ? '#ef4444' : (r.earned > 0 ? '#38bdf8' : '#94a3b8');
+    const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
+    const sign = r.earned > 0 ? '+' : '';
+    
+    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
 }
+
+function renderResultToken(r){
+    const isPenalty = r.earned < 0;
+    const color = isPenalty ? '#ef4444' : (r.earned > 0 ? '#38bdf8' : '#94a3b8');
+    const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
+    const sign = r.earned > 0 ? '+' : '';
+    
+    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
+}
+
 function showRewardModal(rewards){
     const m=document.getElementById('reward-modal'); const msg=document.getElementById('rewardMessage'); const items=document.getElementById('rewardItems');
     const last=rewards[rewards.length-1].level;
@@ -588,7 +661,15 @@ async function changePassword(){
 async function saveSettings(){
     const token=localStorage.getItem('pm_token');
     const msg=document.getElementById('settingsMsg'); msg.innerText='';
-    const payload={ language: document.getElementById('setLanguage').value, font_family: document.getElementById('setFont').value, note_display_mode: document.getElementById('setNoteDisplay').value, fall_speed: parseInt(document.getElementById('setFallSpeed').value), note_size: parseFloat(document.getElementById('setNoteSize').value), sound_volume: parseFloat(document.getElementById('setSoundVolume').value) };
+    const payload={ 
+        language: document.getElementById('setLanguage').value, 
+        font_family: document.getElementById('setFont').value, 
+        note_display_mode: document.getElementById('setNoteDisplay').value, 
+        active_skin: document.getElementById('activeSkinSelect') ? document.getElementById('activeSkinSelect').value : 'default', // 👈 این خط اضافه شد
+        fall_speed: parseInt(document.getElementById('setFallSpeed').value), 
+        note_size: parseFloat(document.getElementById('setNoteSize').value), 
+        sound_volume: parseFloat(document.getElementById('setSoundVolume').value) 
+    };    
     try{
         const res=await fetch('/api/users/settings',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)});
         if(res.ok){ msg.style.color='#10b981'; msg.innerText=t('msg.saved'); await fetchUserProfile(); loadCoinPackages(); }
@@ -631,6 +712,87 @@ function setupInteraction(canvas, mode){
     });
 }
 
+// ==========================================================
+// اسکین‌ها و تاریخچه
+// ==========================================================
+function populateSkinsDropdown(d) {
+    const sel = document.getElementById('activeSkinSelect');
+    if (!sel) return;
+
+    // همیشه default رو داریم + اسکین‌هایی که کاربر خریده
+    const owned = ['default', ...(d.owned_skins || [])];
+    sel.innerHTML = '';
+    owned.forEach(skinId => {
+        const skin = SKINS[skinId];
+        if (!skin) return;
+        const opt = document.createElement('option');
+        opt.value = skinId;
+        opt.innerText = skin.name;
+        sel.appendChild(opt);
+    });
+    sel.value = d.active_skin || 'default';
+}
+
+async function changeActiveSkin(skinId) {
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ active_skin: skinId })
+        });
+        if (res.ok) {
+            currentUser.active_skin = skinId;
+            applyUserAssets();
+        }
+    } catch(e) { console.error('skin change error', e); }
+}
+
+async function loadPracticeHistory() {
+    const token = localStorage.getItem('pm_token');
+    if (!token) return;
+    try {
+        const res = await fetch('/api/users/practice-history?limit=10', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const entries = await res.json();
+        renderHistoryList(entries);
+    } catch(e) { console.error('history load error', e); }
+}
+
+function renderHistoryList(entries) {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+
+    if (!entries || entries.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:#64748b; font-size:13px; padding:15px;">هنوز تمرینی ثبت نشده است</div>`;
+        return;
+    }
+
+    list.innerHTML = '';
+    entries.forEach(e => {
+        const date = new Date(e.played_at);
+        const dateStr = date.toLocaleDateString('fa-IR', { month: 'short', day: 'numeric' });
+        const timeStr = date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+        const accuracyColor = e.accuracy >= 80 ? '#10b981' : (e.accuracy >= 50 ? '#fbbf24' : '#ef4444');
+        const modeIcon = e.mode === 'falling' ? '🌧️' : '🎵';
+
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172a; border-radius:8px; border:1px solid #334155; font-size:13px;';
+        item.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span>${modeIcon}</span>
+                <span style="color:#94a3b8; font-size:11px;">${dateStr} · ${timeStr}</span>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <span style="color:#cbd5e1;">${e.score}</span>
+                <span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
 
 // شروع برنامه
 const savedToken = localStorage.getItem('pm_token');
