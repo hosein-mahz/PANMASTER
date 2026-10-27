@@ -191,6 +191,9 @@
                 <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span>
                 <img src="/assets/coin.svg" alt="coin">)
             </button>
+            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;">حالت ساز واقعی (میکروفون)</button>
+            <button class="menu-btn" onclick="diagnoseMic()" style="border-color: #06b6d4; color: #06b6d4;">تست میکروفون (عیب‌یابی)</button>
+            <button class="menu-btn" onclick="startCalibration()" style="border-color: #a78bfa; color: #a78bfa;"> کالیبراسیون ساز واقعی</button>
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
@@ -212,7 +215,44 @@
             </div>
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <canvas id="fallingCanvas" width="820" height="280"></canvas>
-            <canvas id="handpanCanvasFalling" width="820" height="500"></canvas>
+            <div id="micDebug" style="position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 30; color: #38bdf8; min-width: 220px; text-align: center; display: none; border: 1px solid #38bdf8;">Debug</div>
+        </div>
+
+        <div id="calibration-view" class="view">
+            <button class="back-btn" onclick="cancelCalibration()">← لغو</button>
+            <div style="max-width: 500px; width: 90%; text-align: center; margin: 0 auto; padding-top: 40px;">
+                <h2 style="color: var(--primary); margin-bottom: 20px;">🎯 کالیبراسیون هنگ‌درام</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
+                    در محیط ساکت، برای هر نت ۵ بار ضربه بزنید.<br>
+                    <strong style="color: #fbbf24;">بین هر ضربه، ۳ ثانیه صبر کنید.</strong>
+                </p>
+                
+                <div style="font-size: 48px; font-weight: 900; color: #fbbf24; margin: 15px 0;">
+                    <span id="calibNoteName">۱</span>
+                </div>
+                
+                <div style="font-size: 16px; color: var(--text-main); margin-bottom: 10px;">
+                    ضربه‌های گرفته شده: <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 5
+                </div>
+
+                <!-- نمایش فرکانس و قدرت صدا -->
+                <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">
+                    فرکانس: — | Vol: 0%
+                </div>
+                
+                <!-- تایمر ۳ ثانیه‌ای -->
+                <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;">
+                    آماده ضربه اول
+                </div>
+                
+                <div style="background:#0f172a; border-radius:10px; padding:15px; font-size:13px; color:#94a3b8; margin-bottom: 20px;">
+                    نت‌های کالیبره شده: <span id="calibDoneList">—</span>
+                </div>
+
+                <button class="btn" onclick="skipCalibNote()" style="background: #475569;">
+                    رد کردن این نت
+                </button>
+            </div>
         </div>
 
         <div id="result-view" class="view">
@@ -354,7 +394,9 @@
             <button onclick="closeRewardModal()" data-i18n="reward.ok">عالی!</button>
         </div>
     </div>
-
-    <script src="/js/game-engine.js?v=28"></script>
+        
+    <!-- اسکریپت‌های خودت -->
+    <script src="/js/pitch-detector.js?v=5"></script>
+    <script src="/js/game-engine.js?v=39"></script>
 </body>
 </html>

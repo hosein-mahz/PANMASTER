@@ -381,3 +381,36 @@ def save_practice_history(data: schemas.PracticeHistoryCreate, current_user: mod
 @router.get("/practice-history", response_model=List[schemas.PracticeHistoryOut])
 def get_practice_history(limit: int = 10, current_user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):
     return db.query(models.PracticeHistory).filter(models.PracticeHistory.user_id == current_user.id).order_by(models.PracticeHistory.played_at.desc()).limit(limit).all()
+
+# ===== Calibration =====
+@router.post("/calibration")
+def save_calibration(
+    data: schemas.CalibrationSubmit,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    calibration = {
+        "notes": data.notes,
+        "calibrated_at": datetime.utcnow().isoformat()
+    }
+    current_user.calibration_data = json.dumps(calibration)
+    db.commit()
+    return {"message": "کالیبراسیون ذخیره شد", "calibration": calibration}
+
+
+@router.get("/calibration")
+def get_calibration(current_user: models.User = Depends(get_current_user)):
+    try:
+        return json.loads(current_user.calibration_data or "{}")
+    except:
+        return {}
+
+
+@router.delete("/calibration")
+def reset_calibration(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    current_user.calibration_data = "{}"
+    db.commit()
+    return {"message": "کالیبراسیون پاک شد"}

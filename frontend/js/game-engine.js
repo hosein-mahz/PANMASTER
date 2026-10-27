@@ -353,6 +353,7 @@ function showGame(){
     document.getElementById('game-section').style.display='flex';
     fetchUserProfile().then(()=>backToMenu());
     loadAudioSamples();
+    loadCalibration();
 }
 function backToMenu(){
     showView('menu-view');
@@ -360,13 +361,23 @@ function backToMenu(){
     document.getElementById('countdown-overlay').style.display='none';
     fetchUserProfile();
 }
-function goToFreePlay(){
+async function goToFreePlay(){
+    await fetchUserProfile();
     applyUserAssets();
     showView('free-view');
     const c=document.getElementById('handpanCanvasFree');
     if (c) { drawHandpan(c.getContext('2d')); setupInteraction(c,'free'); }
 }
+
 async function goToFallingGame(){
+    await fetchUserProfile();
+    if (needsRecalibration()) {
+        const go = confirm('🎯 کالیبراسیون ساز شما قدیمی است (بیش از ۶۰ روز). آیا می‌خواهید دوباره کالیبره کنید؟');
+        if (go) {
+            startCalibration();
+            return;
+        }
+    }
     applyUserAssets();
     if(userTokens<10){ alert(t('misc.not_enough_coins')); return; }
     const token=localStorage.getItem('pm_token');
@@ -381,6 +392,7 @@ async function goToFallingGame(){
     score=0; hits=0; misses=0; totalSpawned=0; fallingNotes=[];
     startCountdown();
 }
+
 function goToWallet(){ showView('wallet-view'); fetchUserProfile(); loadCoinPackages(); }
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
 function goToSettings(){ showView('settings-view'); fetchUserProfile(); }
@@ -503,13 +515,40 @@ function executeHit(note,mode){
     if(mode==='falling' && isGameRunning) checkHit(note);
 }
 function checkHit(note){
-    let idx=-1, minD=80;
+    const dbg = document.getElementById('micDebug');
+    let idx = -1, minD = 500; // پنجره بزرگ ۵۰۰ پیکسلی
+    
     for(let i=0;i<fallingNotes.length;i++){
-        const fn=fallingNotes[i];
-        if(fn.note===note && !fn.hit){ const d=Math.abs(fn.y-HIT_Y); if(d<minD){ minD=d; idx=i; } }
+        const fn = fallingNotes[i];
+        if(fn.note === note && !fn.hit){ 
+            const d = Math.abs(fn.y - HIT_Y); 
+            if(d < minD){ minD = d; idx = i; } 
+        }
     }
-    if(idx!==-1){ fallingNotes[idx].hit=true; fallingNotes.splice(idx,1); score+=100; hits++; checkEndGame(); }
+    
+    if(idx !== -1){ 
+        fallingNotes[idx].hit = true; 
+        fallingNotes.splice(idx, 1); 
+        score += 100; hits++;
+        
+        if (dbg) {
+            dbg.innerText = `✅ برخورد! نت: ${note} | امتیاز: ${score} | ضربه: ${hits}`;
+            dbg.style.color = '#10b981';
+            dbg.style.borderColor = '#10b981';
+        }
+        
+        document.body.style.boxShadow = "inset 0 0 80px #10b981";
+        setTimeout(() => document.body.style.boxShadow = "none", 200);
+        checkEndGame(); 
+    } else {
+        if (dbg) {
+            dbg.innerText = `⚠️ نت ${note} زده شد ولی در حال سقوط نبود`;
+            dbg.style.color = '#fbbf24';
+            dbg.style.borderColor = '#fbbf24';
+        }
+    }
 }
+
 function checkEndGame(){ if(totalSpawned>=MAX_NOTES && fallingNotes.length===0 && isGameRunning) endFallingGame(); }
 function stopFallingGame(){ isGameRunning=false; if(animationId) cancelAnimationFrame(animationId); }
 
@@ -792,6 +831,414 @@ function renderHistoryList(entries) {
         `;
         list.appendChild(item);
     });
+}
+
+// ==========================================================
+// حالت میکروفون (تشخیص پیچ)
+// ==========================================================
+let isMicMode = false;
+
+function handleMicNote(noteKey, freq) {
+    const dbg = document.getElementById('micDebug');
+    
+    // نمایش در نوار دیباگ (نت + فرکانس)
+    if (dbg) {
+        dbg.style.display = 'block';
+        dbg.innerText = `🎤 فرکانس: ${freq ? freq.toFixed(1) : '?'} Hz → نت: ${noteKey}`;
+        dbg.style.color = '#38bdf8';
+        dbg.style.borderColor = '#38bdf8';
+    }
+
+    // فقط هایلایت روی کانواس (بدون پخش صدا)
+    let mode = null;
+    if (document.getElementById('free-view').classList.contains('active')) mode = 'free';
+    else if (document.getElementById('falling-view').classList.contains('active')) mode = 'falling';
+
+    if (mode) {
+        const canvasId = mode === 'free' ? 'handpanCanvasFree' : 'handpanCanvasFalling';
+        const c = document.getElementById(canvasId);
+        if (c) {
+            const ctx = c.getContext('2d');
+            drawHandpan(ctx, noteKey);
+            setTimeout(() => drawHandpan(ctx), 150);
+        }
+    }
+
+    // ثبت امتیاز بدون پخش صدا
+    if (mode === 'falling' && isGameRunning) {
+        checkHit(noteKey);
+    }
+}
+
+async function toggleMicMode() {
+    const btn = document.getElementById('micBtn');
+    
+    if (!isMicMode) {
+        try {
+            await window.pitchDetector.start(
+                (noteKey, freq) => handleMicNote(noteKey, freq),
+                (rawPitch) => {
+                    // نمایش فرکانس خام حتی بدون تطبیق
+                    const dbg = document.getElementById('micDebug');
+                    if (dbg) {
+                        dbg.style.display = 'block';
+                        dbg.innerText = `🎤 فرکانس خام: ${rawPitch.toFixed(1)} Hz`;
+                        dbg.style.color = '#fbbf24';
+                        dbg.style.borderColor = '#fbbf24';
+                    }
+                }
+            );
+            
+            isMicMode = true;
+            btn.innerText = "⏹️ خاموش کردن میکروفون";
+            btn.style.borderColor = "#10b981";
+            btn.style.color = "#10b981";
+        } catch (e) {
+            console.error(e);
+        }
+    } else {
+        window.pitchDetector.stop();
+        isMicMode = false;
+        btn.innerText = "🎤 حالت ساز واقعی (میکروفون)";
+        btn.style.borderColor = "#ef4444";
+        btn.style.color = "#ef4444";
+        const dbg = document.getElementById('micDebug');
+        if (dbg) dbg.style.display = 'none';
+    }
+}
+
+// ==========================================================
+// سیستم کالیبراسیون
+// ==========================================================
+let calibrationState = null;
+let calibrationData = null;
+
+// متغیرهای مربوط به تایمر و تشخیص ضربه
+let calibCooldownUntil = 0;    
+let calibCollecting = false;    
+let calibCollectStart = 0;
+let calibCollectBuffer = [];
+const CALIB_VOL_THRESHOLD = 0.02; // آستانه حساسیت صدا
+const CALIB_COOLDOWN_MS = 3000;  // ۳ ثانیه فاصله بین هر ضربه
+
+async function loadCalibration() {
+    const token = localStorage.getItem('pm_token');
+    if (!token) return;
+    try {
+        const res = await fetch('/api/users/calibration', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            calibrationData = await res.json();
+            const notes = calibrationData.notes || {};
+            window.pitchDetector.setCalibration(notes);
+            console.log('✅ کالیبراسیون لود شد:', notes);
+        }
+    } catch(e) { console.error('calib load error', e); }
+}
+
+function needsRecalibration() {
+    if (!calibrationData || !calibrationData.calibrated_at) return true;
+    if (!calibrationData.notes || Object.keys(calibrationData.notes).length === 0) return true;
+    const last = new Date(calibrationData.calibrated_at);
+    const days = (Date.now() - last.getTime()) / (1000 * 60 * 60 * 24);
+    return days > 60;
+}
+
+async function startCalibration() {
+    const allNotes = Object.keys(HANDPAN_LAYOUT_9); // ['D','1','2',...,'8']
+    
+    calibrationState = {
+        currentIdx: 0,
+        allNotes: allNotes,
+        samples: {}, 
+        MIN_SAMPLES: 5,
+        MAX_SAMPLES: 20
+    };
+    allNotes.forEach(n => calibrationState.samples[n] = []);
+
+    // ریست کردن وضعیت ضربه
+    calibCooldownUntil = 0;
+    calibCollecting = false;
+    calibCollectBuffer = [];
+
+    showView('calibration-view');
+    updateCalibrationUI();
+
+    try { window.pitchDetector.stop(); } catch(e) {}
+    await new Promise(r => setTimeout(r, 300));
+
+    try {
+        await window.pitchDetector.start(
+            () => {}, 
+            (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)
+        );
+    } catch(e) {
+        alert('دسترسی به میکروفون ممکن نشد: ' + e.message);
+        cancelCalibration();
+    }
+}
+
+function onCalibrationPitch(rawPitch, rms) {
+    if (!calibrationState) return;
+
+    // اگر rms تعریف نشده بود، یعنی pitch-detector آپدیت نشده است
+    if (rms === undefined) {
+        console.error("❌ خطا: rms undefined است. فایل pitch-detector.js را آپدیت کنید.");
+        return;
+    }
+    
+    const liveEl = document.getElementById('calibLiveFreq');
+    const cooldownEl = document.getElementById('calibCooldown');
+    const now = Date.now();
+
+    // نمایش زنده فرکانس و قدرت صدا
+    if (liveEl) {
+        const volPct = (rms * 100).toFixed(1);
+        const freqTxt = rawPitch ? rawPitch.toFixed(1) : '—';
+        liveEl.innerText = `فرکانس: ${freqTxt} Hz | Vol: ${volPct}%`;
+    }
+
+    // مدیریت تایمر ۳ ثانیه‌ای
+    if (now < calibCooldownUntil) {
+        const remaining = Math.ceil((calibCooldownUntil - now) / 1000);
+        if (cooldownEl) {
+            cooldownEl.innerHTML = `⏱️ ${remaining} ثانیه صبر کن...`;
+            cooldownEl.style.color = '#fbbf24';
+        }
+        return;
+    } else {
+        if (cooldownEl && cooldownEl.innerText.includes('صبر')) {
+            cooldownEl.innerHTML = `✅ آماده ضربه بعدی`;
+            cooldownEl.style.color = '#10b981';
+        }
+    }
+
+    const currentNote = calibrationState.allNotes[calibrationState.currentIdx];
+    if (!currentNote) return;
+    const arr = calibrationState.samples[currentNote];
+
+    // تشخیص شروع ضربه (فقط بر اساس قدرت صدا)
+    if (!calibCollecting && rms > CALIB_VOL_THRESHOLD) {
+        calibCollecting = true;
+        calibCollectStart = now;
+        calibCollectBuffer = [];
+        return;
+    }
+
+    // جمع آوری نمونه‌ها به مدت ۱۵۰ میلی‌ثانیه
+    if (calibCollecting) {
+        if (rawPitch) calibCollectBuffer.push(rawPitch);
+        
+        if (now - calibCollectStart > 150) {
+            if (calibCollectBuffer.length > 0) {
+                calibCollectBuffer.sort((a, b) => a - b);
+                const median = calibCollectBuffer[Math.floor(calibCollectBuffer.length / 2)];
+                
+                if (median > 50 && median < 4000) {
+                    arr.push(median);
+                    updateCalibrationUI(); // آپدیت شمارنده
+                    
+                    calibCooldownUntil = now + CALIB_COOLDOWN_MS;
+                    
+                    if (cooldownEl) {
+                        cooldownEl.innerHTML = `✅ ثبت شد: ${median.toFixed(1)} Hz — ۳ ثانیه صبر...`;
+                        cooldownEl.style.color = '#38bdf8';
+                    }
+                }
+            }
+            
+            calibCollecting = false;
+            calibCollectBuffer = [];
+
+            // اگر ۵ نمونه جمع شد، برو نت بعدی
+            if (arr.length >= calibrationState.MIN_SAMPLES) {
+                setTimeout(() => {
+                    if (!calibrationState) return;
+                    if (calibrationState.currentIdx < calibrationState.allNotes.length - 1) {
+                        calibrationState.currentIdx++;
+                        calibCooldownUntil = 0;
+                        updateCalibrationUI();
+                        if (cooldownEl) {
+                            cooldownEl.innerHTML = `آماده نت بعدی`;
+                            cooldownEl.style.color = '#10b981';
+                        }
+                    } else {
+                        finishCalibration();
+                    }
+                }, CALIB_COOLDOWN_MS + 200);
+            }
+        }
+    }
+}
+
+function updateCalibrationUI() {
+    if (!calibrationState) return;
+    
+    const currentNote = calibrationState.allNotes[calibrationState.currentIdx];
+    const count = calibrationState.samples[currentNote]?.length || 0;
+    
+    const noteNameMap = { "D": "D (سنتر)", "1": "۱", "2": "۲", "3": "۳", "4": "۴", "5": "۵", "6": "۶", "7": "۷", "8": "۸" };
+    
+    const noteEl = document.getElementById('calibNoteName');
+    if (noteEl) noteEl.innerText = noteNameMap[currentNote] || currentNote;
+    
+    const countEl = document.getElementById('calibCount');
+    if (countEl) countEl.innerText = count;
+    
+    const freqEl = document.getElementById('calibFreqInfo');
+    if (freqEl) {
+        if (count > 0) {
+            const arr = calibrationState.samples[currentNote];
+            const avg = arr.reduce((a,b)=>a+b, 0) / arr.length;
+            freqEl.innerText = `میانگین: ${avg.toFixed(1)} Hz`;
+        } else {
+            freqEl.innerText = 'منتظر ضربه...';
+        }
+    }
+    
+    const doneEl = document.getElementById('calibDoneList');
+    if (doneEl) {
+        const done = Object.keys(calibrationState.samples)
+            .filter(n => calibrationState.samples[n].length >= calibrationState.MIN_SAMPLES)
+            .map(n => noteNameMap[n] || n);
+        doneEl.innerText = done.length > 0 ? done.join(' · ') : '—';
+    }
+}
+
+function skipCalibNote() {
+    if (!calibrationState) return;
+    calibrationState.currentIdx++;
+    calibCooldownUntil = 0;
+    if (calibrationState.currentIdx >= calibrationState.allNotes.length) {
+        finishCalibration();
+    } else {
+        updateCalibrationUI();
+    }
+}
+
+async function finishCalibration() {
+    if (!calibrationState) return;
+    
+    window.pitchDetector.stop();
+    
+    const result = {};
+    for (const [note, samples] of Object.entries(calibrationState.samples)) {
+        if (samples.length < calibrationState.MIN_SAMPLES) continue;
+        const min = Math.min(...samples);
+        const max = Math.max(...samples);
+        const avg = samples.reduce((a,b)=>a+b, 0) / samples.length;
+        const padding = avg * 0.03;
+        result[note] = {
+            min: parseFloat((min - padding).toFixed(2)),
+            max: parseFloat((max + padding).toFixed(2)),
+            avg: parseFloat(avg.toFixed(2))
+        };
+    }
+    
+    if (Object.keys(result).length === 0) {
+        alert('هیچ نتی کالیبره نشد. دوباره تلاش کنید.');
+        calibrationState = null;
+        backToMenu();
+        return;
+    }
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/calibration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ notes: result })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            calibrationData = data.calibration;
+            window.pitchDetector.setCalibration(calibrationData.notes);
+            
+            const summary = Object.entries(result).map(([n, r]) => `${n}: ${r.avg} Hz`).join(' | ');
+            alert(`✅ کالیبراسیون ذخیره شد!\n\n${summary}`);
+            
+            calibrationState = null;
+            backToMenu();
+        } else {
+            alert('خطا در ذخیره کالیبراسیون');
+        }
+    } catch(e) {
+        console.error(e);
+        alert('خطا در ارتباط با سرور');
+    }
+}
+
+function cancelCalibration() {
+    window.pitchDetector.stop();
+    calibrationState = null;
+    backToMenu();
+}
+
+async function diagnoseMic() {
+    const result = [];
+    result.push(`مرورگر: ${navigator.userAgent.substring(0, 60)}...`);
+    result.push(`Secure Context: ${window.isSecureContext ? '✅ HTTPS/localhost' : '❌ HTTP (مشکل!)'}`);
+    result.push(`navigator.mediaDevices: ${navigator.mediaDevices ? '✅' : '❌ وجود ندارد'}`);
+
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const mics = devices.filter(d => d.kind === 'audioinput');
+        result.push(`میکروفون‌های پیدا شده: ${mics.length}`);
+        mics.forEach(m => result.push(`  - ${m.label || 'بدون نام'}`));
+    } catch(e) {
+        result.push(`enumerateDevices خطا: ${e.message}`);
+    }
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const tracks = stream.getAudioTracks();
+        result.push(`\n✅ getUserMedia موفق! ${tracks.length} ترک صوتی`);
+        tracks.forEach(t => result.push(`  - ${t.label}, حالت: ${t.readyState}`));
+        
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        result.push(`AudioContext state: ${ctx.state}`);
+        if (ctx.state === 'suspended') {
+            await ctx.resume();
+            result.push(`بعد از resume: ${ctx.state}`);
+        }
+        
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 2048;
+        const source = ctx.createMediaStreamSource(stream);
+        source.connect(analyser);
+        
+        result.push(`\n🎤 حالا ۳ ثانیه با صدای بلند صحبت کن یا سوت بزن...`);
+        alert(result.join('\n'));
+        result.length = 0;
+        
+        let maxVol = 0;
+        const startTime = Date.now();
+        
+        await new Promise(resolve => {
+            const check = () => {
+                const buf = new Float32Array(analyser.fftSize);
+                analyser.getFloatTimeDomainData(buf);
+                let sum = 0;
+                for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+                const vol = Math.sqrt(sum / buf.length) * 100;
+                if (vol > maxVol) maxVol = vol;
+                if (Date.now() - startTime < 3000) requestAnimationFrame(check);
+                else resolve();
+            };
+            check();
+        });
+        
+        stream.getTracks().forEach(t => t.stop());
+        ctx.close();
+        
+        alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 2 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه، میکروفون صدا رو نمی‌گیره'}`);
+        
+    } catch(e) {
+        result.push(`\n❌ getUserMedia خطا: ${e.name}`);
+        result.push(`${e.message}`);
+        alert(result.join('\n'));
+    }
 }
 
 // شروع برنامه

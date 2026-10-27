@@ -25,6 +25,7 @@ class User(Base):
     sound_volume = Column(Float, default=0.5, nullable=False)        # 0-1
     note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم
     active_skin = Column(String, default="default", nullable=False)
+    calibration_data = Column(String, default="{}", nullable=False)
     avatar_url = Column(String, nullable=True)
 
 

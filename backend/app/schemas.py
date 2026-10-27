@@ -112,3 +112,10 @@ class BuyCoinsResponse(BaseModel):
     message: str
     coins_added: int
     new_balance: int
+
+class CalibrationSubmit(BaseModel):
+    notes: dict  # {"1": {"min": 108.5, "max": 112.3, "avg": 110.4}, ...}
+
+class CalibrationOut(BaseModel):
+    notes: dict = {}
+    calibrated_at: Optional[str] = None
