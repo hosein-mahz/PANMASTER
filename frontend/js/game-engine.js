@@ -12,25 +12,22 @@ const I18N = {
         "result.title":"🎉 نتیجه تمرین","result.score":"امتیاز:","result.hits":"ضربه درست:","result.misses":"خطا:","result.accuracy":"دقت:","result.xp":"XP کسب‌شده:","result.back":"بازگشت به منو","result.reward_full":"عالی! پاداش کامل + ۲۰ XP (بالای ۷۵٪)","result.reward_ok":"خوب! ۱۰ سکه پاداش (بین ۵۰ تا ۷۵٪)","result.reward_none":"بدون پاداش (بین ۲۵ تا ۵۰٪)","result.reward_penalty":"جریمه ۵ سکه (زیر ۲۵٪)","result.reward_prefix":"جایزه دریافتی :",
         "wallet.title":"💰 موجودی کیف پول","wallet.hint":"سکه‌های شما برای ورود به بازی‌ها و خرید استفاده می‌شوند","wallet.buy":"🛒 خرید سکه","wallet.pkg_starter":"بسته شروع","wallet.pkg_standard":"بسته استاندارد","wallet.pkg_premium":"بسته پریمیوم","wallet.pkg_ultimate":"بسته نهایی",
         "profile.coins":"سکه","profile.total_xp":"مجموع XP","profile.extra_notes":"هنگ‌درام‌های اضافی","profile.skins":"اسکین‌های باز‌شده",
-        "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت سقوط نت‌ها","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها",
+        "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت سقوط نت‌ها","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها","settings.active_skin":"طرح هنگ‌درام (اسکین)",
         "display.number": "عدد", "display.name": "حروف",
         "msg.saved":"✓ تغییرات ذخیره شد","msg.saved_token":"✓ تغییرات ذخیره شد (توکن جدید صادر شد)","msg.pass_changed":"✓ رمز عبور تغییر کرد","msg.avatar_uploaded":"✓ آواتار آپلود شد","msg.uploading":"در حال آپلود...","msg.error_server":"خطا در ارتباط با سرور","msg.error_generic":"خطا","msg.pass_short":"رمز جدید حداقل ۶ کاراکتر باید باشد",
         "reward.title":"🎉 تبریک!","reward.message_1":"شما به مرحله","reward.message_2":"رسیدید!","reward.ok":"عالی!","reward.level_prefix":"مرحله",
         "misc.coin":"سکه","misc.not_enough_coins":"❌ سکه کافی ندارید! برای بازی به ۱۰ سکه نیاز است.","misc.coin_deduct_error":"خطا در کسر سکه.","misc.connection_error":"ارتباط با سرور برقرار نشد."
     },
     en: {
-        "auth.identifier":"Email or username","auth.password":"Password","auth.login_btn":"Enter Studio","auth.no_account":"No account? Register","auth.username":"Username","auth.email":"Email","auth.register_btn":"Create Account","auth.have_account":"Already registered? Sign in",
         "header.logout":"Logout","header.level_prefix":"Lvl",
-        "menu.title":"Choose a mode","menu.free_play":"🎵 Free Play","menu.trial":"🌧️ Trial Mode (Entry: 10","menu.wallet":"💰 Wallet","menu.profile":"👤 Profile","menu.settings":"⚙️ Settings","menu.hint":"💡 Accuracy above 80% = 20 XP + level reward",
+        "menu.title":"Choose a mode","menu.free_play":"🎵 Free Play","menu.trial":"🌧️ Trial Mode (Entry: 10","menu.wallet":"💰 Wallet","menu.profile":"👤 Profile","menu.settings":"⚙️ Settings","menu.hint":"💡 Accuracy above 75% = 20 XP + level reward",
         "game.ready":"Get ready...","game.end":"End Practice","game.back":"← Back",
         "result.title":"🎉 Practice Result","result.score":"Score:","result.hits":"Correct Hits:","result.misses":"Misses:","result.accuracy":"Accuracy:","result.xp":"XP Earned:","result.back":"Back to Menu","result.reward_full":"Excellent! Full reward + 20 XP (Above 75%)","result.reward_ok":"Good! 10 coin reward (50-75%)","result.reward_none":"No reward (25-50%)","result.reward_penalty":"5 coin penalty (Below 25%)","result.reward_prefix":"Your reward:",
-        "wallet.title":"💰 Wallet Balance","wallet.hint":"Your coins are used for game entries and purchases","wallet.buy":"🛒 Buy Coins","wallet.pkg_starter":"Starter Pack","wallet.pkg_standard":"Standard Pack","wallet.pkg_premium":"Premium Pack","wallet.pkg_ultimate":"Ultimate Pack",
-        "profile.coins":"Coins","profile.total_xp":"Total XP","profile.extra_notes":"Extra Handpans","profile.skins":"Unlocked Skins",
-        "settings.title":"⚙️ Settings","settings.account":"📝 Account Info","settings.username":"Username","settings.email":"Email","settings.save_profile":"Save Changes","settings.password":"🔒 Change Password","settings.current_password":"Current Password","settings.new_password":"New Password (min 6 chars)","settings.change_password":"Change Password","settings.avatar":"🖼️ Profile Picture","settings.choose_image":"Choose Image","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.font":"Display Font","settings.fall_speed":"Note Fall Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.font_vazir":"Vazirmatn (default)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "Note Display Mode",
+        "wallet.title":"💰 Wallet Balance","wallet.hint":"Your coins are used for game entries and purchases","wallet.buy":"🛒 Buy Coins",
+        "profile.coins":"Coins","profile.total_xp":"Total XP",
+        "settings.title":"⚙️ Settings","settings.appearance":"🎨 Game Appearance","settings.note_display": "Note Display Mode","settings.active_skin":"Handpan Skin","settings.language":"Language","settings.fall_speed":"Note Fall Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings",
         "display.number": "Number", "display.name": "Letters",
-        "msg.saved":"✓ Changes saved","msg.saved_token":"✓ Changes saved (new token issued)","msg.pass_changed":"✓ Password changed","msg.avatar_uploaded":"✓ Avatar uploaded","msg.uploading":"Uploading...","msg.error_server":"Server connection error","msg.error_generic":"Error","msg.pass_short":"New password must be at least 6 characters",
-        "reward.title":"🎉 Congratulations!","reward.message_1":"You reached level","reward.message_2":"!","reward.ok":"Great!","reward.level_prefix":"Level",
-        "misc.coin":"coins","misc.not_enough_coins":"❌ Not enough coins! You need 10 coins to play.","misc.coin_deduct_error":"Error deducting coins.","misc.connection_error":"Connection failed."
+        "misc.coin":"coins","misc.not_enough_coins":"❌ Not enough coins! You need 10 coins to play."
     }
 };
 
@@ -45,7 +42,7 @@ function t(k){ return I18N[CURRENT_LANG]?.[k] ?? I18N.fa[k] ?? k; }
 function getLocalizedLevelName(lvl, fb){ const a=LEVEL_NAMES_I18N[CURRENT_LANG]; return (a && lvl>=1 && lvl<=a.length) ? a[lvl-1] : (fb||''); }
 
 // ==========================================================
-// LAYOUTS & COLORS (بر اساس JSON شما)
+// LAYOUTS & COLORS
 // ==========================================================
 const HANDPAN_LAYOUT_9 = {
     "D": [410, 250, 58],
@@ -101,11 +98,12 @@ function generateHandpanLayout(total){
 function getLayoutForNotes(n){ return n<=9?HANDPAN_LAYOUT_9:generateHandpanLayout(n); }
 
 // ==========================================================
-// متغیرهای اصلی
+// STATE
 // ==========================================================
 let userTokens = 0;
 let currentUser = null;
 let ACTIVE_LAYOUT = HANDPAN_LAYOUT_9;
+let ACTIVE_SKIN = SKINS.default;
 const coinIconSVG = `<img src="/assets/coin.svg" alt="سکه" style="width:28px;height:28px;vertical-align:middle;">`;
 
 function applyUserAssets(){
@@ -116,7 +114,7 @@ function applyUserAssets(){
 function getNoteRadius(baseR){ return baseR * (currentUser?.note_size || 1.0); }
 
 // ==========================================================
-// صدا (پلی‌فونیک با فایل‌های WAV)
+// AUDIO
 // ==========================================================
 let audioCtx = null;
 const soundBuffers = {}; 
@@ -126,19 +124,13 @@ function initAudio() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
 }
-
 document.body.addEventListener('click', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); });
 
 async function loadAudioSamples() {
-    // فقط اگر AudioContext قبلا ساخته شده باشه ازش استفاده میکنیم
-    if (!audioCtx) {
-        // ایجاد یک AudioContext موقت برای دیکود کردن فایلها بدون نیاز به کلیک
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = initAudio();
     const keys = Object.keys(HANDPAN_LAYOUT_9); 
     let loadedCount = 0;
-
     for (const key of keys) {
         try {
             const response = await fetch(`/assets/sounds/${key}.wav`);
@@ -147,57 +139,37 @@ async function loadAudioSamples() {
                 soundBuffers[key] = await ctx.decodeAudioData(arrayBuffer);
                 loadedCount++;
             }
-        } catch (e) {
-            console.warn(`فایل صوتی برای نت ${key} پیدا نشد.`);
-        }
+        } catch (e) { console.warn(`فایل صوتی ${key} پیدا نشد.`); }
     }
-    console.log(`🎵 ${loadedCount} فایل صوتی WAV با موفقیت لود شد.`);
+    console.log(`🎵 ${loadedCount} فایل صوتی WAV لود شد.`);
 }
 
 function playSound(noteKey) {
     const ctx = initAudio();
     if (!ctx) return;
-    
-    // باز کردن قفل صدا در موبایل
-    if (ctx.state === 'suspended') {
-        ctx.resume();
-    }
-
+    if (ctx.state === 'suspended') ctx.resume();
     const volume = currentUser?.sound_volume ?? 0.5;
     if (volume === 0) return;
 
-    // اگر فایل WAV داری، کل فایل رو تا آخر پخش میکنه
     if (soundBuffers[noteKey]) {
-        console.log("🔊 پخش WAV:", noteKey);
         const source = ctx.createBufferSource();
         source.buffer = soundBuffers[noteKey];
         const gain = ctx.createGain();
         gain.gain.value = volume; 
         source.connect(gain);
         gain.connect(ctx.destination);
-        
-        // پخش کامل فایل (بدون قطع کردن نت قبلی)
         source.start(0); 
-    } 
-    // صدای پشتیبان (سینتسایزر) که الان تا ۴ ثانیه کشیده میشه
-    else {
-        console.warn("⚠️ WAV پیدا نشد. پخش سینتسایزر برای:", noteKey);
+    } else {
         const freq = FREQS[noteKey] || 440; 
         const now = ctx.currentTime; 
-        const duration = 4.0; // 👈 از ۱.۵ ثانیه به ۴ ثانیه افزایش یافت
-
+        const duration = 4.0;
         const osc = ctx.createOscillator(); 
         const gain = ctx.createGain();
-        
         osc.type = 'sine'; 
         osc.frequency.setValueAtTime(freq, now);
-        
-        // شروع نرم
         gain.gain.setValueAtTime(0, now); 
         gain.gain.linearRampToValueAtTime(volume * 0.6, now + 0.05); 
-        // محو شدن تدریجی تا ثانیه ۴
         gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        
         osc.connect(gain); 
         gain.connect(ctx.destination); 
         osc.start(now); 
@@ -206,7 +178,7 @@ function playSound(noteKey) {
 }
 
 // ==========================================================
-// Auth
+// AUTH & UI
 // ==========================================================
 function toggleAuth(type){
     document.getElementById('login-form').style.display = type==='login'?'block':'none';
@@ -216,19 +188,11 @@ function toggleAuth(type){
 async function login(){
     const username=document.getElementById('loginUser').value.trim();
     const password=document.getElementById('loginPass').value;
-    if(!username || !password) {
-        document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.';
-        return;
-    }
+    if(!username || !password) { document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
     const fd=new URLSearchParams(); fd.append('username',username); fd.append('password',password);
     try{
         const res=await fetch('/api/users/login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:fd});
-        if(res.ok){ 
-            const d=await res.json(); 
-            localStorage.setItem('pm_token',d.access_token); 
-            document.getElementById('authError').innerText = '';
-            showGame(); 
-        }
+        if(res.ok){ const d=await res.json(); localStorage.setItem('pm_token',d.access_token); document.getElementById('authError').innerText = ''; showGame(); }
         else document.getElementById('authError').innerText = 'نام کاربری یا رمز عبور اشتباه است.';
     }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
 }
@@ -237,36 +201,12 @@ async function register(){
     const username=document.getElementById('regUser').value.trim();
     const email=document.getElementById('regEmail').value.trim();
     const password=document.getElementById('regPass').value;
-    
-    // اعتبارسنجی ساده سمت کاربر
-    if(!username || !email || !password) {
-        document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.';
-        return;
-    }
-    if(!email.includes('@') || !email.includes('.')) {
-        document.getElementById('authError').innerText = 'فرمت ایمیل صحیح نیست (مثال: test@gmail.com).';
-        return;
-    }
-
+    if(!username || !email || !password) { document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
+    if(!email.includes('@') || !email.includes('.')) { document.getElementById('authError').innerText = 'فرمت ایمیل صحیح نیست.'; return; }
     try{
         const res=await fetch('/api/users/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
-        if(res.ok){ 
-            alert('✅ ثبت‌نام موفق! حالا وارد شوید.');
-            toggleAuth('login'); 
-            document.getElementById('authError').innerText = '';
-        }
-        else { 
-            const err=await res.json(); 
-            let msg = t('msg.error_generic');
-            // استخراج پیام دقیق از خطای 422 FastAPI
-            if (Array.isArray(err.detail) && err.detail.length > 0) {
-                msg = err.detail[0].msg;
-                if (err.detail[0].loc.includes('email')) msg = 'فرمت ایمیل معتبر نیست.';
-            } else if (typeof err.detail === 'string') {
-                msg = err.detail;
-            }
-            document.getElementById('authError').innerText = msg; 
-        }
+        if(res.ok){ alert('✅ ثبت‌نام موفق!'); toggleAuth('login'); document.getElementById('authError').innerText = ''; }
+        else { const err=await res.json(); document.getElementById('authError').innerText = err.detail || 'خطا'; }
     }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
 }
 function logout(){
@@ -307,10 +247,8 @@ function updateUIFromUser(d){
     const pc=document.getElementById('profileCoins'); if(pc) pc.innerText=d.coins;
     const ptx=document.getElementById('profileTotalXp'); if(ptx) ptx.innerText=d.xp;
     const pnot=document.getElementById('profileNotes'); if(pnot) pnot.innerText=d.extra_notes;
-    const SKINS = {
-    // فقط اسکین پیش‌فرض اینجاست. بقیه رو خودت اینجا با رنگ‌های دلخواهت اضافه کن
-    default: { name: "پیش‌فرض", bodyColor: "#1e293b", edgeColor: "#475569", innerColor: "#0f172a", innerRingColor: "#334155", noteDefaultFill: "#1e293b", noteDefaultEdge: "#475569", noteHighlightFill: "#1e3a8a" }
-    };
+    const psk=document.getElementById('profileSkins'); if(psk) psk.innerText=d.owned_skins?.length || 0;
+
     const pw=document.getElementById('profileAvatarWrap');
     if(pw) pw.innerHTML = d.avatar_url ? `<img src="${d.avatar_url}?t=${Date.now()}" class="avatar-big" alt="avatar">` : `<div class="avatar-placeholder-big">${d.username.charAt(0).toUpperCase()}</div>`;
 
@@ -329,7 +267,20 @@ function applySettingsToUI(d){
     const sfs=document.getElementById('setFallSpeed'); if(sfs){ sfs.value=d.fall_speed; document.getElementById('fallSpeedVal').innerText=d.fall_speed; }
     const sns=document.getElementById('setNoteSize'); if(sns){ sns.value=d.note_size; document.getElementById('noteSizeVal').innerText=d.note_size.toFixed(2); }
     const ssv=document.getElementById('setSoundVolume'); if(ssv){ ssv.value=d.sound_volume; document.getElementById('soundVolVal').innerText=d.sound_volume.toFixed(2); }
-    const sas = document.getElementById('activeSkinSelect'); if(sas) { sas.innerHTML = ''; const owned = ['default', ...(d.owned_skins || [])]; owned.forEach(skinId => { const skin = SKINS[skinId]; if (!skin) return; const opt = document.createElement('option'); opt.value = skinId; opt.innerText = skin.name; sas.appendChild(opt); }); sas.value = d.active_skin || 'default'; }
+    const sas = document.getElementById('activeSkinSelect'); 
+    if(sas) { 
+        sas.innerHTML = ''; 
+        const owned = ['default', ...(d.owned_skins || [])]; 
+        owned.forEach(skinId => { 
+            const skin = SKINS[skinId]; 
+            if (!skin) return; 
+            const opt = document.createElement('option'); 
+            opt.value = skinId; 
+            opt.innerText = skin.name; 
+            sas.appendChild(opt); 
+        }); 
+        sas.value = d.active_skin || 'default'; 
+    }
 }
 
 function applyLanguage(){
@@ -345,7 +296,7 @@ function applyLanguage(){
 function applyFont(f){ document.documentElement.style.setProperty('--app-font', `'${f}', sans-serif`); }
 
 // ==========================================================
-// ناوبری
+// NAVIGATION
 // ==========================================================
 function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function showGame(){
@@ -372,11 +323,8 @@ async function goToFreePlay(){
 async function goToFallingGame(){
     await fetchUserProfile();
     if (needsRecalibration()) {
-        const go = confirm('🎯 کالیبراسیون ساز شما قدیمی است (بیش از ۶۰ روز). آیا می‌خواهید دوباره کالیبره کنید؟');
-        if (go) {
-            startCalibration();
-            return;
-        }
+        const go = confirm('🎯 کالیبراسیون ساز شما قدیمی است. آیا می‌خواهید دوباره کالیبره کنید؟');
+        if (go) { startCalibration(); return; }
     }
     applyUserAssets();
     if(userTokens<10){ alert(t('misc.not_enough_coins')); return; }
@@ -386,9 +334,23 @@ async function goToFallingGame(){
         if(res.ok){ const d=await res.json(); userTokens=d.new_balance; document.getElementById('tokenDisplay').innerText=userTokens; }
         else { alert(t('misc.coin_deduct_error')); return; }
     }catch(e){ alert(t('misc.connection_error')); return; }
+    
     showView('falling-view');
+    
+    // 👇 رفع باگ: متغیر c به جای hc تعریف شد
     const c=document.getElementById('handpanCanvasFalling');
-    if (c) { drawHandpan(c.getContext('2d')); setupInteraction(c,'falling'); }
+    if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c,'falling'); }
+    
+    // ریست کردن حالت میکروفون اگر باز مانده بود
+    isMicMode = false;
+    const micBtn = document.getElementById('micBtn');
+    if(micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "#ef4444"; micBtn.style.color = "#ef4444"; }
+    const fv = document.getElementById('falling-view');
+    if (fv) fv.classList.remove('mic-active');
+    HIT_Y = 220;
+    const fc = document.getElementById('fallingCanvas');
+    if (fc) { fc.width = 820; fc.height = 280; }
+
     score=0; hits=0; misses=0; totalSpawned=0; fallingNotes=[];
     startCountdown();
 }
@@ -400,7 +362,7 @@ function onLanguageChange(l){ setLang(l); document.querySelectorAll('[data-i18n]
 function previewFont(f){ applyFont(f); }
 
 // ==========================================================
-// رسم روی هنگ درام
+// DRAWING
 // ==========================================================
 function drawHandpan(ctx, highlight=null){
     const W=820,H=500; ctx.clearRect(0,0,W,H);
@@ -408,7 +370,6 @@ function drawHandpan(ctx, highlight=null){
     const s = ACTIVE_SKIN || SKINS.default; 
     const mode = currentUser?.note_display_mode || 'number';
     
-    // بدنه
     ctx.shadowColor='#000'; ctx.shadowBlur=25;
     ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
     ctx.shadowBlur=0; ctx.strokeStyle='#475569'; ctx.lineWidth=3; ctx.stroke();
@@ -440,12 +401,12 @@ function drawHandpan(ctx, highlight=null){
 }
 
 // ==========================================================
-// فلاینگ نوت
+// FALLING GAME LOGIC
 // ==========================================================
 let fallingNotes=[];
 let animationId=null, lastTime=0;
 let score=0,hits=0,misses=0,totalSpawned=0;
-const MAX_NOTES=20, HIT_Y=220;
+let MAX_NOTES=20, HIT_Y=220; 
 let isGameRunning=false, noteSpawnTimer=0, countdownInterval=null;
 const ctxFall=document.getElementById('fallingCanvas').getContext('2d');
 const TEST_SEQUENCE=["D","1","2","3","4","5","6","7","8"];
@@ -480,7 +441,7 @@ function animateFalling(time){
     const dt=(time-lastTime)/1000; lastTime=time; noteSpawnTimer+=dt;
     if(noteSpawnTimer>1.5){ spawnNote(); noteSpawnTimer=0; }
     
-    ctxFall.clearRect(0,0,820,280);
+    ctxFall.clearRect(0, 0, 820, isMicMode ? 500 : 280);
     ctxFall.beginPath(); ctxFall.moveTo(0,HIT_Y); ctxFall.lineTo(820,HIT_Y);
     ctxFall.strokeStyle='#38bdf8'; ctxFall.lineWidth=4; ctxFall.stroke();
     
@@ -502,28 +463,34 @@ function animateFalling(time){
         ctxFall.textAlign='center'; ctxFall.textBaseline='middle';
         ctxFall.fillText(displayTxt, fn.x, fn.y);
         
-        if(fn.y>HIT_Y+40){ misses++; fallingNotes.splice(i,1); checkEndGame(); }
+        if(fn.y>HIT_Y+100){ misses++; fallingNotes.splice(i,1); checkEndGame(); }
     }
     animationId=requestAnimationFrame(animateFalling);
 }
-function executeHit(note,mode){
-    playSound(note);
-    const id=mode==='free'?'handpanCanvasFree':'handpanCanvasFalling';
-    const c=document.getElementById(id); if(!c) return;
-    const ctx=c.getContext('2d');
-    drawHandpan(ctx,note); setTimeout(()=>drawHandpan(ctx),150);
-    if(mode==='falling' && isGameRunning) checkHit(note);
-}
-function checkHit(note){
-    const dbg = document.getElementById('micDebug');
-    let idx = -1, minD = 500; // پنجره بزرگ ۵۰۰ پیکسلی
+function executeHit(note, mode, fromMic = false) {
+    // 👇 اگر از میکروفون اومده، به هیچ وجه صدا پخش نکن (حتی اگر میکروفون خاموش شده باشه)
+    if (!fromMic && !isMicMode) {
+        playSound(note); 
+    }
     
+    const id = mode === 'free' ? 'handpanCanvasFree' : 'handpanCanvasFalling';
+    const c = document.getElementById(id); 
+    if (c && !isMicMode) {
+        const ctx = c.getContext('2d');
+        drawHandpan(ctx, note); 
+        setTimeout(() => drawHandpan(ctx), 150);
+    }
+    
+    if (mode === 'falling' && isGameRunning) {
+        checkHit(note);
+    }
+}
+
+function checkHit(note){
+    let idx = -1;
     for(let i=0;i<fallingNotes.length;i++){
         const fn = fallingNotes[i];
-        if(fn.note === note && !fn.hit){ 
-            const d = Math.abs(fn.y - HIT_Y); 
-            if(d < minD){ minD = d; idx = i; } 
-        }
+        if(fn.note === note && !fn.hit){ idx = i; break; }
     }
     
     if(idx !== -1){ 
@@ -531,21 +498,8 @@ function checkHit(note){
         fallingNotes.splice(idx, 1); 
         score += 100; hits++;
         
-        if (dbg) {
-            dbg.innerText = `✅ برخورد! نت: ${note} | امتیاز: ${score} | ضربه: ${hits}`;
-            dbg.style.color = '#10b981';
-            dbg.style.borderColor = '#10b981';
-        }
-        
-        document.body.style.boxShadow = "inset 0 0 80px #10b981";
-        setTimeout(() => document.body.style.boxShadow = "none", 200);
+        // 👇 فقط امتیاز رو ثبت میکنیم، بدون افکت سنگین روی کل صفحه
         checkEndGame(); 
-    } else {
-        if (dbg) {
-            dbg.innerText = `⚠️ نت ${note} زده شد ولی در حال سقوط نبود`;
-            dbg.style.color = '#fbbf24';
-            dbg.style.borderColor = '#fbbf24';
-        }
     }
 }
 
@@ -559,27 +513,13 @@ async function endFallingGame(){
     const att=hits+misses; 
     const acc=att>0?Math.round((hits/att)*100):0;
     
-    let earned = 0;
-    let key = '';
-    let xpStr = '0';
+    let earned = 0; let key = ''; let xpStr = '0';
 
-    // منطق پاداش و جریمه جدید
-    if (acc >= 75) {
-        earned = 15;
-        key = 'result.reward_full';
-        xpStr = '+20';
-    } else if (acc >= 50) {
-        earned = 10;
-        key = 'result.reward_ok';
-    } else if (acc >= 25) {
-        earned = 0;
-        key = 'result.reward_none';
-    } else {
-        earned = -5; // جریمه ۵ سکه
-        key = 'result.reward_penalty';
-    }
+    if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
+    else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
+    else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
+    else { earned = -5; key = 'result.reward_penalty'; }
 
-    // نمایش در صفحه نتیجه
     document.getElementById('resScore').innerText = score;
     document.getElementById('resHits').innerText = hits;
     document.getElementById('resMisses').innerText = misses;
@@ -590,15 +530,9 @@ async function endFallingGame(){
     renderResultToken(window._lastResult);
     showView('result-view');
 
-    // ارسال به بک‌اند
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/game-reward', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
-            body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score})
-        });
-        
+        const res = await fetch('/api/users/game-reward', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score}) });
         if(res.ok) {
             const d = await res.json();
             userTokens = d.new_balance;
@@ -606,23 +540,10 @@ async function endFallingGame(){
             document.getElementById('levelBadge').innerText = `${t('header.level_prefix')} ${d.level}`;
             document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
             document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
-            
-            if(d.leveled_up && d.rewards_granted?.length) { 
-                window._lastRewards = d.rewards_granted; 
-                showRewardModal(d.rewards_granted); 
-            }
+            if(d.leveled_up && d.rewards_granted?.length) { window._lastRewards = d.rewards_granted; showRewardModal(d.rewards_granted); }
         }
-
-        // ذخیره تاریخچه تمرین
-        await fetch('/api/users/practice-history', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ mode: 'falling', score: score, accuracy: acc })
-        });
-
-    } catch(e) { 
-        console.error("Error saving game data: ", e); 
-    }
+        await fetch('/api/users/practice-history', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ mode: 'falling', score: score, accuracy: acc }) });
+    } catch(e) { console.error(e); }
 }
 
 function renderResultToken(r){
@@ -630,16 +551,6 @@ function renderResultToken(r){
     const color = isPenalty ? '#ef4444' : (r.earned > 0 ? '#38bdf8' : '#94a3b8');
     const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
     const sign = r.earned > 0 ? '+' : '';
-    
-    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
-}
-
-function renderResultToken(r){
-    const isPenalty = r.earned < 0;
-    const color = isPenalty ? '#ef4444' : (r.earned > 0 ? '#38bdf8' : '#94a3b8');
-    const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
-    const sign = r.earned > 0 ? '+' : '';
-    
     document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
 }
 
@@ -654,7 +565,7 @@ function showRewardModal(rewards){
 function closeRewardModal(){ document.getElementById('reward-modal').classList.remove('show'); fetchUserProfile(); }
 
 // ==========================================================
-// تنظیمات و کیف پول
+// SETTINGS & WALLET
 // ==========================================================
 async function loadCoinPackages(){
     try{
@@ -703,18 +614,23 @@ async function saveSettings(){
     const payload={ 
         language: document.getElementById('setLanguage').value, 
         font_family: document.getElementById('setFont').value, 
-        note_display_mode: document.getElementById('setNoteDisplay').value, 
-        active_skin: document.getElementById('activeSkinSelect') ? document.getElementById('activeSkinSelect').value : 'default', // 👈 این خط اضافه شد
+        note_display_mode: document.getElementById('setNoteDisplay')?.value || 'number', 
+        active_skin: document.getElementById('activeSkinSelect')?.value || 'default', 
         fall_speed: parseInt(document.getElementById('setFallSpeed').value), 
         note_size: parseFloat(document.getElementById('setNoteSize').value), 
         sound_volume: parseFloat(document.getElementById('setSoundVolume').value) 
-    };    
+    };
     try{
         const res=await fetch('/api/users/settings',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)});
-        if(res.ok){ msg.style.color='#10b981'; msg.innerText=t('msg.saved'); await fetchUserProfile(); loadCoinPackages(); }
+        if(res.ok){ 
+            msg.style.color='#10b981'; msg.innerText=t('msg.saved'); 
+            if (currentUser) Object.assign(currentUser, payload);
+            await fetchUserProfile(); 
+        }
         else { const e=await res.json(); msg.style.color='#ef4444'; msg.innerText=e.detail||t('msg.error_generic'); }
     }catch(e){ msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
 }
+
 async function uploadAvatar(input){
     if(!input.files||!input.files[0]) return;
     const token=localStorage.getItem('pm_token'); const msg=document.getElementById('avatarMsg'); msg.innerText=t('msg.uploading');
@@ -727,7 +643,7 @@ async function uploadAvatar(input){
 }
 
 // ==========================================================
-// تعامل لمسی و ماوس
+// INTERACTION
 // ==========================================================
 function setupInteraction(canvas, mode){
     const c=canvas.cloneNode(true); canvas.parentNode.replaceChild(c,canvas); drawHandpan(c.getContext('2d'));
@@ -752,63 +668,20 @@ function setupInteraction(canvas, mode){
 }
 
 // ==========================================================
-// اسکین‌ها و تاریخچه
+// HISTORY
 // ==========================================================
-function populateSkinsDropdown(d) {
-    const sel = document.getElementById('activeSkinSelect');
-    if (!sel) return;
-
-    // همیشه default رو داریم + اسکین‌هایی که کاربر خریده
-    const owned = ['default', ...(d.owned_skins || [])];
-    sel.innerHTML = '';
-    owned.forEach(skinId => {
-        const skin = SKINS[skinId];
-        if (!skin) return;
-        const opt = document.createElement('option');
-        opt.value = skinId;
-        opt.innerText = skin.name;
-        sel.appendChild(opt);
-    });
-    sel.value = d.active_skin || 'default';
-}
-
-async function changeActiveSkin(skinId) {
-    const token = localStorage.getItem('pm_token');
-    try {
-        const res = await fetch('/api/users/settings', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ active_skin: skinId })
-        });
-        if (res.ok) {
-            currentUser.active_skin = skinId;
-            applyUserAssets();
-        }
-    } catch(e) { console.error('skin change error', e); }
-}
-
 async function loadPracticeHistory() {
-    const token = localStorage.getItem('pm_token');
-    if (!token) return;
+    const token = localStorage.getItem('pm_token'); if (!token) return;
     try {
-        const res = await fetch('/api/users/practice-history?limit=10', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await fetch('/api/users/practice-history?limit=10', { headers: { 'Authorization': `Bearer ${token}` } });
         if (!res.ok) return;
-        const entries = await res.json();
-        renderHistoryList(entries);
+        const entries = await res.json(); renderHistoryList(entries);
     } catch(e) { console.error('history load error', e); }
 }
 
 function renderHistoryList(entries) {
-    const list = document.getElementById('historyList');
-    if (!list) return;
-
-    if (!entries || entries.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:#64748b; font-size:13px; padding:15px;">هنوز تمرینی ثبت نشده است</div>`;
-        return;
-    }
-
+    const list = document.getElementById('historyList'); if (!list) return;
+    if (!entries || entries.length === 0) { list.innerHTML = `<div style="text-align:center; color:#64748b; font-size:13px; padding:15px;">هنوز تمرینی ثبت نشده است</div>`; return; }
     list.innerHTML = '';
     entries.forEach(e => {
         const date = new Date(e.played_at);
@@ -816,110 +689,25 @@ function renderHistoryList(entries) {
         const timeStr = date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
         const accuracyColor = e.accuracy >= 80 ? '#10b981' : (e.accuracy >= 50 ? '#fbbf24' : '#ef4444');
         const modeIcon = e.mode === 'falling' ? '🌧️' : '🎵';
-
         const item = document.createElement('div');
         item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172a; border-radius:8px; border:1px solid #334155; font-size:13px;';
-        item.innerHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span>${modeIcon}</span>
-                <span style="color:#94a3b8; font-size:11px;">${dateStr} · ${timeStr}</span>
-            </div>
-            <div style="display:flex; gap:12px;">
-                <span style="color:#cbd5e1;">${e.score}</span>
-                <span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span>
-            </div>
-        `;
+        item.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span>${modeIcon}</span><span style="color:#94a3b8; font-size:11px;">${dateStr} · ${timeStr}</span></div><div style="display:flex; gap:12px;"><span style="color:#cbd5e1;">${e.score}</span><span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span></div>`;
         list.appendChild(item);
     });
 }
 
 // ==========================================================
-// حالت میکروفون (تشخیص پیچ)
+// MIC & CALIBRATION
 // ==========================================================
 let isMicMode = false;
-
-function handleMicNote(noteKey, freq) {
-    const dbg = document.getElementById('micDebug');
-    
-    // نمایش در نوار دیباگ (نت + فرکانس)
-    if (dbg) {
-        dbg.style.display = 'block';
-        dbg.innerText = `🎤 فرکانس: ${freq ? freq.toFixed(1) : '?'} Hz → نت: ${noteKey}`;
-        dbg.style.color = '#38bdf8';
-        dbg.style.borderColor = '#38bdf8';
-    }
-
-    // فقط هایلایت روی کانواس (بدون پخش صدا)
-    let mode = null;
-    if (document.getElementById('free-view').classList.contains('active')) mode = 'free';
-    else if (document.getElementById('falling-view').classList.contains('active')) mode = 'falling';
-
-    if (mode) {
-        const canvasId = mode === 'free' ? 'handpanCanvasFree' : 'handpanCanvasFalling';
-        const c = document.getElementById(canvasId);
-        if (c) {
-            const ctx = c.getContext('2d');
-            drawHandpan(ctx, noteKey);
-            setTimeout(() => drawHandpan(ctx), 150);
-        }
-    }
-
-    // ثبت امتیاز بدون پخش صدا
-    if (mode === 'falling' && isGameRunning) {
-        checkHit(noteKey);
-    }
-}
-
-async function toggleMicMode() {
-    const btn = document.getElementById('micBtn');
-    
-    if (!isMicMode) {
-        try {
-            await window.pitchDetector.start(
-                (noteKey, freq) => handleMicNote(noteKey, freq),
-                (rawPitch) => {
-                    // نمایش فرکانس خام حتی بدون تطبیق
-                    const dbg = document.getElementById('micDebug');
-                    if (dbg) {
-                        dbg.style.display = 'block';
-                        dbg.innerText = `🎤 فرکانس خام: ${rawPitch.toFixed(1)} Hz`;
-                        dbg.style.color = '#fbbf24';
-                        dbg.style.borderColor = '#fbbf24';
-                    }
-                }
-            );
-            
-            isMicMode = true;
-            btn.innerText = "⏹️ خاموش کردن میکروفون";
-            btn.style.borderColor = "#10b981";
-            btn.style.color = "#10b981";
-        } catch (e) {
-            console.error(e);
-        }
-    } else {
-        window.pitchDetector.stop();
-        isMicMode = false;
-        btn.innerText = "🎤 حالت ساز واقعی (میکروفون)";
-        btn.style.borderColor = "#ef4444";
-        btn.style.color = "#ef4444";
-        const dbg = document.getElementById('micDebug');
-        if (dbg) dbg.style.display = 'none';
-    }
-}
-
-// ==========================================================
-// سیستم کالیبراسیون
-// ==========================================================
 let calibrationState = null;
 let calibrationData = null;
-
-// متغیرهای مربوط به تایمر و تشخیص ضربه
 let calibCooldownUntil = 0;    
 let calibCollecting = false;    
 let calibCollectStart = 0;
 let calibCollectBuffer = [];
-const CALIB_VOL_THRESHOLD = 0.02; // آستانه حساسیت صدا
-const CALIB_COOLDOWN_MS = 3000;  // ۳ ثانیه فاصله بین هر ضربه
+const CALIB_VOL_THRESHOLD = 0.002;
+const CALIB_COOLDOWN_MS = 2000;
 
 async function loadCalibration() {
     const token = localStorage.getItem('pm_token');
@@ -945,127 +733,109 @@ function needsRecalibration() {
     return days > 60;
 }
 
-async function startCalibration() {
-    const allNotes = Object.keys(HANDPAN_LAYOUT_9); // ['D','1','2',...,'8']
+function handleMicNote(noteKey, freq) {
+    // 👇 کدهای مربوط به دیباگ کاملاً حذف شد تا لگ نداشته باشیم
+    let mode = null;
+    if (document.getElementById('free-view').classList.contains('active')) mode = 'free';
+    else if (document.getElementById('falling-view').classList.contains('active')) mode = 'falling';
     
-    calibrationState = {
-        currentIdx: 0,
-        allNotes: allNotes,
-        samples: {}, 
-        MIN_SAMPLES: 5,
-        MAX_SAMPLES: 20
-    };
+    if (mode) {
+        executeHit(noteKey, mode, true); 
+    }
+}
+
+async function toggleMicMode() {
+    const btn = document.getElementById('micBtn'); 
+    const fv = document.getElementById('falling-view'); 
+    const fc = document.getElementById('fallingCanvas'); 
+    const hc = document.getElementById('handpanCanvasFalling');
+    
+    if (!isMicMode) {
+        try {
+            await window.pitchDetector.start(
+                (noteKey, freq) => handleMicNote(noteKey, freq),
+                () => {} // 👈 حذف کامل آپدیت DOM در هر فریم (باعث لگ می‌شد)
+            );
+            isMicMode = true; 
+            btn.innerText = "⏹️ خاموش کردن میکروفون"; 
+            btn.style.borderColor = "#10b981"; 
+            btn.style.color = "#10b981";
+            
+            if (fv) fv.classList.add('mic-active'); 
+            if (hc) hc.style.display = 'none'; 
+            if (fc) { fc.width = 820; fc.height = 500; fc.style.aspectRatio = "820 / 500"; HIT_Y = 420; }
+            alert("🎤 میکروفون با موفقیت روشن شد!");
+        } catch (e) { 
+            alert("خطا در فعال‌سازی میکروفون: " + e.message); 
+        }
+    } else {
+        window.pitchDetector.stop(); 
+        isMicMode = false; 
+        btn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; 
+        btn.style.borderColor = "#ef4444"; 
+        btn.style.color = "#ef4444";
+        
+        if (fv) fv.classList.remove('mic-active'); 
+        if (hc) hc.style.display = 'block'; 
+        if (fc) { fc.width = 820; fc.height = 280; fc.style.aspectRatio = "820 / 280"; HIT_Y = 220; }
+    }
+}
+
+async function startCalibration() {
+    const allNotes = Object.keys(HANDPAN_LAYOUT_9); 
+    calibrationState = { currentIdx: 0, allNotes: allNotes, samples: {}, MIN_SAMPLES: 3, MAX_SAMPLES: 10, movingNext: false };
     allNotes.forEach(n => calibrationState.samples[n] = []);
-
-    // ریست کردن وضعیت ضربه
-    calibCooldownUntil = 0;
-    calibCollecting = false;
-    calibCollectBuffer = [];
-
-    showView('calibration-view');
-    updateCalibrationUI();
-
+    calibCooldownUntil = 0; calibCollecting = false; calibCollectBuffer = [];
+    showView('calibration-view'); updateCalibrationUI();
     try { window.pitchDetector.stop(); } catch(e) {}
     await new Promise(r => setTimeout(r, 300));
-
-    try {
-        await window.pitchDetector.start(
-            () => {}, 
-            (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)
-        );
-    } catch(e) {
-        alert('دسترسی به میکروفون ممکن نشد: ' + e.message);
-        cancelCalibration();
-    }
+    try { await window.pitchDetector.start(() => {}, (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)); } catch(e) { alert('خطای میکروفون: ' + e.message); cancelCalibration(); }
 }
 
 function onCalibrationPitch(rawPitch, rms) {
     if (!calibrationState) return;
-
-    // اگر rms تعریف نشده بود، یعنی pitch-detector آپدیت نشده است
-    if (rms === undefined) {
-        console.error("❌ خطا: rms undefined است. فایل pitch-detector.js را آپدیت کنید.");
-        return;
-    }
-    
-    const liveEl = document.getElementById('calibLiveFreq');
-    const cooldownEl = document.getElementById('calibCooldown');
-    const now = Date.now();
-
-    // نمایش زنده فرکانس و قدرت صدا
-    if (liveEl) {
-        const volPct = (rms * 100).toFixed(1);
-        const freqTxt = rawPitch ? rawPitch.toFixed(1) : '—';
-        liveEl.innerText = `فرکانس: ${freqTxt} Hz | Vol: ${volPct}%`;
-    }
-
-    // مدیریت تایمر ۳ ثانیه‌ای
+    const liveEl = document.getElementById('calibLiveFreq'); const cooldownEl = document.getElementById('calibCooldown'); const now = Date.now();
+    if (liveEl) { const volPct = (rms * 100).toFixed(1); liveEl.innerText = rawPitch ? `${rawPitch.toFixed(1)} Hz | Vol: ${volPct}%` : `— | Vol: ${volPct}%`; }
+    if (calibrationState.movingNext) return;
     if (now < calibCooldownUntil) {
         const remaining = Math.ceil((calibCooldownUntil - now) / 1000);
-        if (cooldownEl) {
-            cooldownEl.innerHTML = `⏱️ ${remaining} ثانیه صبر کن...`;
-            cooldownEl.style.color = '#fbbf24';
-        }
+        if (cooldownEl) cooldownEl.innerHTML = `⏱️ <strong style="color:#fbbf24;">${remaining}</strong> ثانیه صبر کن...`;
         return;
-    } else {
-        if (cooldownEl && cooldownEl.innerText.includes('صبر')) {
-            cooldownEl.innerHTML = `✅ آماده ضربه بعدی`;
-            cooldownEl.style.color = '#10b981';
-        }
-    }
+    } else { if (cooldownEl && cooldownEl.innerText.includes('صبر')) cooldownEl.innerHTML = `<strong style="color:#10b981;">✅ آماده ضربه بعدی</strong>`; }
 
-    const currentNote = calibrationState.allNotes[calibrationState.currentIdx];
-    if (!currentNote) return;
+    const currentNote = calibrationState.allNotes[calibrationState.currentIdx]; if (!currentNote) return;
     const arr = calibrationState.samples[currentNote];
 
-    // تشخیص شروع ضربه (فقط بر اساس قدرت صدا)
-    if (!calibCollecting && rms > CALIB_VOL_THRESHOLD) {
-        calibCollecting = true;
-        calibCollectStart = now;
-        calibCollectBuffer = [];
-        return;
-    }
+    if (!calibCollecting && rms > CALIB_VOL_THRESHOLD && rawPitch) { calibCollecting = true; calibCollectStart = now; calibCollectBuffer = [rawPitch]; return; }
 
-    // جمع آوری نمونه‌ها به مدت ۱۵۰ میلی‌ثانیه
     if (calibCollecting) {
         if (rawPitch) calibCollectBuffer.push(rawPitch);
-        
-        if (now - calibCollectStart > 150) {
-            if (calibCollectBuffer.length > 0) {
-                calibCollectBuffer.sort((a, b) => a - b);
-                const median = calibCollectBuffer[Math.floor(calibCollectBuffer.length / 2)];
-                
-                if (median > 50 && median < 4000) {
-                    arr.push(median);
-                    updateCalibrationUI(); // آپدیت شمارنده
-                    
-                    calibCooldownUntil = now + CALIB_COOLDOWN_MS;
-                    
-                    if (cooldownEl) {
-                        cooldownEl.innerHTML = `✅ ثبت شد: ${median.toFixed(1)} Hz — ۳ ثانیه صبر...`;
-                        cooldownEl.style.color = '#38bdf8';
-                    }
-                }
+        if (now - calibCollectStart > 300) {
+            if (calibCollectBuffer.length < 5) { calibCollecting = false; calibCollectBuffer = []; return; }
+            const sorted = [...calibCollectBuffer].sort((a, b) => a - b);
+            const median = sorted[Math.floor(sorted.length / 2)];
+            const consistent = sorted.filter(p => Math.abs(p - median) / median < 0.05);
+            if ((consistent.length / sorted.length) < 0.6) {
+                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ صدای نویز شناسایی شد. دوباره بزنید.`; cooldownEl.style.color = '#ef4444'; }
+                calibCollecting = false; calibCollectBuffer = []; return;
             }
-            
-            calibCollecting = false;
-            calibCollectBuffer = [];
-
-            // اگر ۵ نمونه جمع شد، برو نت بعدی
+            if (median < 50 || median > 4000) {
+                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ فرکانس نامعتبر. دوباره بزنید.`; cooldownEl.style.color = '#ef4444'; }
+                calibCollecting = false; calibCollectBuffer = []; return;
+            }
+            arr.push(median); updateCalibrationUI();
+            calibCooldownUntil = now + CALIB_COOLDOWN_MS;
+            if (cooldownEl) { cooldownEl.innerHTML = `✅ ثبت شد: <strong style="color:#10b981;">${median.toFixed(1)} Hz</strong> (${arr.length}/۳)`; cooldownEl.style.color = '#38bdf8'; }
+            calibCollecting = false; calibCollectBuffer = [];
             if (arr.length >= calibrationState.MIN_SAMPLES) {
+                calibrationState.movingNext = true;
                 setTimeout(() => {
                     if (!calibrationState) return;
+                    calibrationState.movingNext = false;
                     if (calibrationState.currentIdx < calibrationState.allNotes.length - 1) {
-                        calibrationState.currentIdx++;
-                        calibCooldownUntil = 0;
-                        updateCalibrationUI();
-                        if (cooldownEl) {
-                            cooldownEl.innerHTML = `آماده نت بعدی`;
-                            cooldownEl.style.color = '#10b981';
-                        }
-                    } else {
-                        finishCalibration();
-                    }
+                        calibrationState.currentIdx++; calibCooldownUntil = 0; updateCalibrationUI();
+                        if (cooldownEl) { cooldownEl.innerHTML = `<strong style="color:#10b981;">✅ نت بعدی</strong>`; cooldownEl.style.color = '#10b981'; }
+                    } else { finishCalibration(); }
                 }, CALIB_COOLDOWN_MS + 200);
             }
         }
@@ -1074,181 +844,90 @@ function onCalibrationPitch(rawPitch, rms) {
 
 function updateCalibrationUI() {
     if (!calibrationState) return;
-    
-    const currentNote = calibrationState.allNotes[calibrationState.currentIdx];
-    const count = calibrationState.samples[currentNote]?.length || 0;
-    
-    const noteNameMap = { "D": "D (سنتر)", "1": "۱", "2": "۲", "3": "۳", "4": "۴", "5": "۵", "6": "۶", "7": "۷", "8": "۸" };
-    
-    const noteEl = document.getElementById('calibNoteName');
-    if (noteEl) noteEl.innerText = noteNameMap[currentNote] || currentNote;
-    
-    const countEl = document.getElementById('calibCount');
-    if (countEl) countEl.innerText = count;
-    
+    const currentNote = calibrationState.allNotes[calibrationState.currentIdx]; const count = calibrationState.samples[currentNote]?.length || 0;
+    const noteNameMap = { "D": "D", "1": "۱", "2": "۲", "3": "۳", "4": "۴", "5": "۵", "6": "۶", "7": "۷", "8": "۸" };
+    const noteEl = document.getElementById('calibNoteName'); if (noteEl) noteEl.innerText = noteNameMap[currentNote] || currentNote;
+    const countEl = document.getElementById('calibCount'); if (countEl) countEl.innerText = count;
     const freqEl = document.getElementById('calibFreqInfo');
     if (freqEl) {
-        if (count > 0) {
-            const arr = calibrationState.samples[currentNote];
-            const avg = arr.reduce((a,b)=>a+b, 0) / arr.length;
-            freqEl.innerText = `میانگین: ${avg.toFixed(1)} Hz`;
-        } else {
-            freqEl.innerText = 'منتظر ضربه...';
-        }
+        if (count > 0) { const arr = calibrationState.samples[currentNote]; const avg = arr.reduce((a,b)=>a+b, 0) / arr.length; freqEl.innerText = `میانگین: ${avg.toFixed(1)} Hz`; }
+        else freqEl.innerText = 'منتظر ضربه...';
     }
-    
     const doneEl = document.getElementById('calibDoneList');
     if (doneEl) {
-        const done = Object.keys(calibrationState.samples)
-            .filter(n => calibrationState.samples[n].length >= calibrationState.MIN_SAMPLES)
-            .map(n => noteNameMap[n] || n);
+        const done = Object.keys(calibrationState.samples).filter(n => calibrationState.samples[n].length >= calibrationState.MIN_SAMPLES).map(n => noteNameMap[n] || n);
         doneEl.innerText = done.length > 0 ? done.join(' · ') : '—';
     }
 }
 
 function skipCalibNote() {
     if (!calibrationState) return;
-    calibrationState.currentIdx++;
-    calibCooldownUntil = 0;
-    if (calibrationState.currentIdx >= calibrationState.allNotes.length) {
-        finishCalibration();
-    } else {
-        updateCalibrationUI();
-    }
+    calibrationState.currentIdx++; calibCooldownUntil = 0;
+    if (calibrationState.currentIdx >= calibrationState.allNotes.length) finishCalibration();
+    else updateCalibrationUI();
 }
 
 async function finishCalibration() {
     if (!calibrationState) return;
-    
     window.pitchDetector.stop();
-    
     const result = {};
     for (const [note, samples] of Object.entries(calibrationState.samples)) {
         if (samples.length < calibrationState.MIN_SAMPLES) continue;
-        const min = Math.min(...samples);
-        const max = Math.max(...samples);
-        const avg = samples.reduce((a,b)=>a+b, 0) / samples.length;
+        const min = Math.min(...samples); const max = Math.max(...samples); const avg = samples.reduce((a,b)=>a+b, 0) / samples.length;
         const padding = avg * 0.03;
-        result[note] = {
-            min: parseFloat((min - padding).toFixed(2)),
-            max: parseFloat((max + padding).toFixed(2)),
-            avg: parseFloat(avg.toFixed(2))
-        };
+        result[note] = { min: parseFloat((min - padding).toFixed(2)), max: parseFloat((max + padding).toFixed(2)), avg: parseFloat(avg.toFixed(2)) };
     }
-    
-    if (Object.keys(result).length === 0) {
-        alert('هیچ نتی کالیبره نشد. دوباره تلاش کنید.');
-        calibrationState = null;
-        backToMenu();
-        return;
-    }
-    
+    if (Object.keys(result).length === 0) { alert('هیچ نتی کالیبره نشد.'); calibrationState = null; backToMenu(); return; }
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/calibration', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ notes: result })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            calibrationData = data.calibration;
-            window.pitchDetector.setCalibration(calibrationData.notes);
-            
-            const summary = Object.entries(result).map(([n, r]) => `${n}: ${r.avg} Hz`).join(' | ');
-            alert(`✅ کالیبراسیون ذخیره شد!\n\n${summary}`);
-            
-            calibrationState = null;
-            backToMenu();
-        } else {
-            alert('خطا در ذخیره کالیبراسیون');
-        }
-    } catch(e) {
-        console.error(e);
-        alert('خطا در ارتباط با سرور');
-    }
+        const res = await fetch('/api/users/calibration', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ notes: result }) });
+        if (res.ok) { alert('✅ کالیبراسیون ذخیره شد!'); window.pitchDetector.setCalibration(result); calibrationState = null; backToMenu(); }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
 }
 
-function cancelCalibration() {
-    window.pitchDetector.stop();
-    calibrationState = null;
-    backToMenu();
-}
+function cancelCalibration() { window.pitchDetector.stop(); calibrationState = null; backToMenu(); }
 
 async function diagnoseMic() {
     const result = [];
     result.push(`مرورگر: ${navigator.userAgent.substring(0, 60)}...`);
     result.push(`Secure Context: ${window.isSecureContext ? '✅ HTTPS/localhost' : '❌ HTTP (مشکل!)'}`);
-    result.push(`navigator.mediaDevices: ${navigator.mediaDevices ? '✅' : '❌ وجود ندارد'}`);
-
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const mics = devices.filter(d => d.kind === 'audioinput');
         result.push(`میکروفون‌های پیدا شده: ${mics.length}`);
-        mics.forEach(m => result.push(`  - ${m.label || 'بدون نام'}`));
-    } catch(e) {
-        result.push(`enumerateDevices خطا: ${e.message}`);
-    }
+    } catch(e) { result.push(`enumerateDevices خطا: ${e.message}`); }
 
     try {
+        if (window.pitchDetector) window.pitchDetector.stop();
+        await new Promise(r => setTimeout(r, 1000));
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const tracks = stream.getAudioTracks();
-        result.push(`\n✅ getUserMedia موفق! ${tracks.length} ترک صوتی`);
-        tracks.forEach(t => result.push(`  - ${t.label}, حالت: ${t.readyState}`));
-        
+        result.push(`\n✅ getUserMedia موفق! ${stream.getAudioTracks().length} ترک صوتی`);
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        result.push(`AudioContext state: ${ctx.state}`);
-        if (ctx.state === 'suspended') {
-            await ctx.resume();
-            result.push(`بعد از resume: ${ctx.state}`);
-        }
-        
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 2048;
-        const source = ctx.createMediaStreamSource(stream);
-        source.connect(analyser);
-        
+        if (ctx.state === 'suspended') await ctx.resume();
+        const analyser = ctx.createAnalyser(); analyser.fftSize = 2048;
+        const source = ctx.createMediaStreamSource(stream); source.connect(analyser);
         result.push(`\n🎤 حالا ۳ ثانیه با صدای بلند صحبت کن یا سوت بزن...`);
         alert(result.join('\n'));
-        result.length = 0;
-        
-        let maxVol = 0;
-        const startTime = Date.now();
-        
+        let maxVol = 0; const startTime = Date.now();
         await new Promise(resolve => {
             const check = () => {
-                const buf = new Float32Array(analyser.fftSize);
-                analyser.getFloatTimeDomainData(buf);
-                let sum = 0;
-                for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+                const buf = new Float32Array(analyser.fftSize); analyser.getFloatTimeDomainData(buf);
+                let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
                 const vol = Math.sqrt(sum / buf.length) * 100;
                 if (vol > maxVol) maxVol = vol;
                 if (Date.now() - startTime < 3000) requestAnimationFrame(check);
                 else resolve();
-            };
-            check();
+            }; check();
         });
-        
-        stream.getTracks().forEach(t => t.stop());
-        ctx.close();
-        
-        alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 2 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه، میکروفون صدا رو نمی‌گیره'}`);
-        
-    } catch(e) {
-        result.push(`\n❌ getUserMedia خطا: ${e.name}`);
-        result.push(`${e.message}`);
-        alert(result.join('\n'));
-    }
+        stream.getTracks().forEach(t => t.stop()); ctx.close();
+        alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 0.5 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه'}`);
+    } catch(e) { alert(`\n❌ getUserMedia خطا: ${e.name}\n${e.message}`); }
 }
 
-// شروع برنامه
+// شروع
 const savedToken = localStorage.getItem('pm_token');
 if(savedToken) {
-    // اگر توکن داریم، تست میکنیم ببینیم معتبر هست یا نه
     fetch('/api/users/me', { headers: { 'Authorization': `Bearer ${savedToken}` } })
-        .then(res => {
-            if (res.ok) { showGame(); } // توکن معتبره
-            else { logout(); } // توکن باطله، پاکش کن
-        })
+        .then(res => { if (res.ok) { showGame(); } else { logout(); } })
         .catch(() => logout());
 }

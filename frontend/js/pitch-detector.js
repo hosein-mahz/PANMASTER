@@ -10,8 +10,9 @@ class PitchDetector {
         this.animationId = null;
 
         this.lastDetectedTime = 0;
-        this.cooldownMs = 200;
+        this.cooldownMs = 500;
         this.threshold = 0.15;
+        this.calibration = {};
 
         this.NOTE_FREQS = {
             "D": 293.66,
@@ -54,7 +55,13 @@ class PitchDetector {
             this.analyser.smoothingTimeConstant = 0;
 
             const source = this.audioContext.createMediaStreamSource(this.mediaStream);
-            source.connect(this.analyser);
+            
+            // 👇 تقویت صدای میکروفون تا ۵ برابر (برای گوشی‌هایی که میکروفون ضعیفی دارن)
+            const gainNode = this.audioContext.createGain();
+            gainNode.gain.value = 5.0;
+            
+            source.connect(gainNode);
+            gainNode.connect(this.analyser);
 
             this.isListening = true;
             console.log("🟢 Loop شروع شد.");
@@ -95,22 +102,23 @@ class PitchDetector {
             }
             const rms = Math.sqrt(sum / buffer.length);
 
-            const pitch = this._yinPitch(buffer);
+             const pitch = this._yinPitch(buffer);
 
-            if (this.onRawPitch) {
-                this.onRawPitch(pitch, rms);
-            }
+        if (this.onRawPitch) {
+            this.onRawPitch(pitch, rms);
+        }
 
-            if (pitch && pitch > 50 && pitch < 4000) {
-                const now = Date.now();
-                if (now - this.lastDetectedTime > this.cooldownMs) {
-                    const matchedNote = this._findClosestNote(pitch);
-                    if (matchedNote) {
-                        this.lastDetectedTime = now;
-                        if (this.onNoteDetected) this.onNoteDetected(matchedNote, pitch);
-                    }
+        // 👇 شرط rms > 0.01 اضافه شد تا فقط وقتی صدای ضربه بلند شد، ثبت کنه
+        if (pitch && pitch > 50 && pitch < 4000 && rms > 0.001) {
+            const now = Date.now();
+            if (now - this.lastDetectedTime > this.cooldownMs) {
+                const matchedNote = this._findClosestNote(pitch);
+                if (matchedNote) {
+                    this.lastDetectedTime = now;
+                    if (this.onNoteDetected) this.onNoteDetected(matchedNote, pitch);
                 }
             }
+        }
         } catch (err) {
             console.error("❌ خطا در loop:", err);
         }
@@ -171,25 +179,22 @@ class PitchDetector {
     }
 
     _findClosestNote(frequency) {
-        // اول کالیبراسیون
+        // اول چک کردن کالیبراسیون
         for (const [note, range] of Object.entries(this.calibration || {})) {
             if (range.min && range.max && frequency >= range.min && frequency <= range.max) {
                 return note;
             }
         }
 
-        let closestNote = null;
-        let minDiff = Infinity;
+        // اگر کالیبراسیون نداشت، از استاندارد استفاده کن
+        let closestNote = null, minDiff = Infinity;
         for (const [note, targetFreq] of Object.entries(this.NOTE_FREQS)) {
             const diff = Math.abs(frequency - targetFreq);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestNote = note;
-            }
+            if (diff < minDiff) { minDiff = diff; closestNote = note; }
         }
         if (!closestNote) return null;
         const targetFreq = this.NOTE_FREQS[closestNote];
-        const tolerance = targetFreq * 0.05;
+        const tolerance = targetFreq * 0.05; // ۵ درصد خطا
         return minDiff <= tolerance ? closestNote : null;
     }
 

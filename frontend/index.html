@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         #auth-section { display: flex; }
-        #game-section { display: none; width: 100%; height: 100vh; flex-direction: column; padding: 10px; overflow: hidden; }
+        #game-section { display: none; width: 100%; height: 100vh; flex-direction: column; padding: 10px; overflow: hidden; position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--bg-card); border-radius: 15px; margin-bottom: 10px; flex-shrink: 0; border: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
         .header h1 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
         .user-info { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: bold; flex-wrap: wrap; }
@@ -26,119 +26,70 @@
         .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 10px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--border); border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; display: block; text-align: center; }
         .menu-btn:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--primary); transform: translateY(-2px); }
         .menu-btn img { display: inline-block; vertical-align: middle; width: 20px; height: 20px; margin: 0 4px; }
-         /* کانواس بداهه‌نوازی */
-        #handpanCanvasFree {
-            width: 100%;
-            max-width: 820px;
-            aspect-ratio: 820 / 500;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
+        
+        /* تنظیمات کانواس‌ها */
+        #handpanCanvasFree { width: 100%; max-width: 820px; aspect-ratio: 820 / 500; height: auto; display: block; margin: 0 auto; cursor: pointer; touch-action: manipulation; }
+        #handpanCanvasFalling { width: 100%; max-width: 820px; aspect-ratio: 820 / 500; height: auto; display: block; margin: 0 auto; cursor: pointer; touch-action: manipulation; }
+        #fallingCanvas { width: 100%; max-width: 820px; aspect-ratio: 820 / 280; height: auto; display: block; margin: 0 auto 5px auto; background: #0b1320; border-radius: 10px; border: 1px solid var(--border); }
+        
+        /* حالت میکروفون */
+        #falling-view.mic-active #handpanCanvasFalling { display: none !important; }
+        #falling-view.mic-active #fallingCanvas { aspect-ratio: auto !important; height: 65vh !important; max-height: none !important; }
 
-        /* کانواس هنگ‌درام مرحله تستی */
-        #handpanCanvasFalling {
-            width: 100%;
-            max-width: 820px;
-            aspect-ratio: 820 / 500;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-
-        /* کانواس قطره‌های در حال سقوط */
-        #fallingCanvas {
-            width: 100%;
-            max-width: 820px;
-            aspect-ratio: 820 / 280;
-            height: auto;
-            display: block;
-            margin: 0 auto 5px auto;
-            background: #0b1320;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
         .back-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10; transition: 0.3s; }
         .back-btn:hover { border-color: var(--primary); color: var(--primary); }
-        #handpanCanvasFalling { width: 100%; max-width: 820px; height: 60%; cursor: pointer; touch-action: manipulation; }
-        #fallingCanvas { width: 100%; max-width: 820px; height: 35%; background: #0b1320; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 5px; }
         .top-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10; }
         .end-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
         #countdown-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
         #countdown-text { font-size: 120px; font-weight: 900; color: var(--primary); text-shadow: 0 0 40px rgba(56, 189, 248, 0.6); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .result-card { background: var(--bg-card); padding: 30px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 90%; margin: auto; }
-        .result-card h2 { color: var(--primary); font-size: 26px; margin-bottom: 18px; }
-        .result-stat { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 17px; }
-        .result-stat span:last-child { color: var(--primary); font-weight: bold; }
-        .logout-btn { background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .logout-btn:hover { background: #b91c1c; }
-        .card-section { background: var(--bg-card); padding: 24px 20px; border-radius: 18px; border: 1px solid var(--border); text-align: center; max-width: 480px; width: 100%; margin-bottom: 15px; }
-        .card-section h2 { color: var(--primary); font-size: 20px; margin-bottom: 15px; }
+        
+        .result-card, .card-section { background: var(--bg-card); padding: 30px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 90%; margin: auto auto 15px auto; }
+        .result-card h2, .card-section h2 { color: var(--primary); font-size: 24px; margin-bottom: 18px; }
+        .result-stat, .stat { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 17px; }
+        .stat { padding: 10px 15px; background: #0f172a; border-radius: 10px; border: 1px solid #334155; margin-bottom: 8px; }
+        .result-stat span:last-child, .stat span:last-child { color: var(--primary); font-weight: bold; }
+        
         .wallet-balance { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 15px 0; }
         .wallet-balance img { width: 42px; height: 42px; }
         .wallet-balance span { font-size: 38px; font-weight: 900; color: #fbbf24; }
-        .wallet-hint { color: var(--text-muted); font-size: 13px; margin-top: 8px; }
-        .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 15px; }
-        .pkg-card { background: #0f172a; border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; transition: 0.3s; text-align: center; }
-        .pkg-card:hover { border-color: #fbbf24; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(251, 191, 36, 0.2); }
+        .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
+        .pkg-card { background: #0f172a; border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; text-align: center; }
         .pkg-coins { font-size: 22px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .pkg-coins img { width: 24px; height: 24px; }
-        .pkg-price { margin-top: 8px; color: var(--primary); font-weight: bold; font-size: 15px; }
-        .pkg-name { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-        .avatar-big-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
+
+        .avatar-big-wrap { display: inline-block; margin-bottom: 12px; }
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #0f172a; }
         .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
-        .profile-name { font-size: 22px; font-weight: bold; color: var(--primary); margin-bottom: 4px; }
-        .profile-level { font-size: 14px; color: #fbbf24; margin-bottom: 18px; }
-        .profile-xp-bar { width: 100%; height: 10px; background: #0f172a; border-radius: 5px; overflow: hidden; border: 1px solid #334155; margin-bottom: 6px; }
-        .profile-xp-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); width: 0%; transition: width 0.4s ease; }
-        .profile-xp-text { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
-        .profile-stats { display: flex; flex-direction: column; gap: 8px; }
-        .stat { display: flex; justify-content: space-between; padding: 10px 15px; background: #0f172a; border-radius: 10px; font-size: 15px; border: 1px solid #334155; }
-        .stat span:last-child { color: var(--primary); font-weight: bold; }
+        
         .settings-block { margin-bottom: 22px; text-align: right; }
         .settings-block h3 { color: var(--primary); font-size: 15px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
         .setting-row { margin-bottom: 12px; }
         .setting-row label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
-        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; font-size: 14px; }
-        .setting-row input:focus, .setting-row select:focus { border-color: var(--primary); }
+        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         .setting-row input[type="range"] { width: 100%; accent-color: var(--primary); }
         .range-value { font-size: 12px; color: var(--primary); font-weight: bold; margin-right: 6px; }
-        .btn-sm { padding: 10px 18px; background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 6px; }
-        .btn-sm:hover { opacity: 0.9; }
-        .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sm { padding: 10px 18px; background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; }
         .btn-ghost { background: #334155; color: #f1f5f9; }
         .msg-success { color: #10b981; font-size: 13px; margin-top: 6px; min-height: 18px; }
         .msg-error { color: #ef4444; font-size: 13px; margin-top: 6px; min-height: 18px; }
         .avatar-upload-wrap { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
         .avatar-upload-wrap input[type="file"] { display: none; }
+        
         .reward-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
         .reward-modal.show { display: flex; }
-        .reward-content { background: var(--bg-card); border-radius: 20px; padding: 30px 22px; max-width: 380px; width: 100%; text-align: center; border: 2px solid #fbbf24; box-shadow: 0 0 40px rgba(251, 191, 36, 0.4); animation: popIn 0.4s ease; }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .reward-content h2 { color: #fbbf24; font-size: 26px; margin-bottom: 10px; }
-        .reward-content p { color: var(--text-main); margin-bottom: 18px; font-size: 15px; }
+        .reward-content { background: var(--bg-card); border-radius: 20px; padding: 30px 22px; max-width: 380px; width: 100%; text-align: center; border: 2px solid #fbbf24; }
         .reward-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; font-weight: bold; color: var(--primary); font-size: 14px; }
-        .reward-content button { width: 100%; padding: 13px; background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        #micDebug { display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 999; color: #38bdf8; min-width: 220px; text-align: center; border: 1px solid #38bdf8; font-family: monospace; }
     </style>
 </head>
 <body>
 
     <div id="auth-section">
         <div class="form-box">
-            <h1>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle>
-                    <circle cx="12" cy="6" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle>
-                    <circle cx="12" cy="18" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle>
-                </svg>
-                PanMaster
-            </h1>
+            <h1>PanMaster</h1>
             <div id="login-form">
                 <div class="input-group"><label data-i18n="auth.identifier">ایمیل یا نام کاربری</label><input type="text" id="loginUser"></div>
                 <div class="input-group"><label data-i18n="auth.password">رمز عبور</label><input type="password" id="loginPass"></div>
@@ -157,15 +108,9 @@
     </div>
 
     <div id="game-section">
+
         <div class="header">
-            <h1>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle>
-                    <circle cx="12" cy="6" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle>
-                    <circle cx="12" cy="18" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle>
-                </svg>
-                PanMaster
-            </h1>
+            <h1>PanMaster</h1>
             <div class="user-info">
                 <div id="headerAvatar"></div>
                 <div class="user-level-block">
@@ -188,12 +133,11 @@
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
             <button class="menu-btn" onclick="goToFreePlay()" data-i18n="menu.free_play">🎵 بداهه‌نوازی (رایگان)</button>
             <button class="menu-btn" onclick="goToFallingGame()" style="border-color: #fbbf24; color: #fbbf24;">
-                <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span>
-                <img src="/assets/coin.svg" alt="coin">)
+                <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin">)
             </button>
-            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;">حالت ساز واقعی (میکروفون)</button>
-            <button class="menu-btn" onclick="diagnoseMic()" style="border-color: #06b6d4; color: #06b6d4;">تست میکروفون (عیب‌یابی)</button>
-            <button class="menu-btn" onclick="startCalibration()" style="border-color: #a78bfa; color: #a78bfa;"> کالیبراسیون ساز واقعی</button>
+            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;">🎤 حالت ساز واقعی (میکروفون)</button>
+            <button class="menu-btn" onclick="diagnoseMic()" style="border-color: #06b6d4; color: #06b6d4;">🔬 تست میکروفون (عیب‌یابی)</button>
+            <button class="menu-btn" onclick="startCalibration()" style="border-color: #a78bfa; color: #a78bfa;">🎯 کالیبراسیون ساز واقعی</button>
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
@@ -210,12 +154,12 @@
                 <div id="countdown-text">۴</div>
                 <div style="font-size: 24px; color: var(--text-muted); margin-top: 20px;" data-i18n="game.ready">آماده باش...</div>
             </div>
-            <div class="top-controls">
-                <button class="end-btn" onclick="endFallingGame()" data-i18n="game.end">پایان تمرین</button>
-            </div>
+            <div class="top-controls"><button class="end-btn" onclick="endFallingGame()" data-i18n="game.end">پایان تمرین</button></div>
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            
             <canvas id="fallingCanvas" width="820" height="280"></canvas>
-            <div id="micDebug" style="position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 30; color: #38bdf8; min-width: 220px; text-align: center; display: none; border: 1px solid #38bdf8;">Debug</div>
+            <!-- 👇 این خط برگشت داده شد -->
+            <canvas id="handpanCanvasFalling" width="820" height="500"></canvas>
         </div>
 
         <div id="calibration-view" class="view">
@@ -223,35 +167,18 @@
             <div style="max-width: 500px; width: 90%; text-align: center; margin: 0 auto; padding-top: 40px;">
                 <h2 style="color: var(--primary); margin-bottom: 20px;">🎯 کالیبراسیون هنگ‌درام</h2>
                 <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
-                    در محیط ساکت، برای هر نت ۵ بار ضربه بزنید.<br>
-                    <strong style="color: #fbbf24;">بین هر ضربه، ۳ ثانیه صبر کنید.</strong>
+                    برای هر نت <strong style="color: #38bdf8;">۳ ضربه</strong> بزنید:<br>۱. آرام &nbsp;|&nbsp; ۲. متوسط &nbsp;|&nbsp; ۳. محکم
                 </p>
-                
-                <div style="font-size: 48px; font-weight: 900; color: #fbbf24; margin: 15px 0;">
-                    <span id="calibNoteName">۱</span>
-                </div>
-                
+                <div style="font-size: 48px; font-weight: 900; color: #fbbf24; margin: 15px 0;"><span id="calibNoteName">۱</span></div>
                 <div style="font-size: 16px; color: var(--text-main); margin-bottom: 10px;">
-                    ضربه‌های گرفته شده: <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 5
+                    ضربه‌های گرفته شده: <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 3
                 </div>
-
-                <!-- نمایش فرکانس و قدرت صدا -->
-                <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">
-                    فرکانس: — | Vol: 0%
-                </div>
-                
-                <!-- تایمر ۳ ثانیه‌ای -->
-                <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;">
-                    آماده ضربه اول
-                </div>
-                
+                <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">فرکانس: — | Vol: 0%</div>
+                <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;">آماده ضربه اول</div>
                 <div style="background:#0f172a; border-radius:10px; padding:15px; font-size:13px; color:#94a3b8; margin-bottom: 20px;">
                     نت‌های کالیبره شده: <span id="calibDoneList">—</span>
                 </div>
-
-                <button class="btn" onclick="skipCalibNote()" style="background: #475569;">
-                    رد کردن این نت
-                </button>
+                <button class="btn" onclick="skipCalibNote()" style="background: #475569;">رد کردن این نت</button>
             </div>
         </div>
 
@@ -263,7 +190,7 @@
                 <div class="result-stat"><span data-i18n="result.misses">خطا:</span><span id="resMisses">0</span></div>
                 <div class="result-stat"><span data-i18n="result.accuracy">دقت:</span><span id="resAcc">0%</span></div>
                 <div class="result-stat"><span data-i18n="result.xp">XP کسب‌شده:</span><span id="resXp">0</span></div>
-                <div class="result-token" id="resTokenText"></div>
+                <div class="result-token" id="resTokenText" style="font-size: 20px; color: #fbbf24; margin: 20px 0; font-weight: bold; text-align: center;"></div>
                 <button class="btn" onclick="backToMenu()" data-i18n="result.back">بازگشت به منو</button>
             </div>
         </div>
@@ -272,11 +199,7 @@
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
                 <h2 data-i18n="wallet.title">💰 موجودی کیف پول</h2>
-                <div class="wallet-balance">
-                    <img src="/assets/coin.svg" alt="coin">
-                    <span id="walletBalance">0</span>
-                </div>
-                <p class="wallet-hint" data-i18n="wallet.hint">سکه‌های شما برای ورود به بازی‌ها و خرید استفاده می‌شوند</p>
+                <div class="wallet-balance"><img src="/assets/coin.svg" alt="coin"><span id="walletBalance">0</span></div>
             </div>
             <div class="card-section">
                 <h2 data-i18n="wallet.buy">🛒 خرید سکه</h2>
@@ -288,18 +211,15 @@
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
                 <div class="avatar-big-wrap" id="profileAvatarWrap"></div>
-                <div class="profile-name" id="profileUsername">User</div>
-                <div class="profile-level" id="profileLevel">Lvl 1</div>
-                <div class="profile-xp-bar"><div class="profile-xp-fill" id="profileXpFill"></div></div>
-                <div class="profile-xp-text" id="profileXpText">0 / 20 XP</div>
+                <div class="profile-name" id="profileUsername" style="font-size:22px; font-weight:bold; color:var(--primary); margin-bottom:4px;"></div>
+                <div class="profile-level" id="profileLevel" style="font-size:14px; color:#fbbf24; margin-bottom:18px;"></div>
+                <div class="xp-bar" style="height:10px; margin-bottom:6px;"><div class="xp-fill" id="profileXpFill"></div></div>
+                <div class="xp-text" id="profileXpText" style="margin-bottom:20px; text-align:center;"></div>
                 <div class="profile-stats">
                     <div class="stat"><span data-i18n="profile.coins">سکه</span><span id="profileCoins">0</span></div>
                     <div class="stat"><span data-i18n="profile.total_xp">مجموع XP</span><span id="profileTotalXp">0</span></div>
-                    <div class="stat"><span data-i18n="profile.extra_notes">هنگ‌درام‌های اضافی</span><span id="profileNotes">0</span></div>
-                    <div class="stat"><span data-i18n="profile.skins">اسکین‌های باز‌شده</span><span id="profileSkins">0</span></div>
                 </div>
                 
-                <!-- تاریخچه تمرین -->
                 <div style="margin-top: 20px; text-align: right;">
                     <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
                     <div id="historyList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
@@ -313,39 +233,10 @@
                 <h2 data-i18n="settings.title">⚙️ تنظیمات</h2>
 
                 <div class="settings-block">
-                    <h3 data-i18n="settings.account">📝 اطلاعات حساب</h3>
-                    <div class="setting-row"><label data-i18n="settings.username">نام کاربری</label><input type="text" id="setUsername"></div>
-                    <div class="setting-row"><label data-i18n="settings.email">ایمیل</label><input type="email" id="setEmail"></div>
-                    <button class="btn-sm" onclick="saveProfileInfo()" data-i18n="settings.save_profile">ذخیره تغییرات</button>
-                    <div class="msg-success" id="profileMsg"></div>
-                </div>
-
-                <div class="settings-block">
-                    <h3 data-i18n="settings.password">🔒 تغییر رمز عبور</h3>
-                    <div class="setting-row"><label data-i18n="settings.current_password">رمز فعلی</label><input type="password" id="setOldPass"></div>
-                    <div class="setting-row"><label data-i18n="settings.new_password">رمز جدید (حداقل ۶ کاراکتر)</label><input type="password" id="setNewPass"></div>
-                    <button class="btn-sm" onclick="changePassword()" data-i18n="settings.change_password">تغییر رمز</button>
-                    <div class="msg-error" id="passwordMsg"></div>
-                </div>
-
-                <div class="settings-block">
-                    <h3 data-i18n="settings.avatar">🖼️ عکس پروفایل</h3>
-                    <div class="avatar-upload-wrap">
-                        <div id="settingsAvatarPreview"></div>
-                        <label for="avatarFileInput" class="btn-sm btn-ghost" style="cursor:pointer; display:inline-block;" data-i18n="settings.choose_image">انتخاب عکس</label>
-                        <input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatar(this)">
-                    </div>
-                    <div class="msg-success" id="avatarMsg"></div>
-                </div>
-
-                <div class="settings-block">
                     <h3 data-i18n="settings.appearance">🎨 ظاهر بازی</h3>
                     <div class="setting-row">
                         <label data-i18n="settings.note_display">حالت نمایش نت‌ها</label>
-                        <select id="setNoteDisplay">
-                            <option value="number" data-i18n="display.number">عدد</option>
-                            <option value="name" data-i18n="display.name">حروف (اسم نت)</option>
-                        </select>
+                        <select id="setNoteDisplay"><option value="number">عدد</option><option value="name">حروف</option></select>
                     </div>
                     <div class="setting-row">
                         <label data-i18n="settings.active_skin">طرح هنگ‌درام (اسکین)</label>
@@ -353,19 +244,7 @@
                     </div>
                     <div class="setting-row">
                         <label data-i18n="settings.language">زبان</label>
-                        <select id="setLanguage" onchange="onLanguageChange(this.value)">
-                            <option value="fa">فارسی</option>
-                            <option value="en">English</option>
-                        </select>
-                    </div>
-                    <div class="setting-row">
-                        <label data-i18n="settings.font">فونت نوشتار</label>
-                        <select id="setFont" onchange="previewFont(this.value)">
-                            <option value="Vazirmatn" data-i18n="settings.font_vazir">Vazirmatn (پیش‌فرض)</option>
-                            <option value="Arial" data-i18n="settings.font_arial">Arial</option>
-                            <option value="Tahoma" data-i18n="settings.font_tahoma">Tahoma</option>
-                            <option value="system-ui" data-i18n="settings.font_system">System UI</option>
-                        </select>
+                        <select id="setLanguage" onchange="onLanguageChange(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
                     </div>
                     <div class="setting-row">
                         <label><span data-i18n="settings.fall_speed">سرعت سقوط نت‌ها</span> <span class="range-value" id="fallSpeedVal">200</span></label>
@@ -391,12 +270,11 @@
             <h2 data-i18n="reward.title">🎉 تبریک!</h2>
             <p id="rewardMessage"></p>
             <div id="rewardItems"></div>
-            <button onclick="closeRewardModal()" data-i18n="reward.ok">عالی!</button>
+            <button class="btn" onclick="closeRewardModal()" style="margin-top:10px;" data-i18n="reward.ok">عالی!</button>
         </div>
     </div>
         
-    <!-- اسکریپت‌های خودت -->
-    <script src="/js/pitch-detector.js?v=5"></script>
-    <script src="/js/game-engine.js?v=39"></script>
+    <script src="/js/pitch-detector.js?v=21"></script>
+    <script src="/js/game-engine.js?v=75"></script>
 </body>
 </html>
