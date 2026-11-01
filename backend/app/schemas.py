@@ -22,7 +22,7 @@ class UserOut(BaseModel):
     progress_percent: float
     owned_skins: List[str] = []
     extra_notes: int = 0
-    avatar_url: Optional[str] = None
+    selected_avatar: str = "default"
     language: str = "fa"
     fall_speed: int = 200
     note_size: float = 1.0
@@ -30,6 +30,8 @@ class UserOut(BaseModel):
     sound_volume: float = 0.5
     note_display_mode: str = "number"
     active_skin: str = "default"
+    owned_avatars: List[str] = []
+    highlighted_avatars: List[str] = []
 
 class Token(BaseModel):
     access_token: str
@@ -57,6 +59,7 @@ class SettingsUpdate(BaseModel):
     sound_volume: Optional[float] = Field(None, ge=0.0, le=1.0)
     note_display_mode: Optional[str] = None
     active_skin: Optional[str] = None
+    selected_avatar: Optional[str] = None
 
 class SettingsOut(BaseModel):
     language: str
@@ -119,3 +122,10 @@ class CalibrationSubmit(BaseModel):
 class CalibrationOut(BaseModel):
     notes: dict = {}
     calibrated_at: Optional[str] = None
+
+class AvatarPurchase(BaseModel):
+    avatar_id: str
+    cost: int
+
+class HighlightToggle(BaseModel):
+    avatar_url: str

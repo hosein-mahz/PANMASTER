@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 ابزار ساخت آواتار PanMaster</title>
+    <style>
+        * { box-sizing: border-box; font-family: Tahoma, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; border-radius: 20px; padding: 20px; display: flex; gap: 20px; border: 1px solid #334155; max-width: 900px; width: 100%; flex-wrap: wrap; }
+        
+        .canvas-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .preview-box {
+            width: 400px; height: 400px; background: #0f172a; border: 2px dashed #475569;
+            border-radius: 10px; position: relative; overflow: hidden; cursor: grab;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .preview-box:active { cursor: grabbing; }
+        #sourceImage { position: absolute; transform-origin: center center; user-select: none; -webkit-user-drag: none; }
+        
+        /* Shape Masks */
+        .shape-square { clip-path: inset(0 0 0 0); }
+        .shape-circle { clip-path: circle(50% at 50% 50%); }
+        .shape-rectangle { clip-path: inset(12.5% 0 12.5% 0); } /* 400x300 */
+
+        .controls { width: 300px; display: flex; flex-direction: column; gap: 15px; }
+        .controls h2 { color: #38bdf8; font-size: 18px; margin: 0 0 10px 0; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn:hover { background: #475569; }
+        .btn.active { background: #38bdf8; color: #0f172a; font-weight: bold; }
+        .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: bold; margin-top: 10px; padding: 15px; }
+        .btn-primary:hover { background: linear-gradient(135deg, #059669, #047857); }
+        
+        .control-group { display: flex; flex-direction: column; gap: 8px; background: #0f172a; padding: 15px; border-radius: 10px; border: 1px solid #334155; }
+        .control-group label { font-size: 13px; color: #94a3b8; }
+        input[type="range"] { width: 100%; accent-color: #38bdf8; }
+        input[type="file"] { display: none; }
+        
+        .note { font-size: 12px; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 10px; border-radius: 8px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="canvas-area">
+            <div class="preview-box shape-circle" id="previewBox">
+                <img id="sourceImage" style="display: none;">
+                <div id="placeholderText" style="color:#475569; text-align:center;">عکس خود را آپلود کنید<br><span style="font-size:24px;">🖼️</span></div>
+            </div>
+            <p style="color:#94a3b8; font-size:12px; margin-top:10px;">با موس عکس را بکشید (Pan) و با اسلایدر بزرگنمایی کنید.</p>
+        </div>
+
+        <div class="controls">
+            <h2>⚙️ تنظیمات آواتار</h2>
+            
+            <label for="fileInput" class="btn" style="text-align:center; background:#38bdf8; color:#0f172a; font-weight:bold; cursor:pointer;">
+                📁 آپلود عکس
+            </label>
+            <input type="file" id="fileInput" accept="image/*">
+
+            <div class="control-group">
+                <label>شکل قالب (Mask)</label>
+                <div class="btn-group">
+                    <button class="btn active" onclick="setShape('circle', this)">دایره</button>
+                    <button class="btn" onclick="setShape('square', this)">مربع</button>
+                    <button class="btn" onclick="setShape('rectangle', this)">مستطیل</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>بزرگنمایی (Zoom)</label>
+                <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" oninput="applyTransform()">
+            </div>
+
+            <button class="btn btn-primary" onclick="exportSVG()" id="downloadBtn" disabled>
+                💾 دانلود خروجی SVG
+            </button>
+
+            <div class="note">
+                <strong>نکته:</strong> خروجی SVG یک فایل وکتور است که عکس شما را با ماسک انتخاب‌شده در خود ذخیره می‌کند. حجم فایل کم و کیفیت آن در هر ابعادی حفظ می‌شود.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const img = document.getElementById('sourceImage');
+        const previewBox = document.getElementById('previewBox');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const placeholderText = document.getElementById('placeholderText');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let base64Image = "";
+        let currentShape = 'circle';
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0, translateY = 0;
+        let scale = 1;
+        let naturalWidth = 0, naturalHeight = 0;
+
+        // 1. آپلود عکس
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                base64Image = event.target.result;
+                img.src = base64Image;
+                img.style.display = 'block';
+                placeholderText.style.display = 'none';
+                downloadBtn.disabled = false;
+                
+                img.onload = function() {
+                    naturalWidth = img.naturalWidth;
+                    naturalHeight = img.naturalHeight;
+                    // ریست کردن موقعیت و مقیاس
+                    translateX = 0; translateY = 0; scale = 1;
+                    zoomSlider.value = 1;
+                    
+                    // فیت کردن اولیه عکس داخل کادر ۴۰۰ در ۴۰۰
+                    const scaleToFit = Math.min(400 / naturalWidth, 400 / naturalHeight);
+                    scale = scaleToFit;
+                    zoomSlider.value = scale;
+                    applyTransform();
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 2. تغییر شکل قالب
+        function setShape(shape, btnElement) {
+            currentShape = shape;
+            document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+            
+            previewBox.className = 'preview-box'; // ریست
+            previewBox.classList.add('shape-' + shape);
+        }
+
+        // 3. درگ کردن عکس (Pan)
+        previewBox.addEventListener('mousedown', (e) => {
+            if (!img.src || img.style.display === 'none') return;
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        // لمس برای موبایل
+        previewBox.addEventListener('touchstart', (e) => {
+            if (!img.src) return;
+            isDragging = true;
+            startX = e.touches[0].clientX - translateX;
+            startY = e.touches[0].clientY - translateY;
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            translateX = e.touches[0].clientX - startX;
+            translateY = e.touches[0].clientY - startY;
+            applyTransform();
+        }, { passive: false });
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        // 4. اعمال تغییرات روی صفحه
+        function applyTransform() {
+            scale = parseFloat(zoomSlider.value);
+            img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
+
+        // 5. خروجی SVG
+        function exportSVG() {
+            if (!base64Image) return;
+
+            // در SVG، ابعاد پیش‌فرض 400x400 است
+            const viewBoxSize = 400;
+            
+            // محاسبه ابعاد و موقعیت عکس در SVG
+            // عکس در مرکز قرار داره، پس با scale و translate جابجا میشه
+            const w = naturalWidth * scale;
+            const h = naturalHeight * scale;
+            
+            // فرمول محاسبه x و y برای اینکه دقیقا مثل پیش‌نمایش در مرکز باشه
+            const x = (viewBoxSize - w) / 2 + translateX;
+            const y = (viewBoxSize - h) / 2 + translateY;
+
+            let clipPath = "";
+            if (currentShape === 'circle') {
+                clipPath = `<clipPath id="avatarMask"><circle cx="200" cy="200" r="200"/></clipPath>`;
+            } else if (currentShape === 'square') {
+                clipPath = `<clipPath id="avatarMask"><rect x="0" y="0" width="400" height="400"/></clipPath>`;
+            } else if (currentShape === 'rectangle') {
+                // مستطیل ۴۰۰x۳۰۰ در مرکز (۵۰ پیکسل از بالا و پایین فاصله)
+                clipPath = `<clipPath id="avatarMask"><rect x="0" y="50" width="400" height="300"/></clipPath>`;
+            }
+
+            // ساخت رشته SVG
+            const svgString = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+    <defs>
+        ${clipPath}
+    </defs>
+    <g clip-path="url(#avatarMask)">
+        <image href="${base64Image}" x="${x}" y="${y}" width="${w}" height="${h}" />
+    </g>
+</svg>`.trim();
+
+            // دانلود فایل
+            const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `avatar_${currentShape}_${Date.now()}.svg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

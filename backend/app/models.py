@@ -16,6 +16,8 @@ class User(Base):
     is_vip = Column(Boolean, default=False)
     vip_expire_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    owned_avatars = Column(String, default='["1", "2", "3", "4"]', nullable=False)
+    highlighted_avatars = Column(String, default="[]", nullable=False)
 
     # ===== تنظیمات =====
     language = Column(String, default="fa", nullable=False)
@@ -26,8 +28,7 @@ class User(Base):
     note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم
     active_skin = Column(String, default="default", nullable=False)
     calibration_data = Column(String, default="{}", nullable=False)
-    avatar_url = Column(String, nullable=True)
-
+    selected_avatar = Column(String, default="default", nullable=False)
 
 class Song(Base):
     __tablename__ = "songs"

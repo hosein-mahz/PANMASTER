@@ -236,8 +236,23 @@ function updateUIFromUser(d){
     document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
     document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
 
+    // 👇 آپدیت آواتار هدر
     const av = document.getElementById('headerAvatar');
-    av.innerHTML = d.avatar_url ? `<img src="${d.avatar_url}?t=${Date.now()}" class="avatar-mini" alt="avatar">` : `<div class="avatar-placeholder">${d.username.charAt(0).toUpperCase()}</div>`;
+    if (d.selected_avatar && d.selected_avatar !== 'default') {
+        // تشخیص اینکه آواتار محلی است یا از API دایس‌بر
+        const avSrc = d.selected_avatar.startsWith('http') ? d.selected_avatar : `/assets/avatars/${d.selected_avatar}.png`;
+        av.innerHTML = `<img src="${avSrc}" class="avatar-mini" alt="avatar" style="pointer-events:none; user-select:none;">`;
+        
+        // 👇 آپدیت آواتار بزرگ پروفایل
+        const pImg = document.getElementById('profileAvatarImg');
+        const pPlace = document.getElementById('profileAvatarPlaceholder');
+        if(pImg) { pImg.src = avSrc; pImg.style.display = 'block'; pPlace.style.display = 'none'; }
+    } else {
+        av.innerHTML = `<div class="avatar-placeholder">${d.username.charAt(0).toUpperCase()}</div>`;
+        const pImg = document.getElementById('profileAvatarImg');
+        const pPlace = document.getElementById('profileAvatarPlaceholder');
+        if(pImg) { pImg.style.display = 'none'; pPlace.style.display = 'flex'; pPlace.innerText = d.username.charAt(0).toUpperCase(); }
+    }
 
     const wb=document.getElementById('walletBalance'); if(wb) wb.innerText=d.coins;
     const pn=document.getElementById('profileUsername'); if(pn) pn.innerText=d.username;
@@ -248,12 +263,6 @@ function updateUIFromUser(d){
     const ptx=document.getElementById('profileTotalXp'); if(ptx) ptx.innerText=d.xp;
     const pnot=document.getElementById('profileNotes'); if(pnot) pnot.innerText=d.extra_notes;
     const psk=document.getElementById('profileSkins'); if(psk) psk.innerText=d.owned_skins?.length || 0;
-
-    const pw=document.getElementById('profileAvatarWrap');
-    if(pw) pw.innerHTML = d.avatar_url ? `<img src="${d.avatar_url}?t=${Date.now()}" class="avatar-big" alt="avatar">` : `<div class="avatar-placeholder-big">${d.username.charAt(0).toUpperCase()}</div>`;
-
-    const sav=document.getElementById('settingsAvatarPreview');
-    if(sav) sav.innerHTML = d.avatar_url ? `<img src="${d.avatar_url}?t=${Date.now()}" class="avatar-big" style="width:60px;height:60px;" alt="avatar">` : `<div class="avatar-placeholder-big" style="width:60px;height:60px;font-size:24px;">${d.username.charAt(0).toUpperCase()}</div>`;
 
     applySettingsToUI(d);
 }
@@ -357,7 +366,7 @@ async function goToFallingGame(){
 
 function goToWallet(){ showView('wallet-view'); fetchUserProfile(); loadCoinPackages(); }
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
-function goToSettings(){ showView('settings-view'); fetchUserProfile(); }
+function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); }
 function onLanguageChange(l){ setLang(l); document.querySelectorAll('[data-i18n]').forEach(el=>{ const tr=t(el.getAttribute('data-i18n')); if(tr) el.innerText=tr; }); }
 function previewFont(f){ applyFont(f); }
 
@@ -615,7 +624,8 @@ async function saveSettings(){
         language: document.getElementById('setLanguage').value, 
         font_family: document.getElementById('setFont').value, 
         note_display_mode: document.getElementById('setNoteDisplay')?.value || 'number', 
-        active_skin: document.getElementById('activeSkinSelect')?.value || 'default', 
+        active_skin: document.getElementById('activeSkinSelect')?.value || 'default',
+        selected_avatar: currentUser?.selected_avatar || 'default', 
         fall_speed: parseInt(document.getElementById('setFallSpeed').value), 
         note_size: parseFloat(document.getElementById('setNoteSize').value), 
         sound_volume: parseFloat(document.getElementById('setSoundVolume').value) 
@@ -631,16 +641,6 @@ async function saveSettings(){
     }catch(e){ msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
 }
 
-async function uploadAvatar(input){
-    if(!input.files||!input.files[0]) return;
-    const token=localStorage.getItem('pm_token'); const msg=document.getElementById('avatarMsg'); msg.innerText=t('msg.uploading');
-    const fd=new FormData(); fd.append('file',input.files[0]);
-    try{
-        const res=await fetch('/api/users/avatar',{method:'POST',headers:{'Authorization':`Bearer ${token}`},body:fd});
-        if(res.ok){ msg.style.color='#10b981'; msg.innerText=t('msg.avatar_uploaded'); await fetchUserProfile(); }
-        else { const e=await res.json(); msg.style.color='#ef4444'; msg.innerText=e.detail||t('msg.error_generic'); }
-    }catch(e){ msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
-}
 
 // ==========================================================
 // INTERACTION
@@ -922,6 +922,297 @@ async function diagnoseMic() {
         stream.getTracks().forEach(t => t.stop()); ctx.close();
         alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 0.5 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه'}`);
     } catch(e) { alert(`\n❌ getUserMedia خطا: ${e.name}\n${e.message}`); }
+}
+// ==========================================================
+// گالری آواتار و DiceBear
+// ==========================================================
+// 👇 اسم فایل‌های SVG که توی پوشه assets/avatars ذخیره کردی رو اینجا بنویس (بدون پسوند .svg)
+const AVATAR_LIST = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+const FREE_AVATARS = ['1', '2', '3', '4'];
+const AVATAR_PRICE = 50;
+
+function renderAvatarGallery() {
+    const gallery = document.getElementById('avatarGallery');
+    if (!gallery) return;
+    gallery.innerHTML = '';
+    
+    const owned = currentUser?.owned_avatars || FREE_AVATARS;
+    const highlighted = currentUser?.highlighted_avatars || [];
+
+    // آواتارهای پیش‌فرض (بدون ستاره)
+    AVATAR_LIST.forEach(avName => {
+        const isFree = FREE_AVATARS.includes(avName);
+        const isOwned = owned.includes(avName);
+        
+        const wrap = document.createElement('div');
+        wrap.style.position = 'relative';
+        wrap.style.cursor = 'pointer';
+        
+        const img = document.createElement('img');
+        img.src = `/assets/avatars/${avName}.png`; 
+        img.className = 'avatar-option';
+        img.style.pointerEvents = 'none';
+        
+        if (currentUser?.selected_avatar === avName) img.classList.add('selected');
+        wrap.appendChild(img);
+        
+        if (!isFree && !isOwned) {
+            img.style.opacity = '0.4';
+            const lock = document.createElement('div');
+            lock.innerHTML = `🔒<br><span style="font-size:10px; color:#fbbf24;">${AVATAR_PRICE}</span>`;
+            lock.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; font-size:18px; text-shadow:1px 1px 3px #000; pointer-events:none;';
+            wrap.appendChild(lock);
+        }
+        
+        wrap.onclick = () => {
+            if (isFree || isOwned) selectAvatar(avName);
+            else promptBuyAvatar(avName);
+        };
+        gallery.appendChild(wrap);
+    });
+
+    // آواتارهای رندوم (با ستاره و دکمه حذف)
+    const randomAvatars = owned.filter(id => id.startsWith('http'));
+    randomAvatars.forEach(url => {
+        const wrap = document.createElement('div');
+        wrap.style.position = 'relative';
+        wrap.style.cursor = 'pointer';
+        
+        const img = document.createElement('img');
+        img.src = url; 
+        img.className = 'avatar-option';
+        img.style.pointerEvents = 'none';
+        
+        if (currentUser?.selected_avatar === url) img.classList.add('selected');
+        wrap.appendChild(img);
+        
+        // 👇 ستاره هایلایت
+        const isHighlighted = highlighted.includes(url);
+        const star = document.createElement('div');
+        star.className = 'avatar-star' + (isHighlighted ? ' active' : '');
+        star.innerText = isHighlighted ? '⭐' : '☆';
+        star.style.pointerEvents = 'auto';
+        star.onclick = (e) => {
+            e.stopPropagation();
+            toggleHighlight(url);
+        };
+        wrap.appendChild(star);
+
+        // 👇 دکمه حذف
+        const delBtn = document.createElement('div');
+        delBtn.className = 'avatar-delete';
+        delBtn.innerHTML = '✕';
+        delBtn.style.pointerEvents = 'auto';
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteRandomAvatar(url);
+        };
+        wrap.appendChild(delBtn);
+        
+        wrap.onclick = () => selectAvatar(url);
+        gallery.appendChild(wrap);
+    });
+    
+}
+
+async function promptBuyAvatar(avName) {
+    if (!confirm(`آواتار ${avName} قفل است. آیا ${AVATAR_PRICE} سکه می‌پردازید؟`)) return;
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/buy-avatar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ avatar_id: avName, cost: AVATAR_PRICE })
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            userTokens = data.new_balance;
+            document.getElementById('tokenDisplay').innerText = userTokens;
+            
+            // آپدیت حافظه موقت و انتخاب خودکار آواتار جدید
+            if (!currentUser.owned_avatars) currentUser.owned_avatars = [...FREE_AVATARS];
+            currentUser.owned_avatars.push(avName);
+            
+            await selectAvatar(avName);
+            alert('✅ خرید موفق! آواتار شما تغییر کرد.');
+        } else {
+            const err = await res.json();
+            alert(err.detail || 'خطا در خرید');
+        }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
+}
+
+async function selectAvatar(avName) {
+    if (!currentUser) return;
+    
+    const oldAvatar = currentUser.selected_avatar; // ذخیره حالت قبلی برای بازگشت در صورت خطا
+    currentUser.selected_avatar = avName; // آپدیت حافظه موقت
+    renderAvatarGallery(); // آپدیت گالری
+    updateUIFromUser(currentUser); // آپدیت هدر و پروفایل
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ selected_avatar: avName })
+        });
+        
+        if (res.ok) {
+            const msg = document.getElementById('avatarMsg');
+            if(msg) { msg.style.color='#10b981'; msg.innerText = '✓ آواتار با موفقیت ذخیره شد'; setTimeout(()=>msg.innerText='', 2000); }
+        } else {
+            // اگر سرور خطا داد، به آواتار قبلی برگرد
+            currentUser.selected_avatar = oldAvatar;
+            renderAvatarGallery();
+            updateUIFromUser(currentUser);
+            alert('خطا در ذخیره آواتار. لطفاً دوباره تلاش کنید.');
+        }
+    } catch (e) { 
+        currentUser.selected_avatar = oldAvatar;
+        renderAvatarGallery();
+        updateUIFromUser(currentUser);
+        console.error(e); 
+    }
+}
+
+async function generateRandomAvatar() {
+    if (!currentUser) return;
+    
+    const cost = 20;
+    
+    // 👇 چک کردن محدودیت ۵ آواتار رندوم
+    const owned = currentUser.owned_avatars || [];
+    const highlighted = currentUser.highlighted_avatars || [];
+    const randomList = owned.filter(a => a.startsWith('http'));
+    
+    if (randomList.length >= 5) {
+        const unhighlighted = randomList.filter(a => !highlighted.includes(a));
+        if (unhighlighted.length === 0) {
+            alert('⚠️ همه ۵ آواتار رندوم شما هایلایت شده‌اند.\n\nبرای گرفتن آواتار جدید، ابتدا روی ستاره یکی از آنها بزنید تا هایلایتش برداشته شود.');
+            return;
+        }
+        if (!confirm(`شما به محدودیت ۵ آواتار رندوم رسیده‌اید.\nقدیمی‌ترین آواتار هایلایت‌نشده به صورت خودکار حذف خواهد شد.\n\nآیا ادامه می‌دهید؟`)) return;
+    }
+    
+    if (!confirm(`ساخت آواتار رندوم جدید ${cost} سکه هزینه دارد. ادامه می‌دهید؟`)) return;
+    
+    const gender = document.getElementById('avatarGender')?.value || 'male';
+    const randomSeed = Math.random().toString(36).substring(7);
+    
+    let dicebearUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomSeed}`;
+    if (gender === 'male') {
+        dicebearUrl += '&facialHairProbability=100&hair=short01,short02,short03,short04,short05'; 
+    } else {
+        dicebearUrl += '&facialHairProbability=0&hair=long01,long02,long03,long04,long05';
+    }
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/buy-avatar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ avatar_id: dicebearUrl, cost: cost })
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            userTokens = data.new_balance;
+            document.getElementById('tokenDisplay').innerText = userTokens;
+            
+            // رفرش کامل پروفایل برای گرفتن لیست آپدیت‌شده آواتارها
+            await fetchUserProfile();
+            
+            await selectAvatar(dicebearUrl);
+            
+            const msg = document.getElementById('avatarMsg');
+            if(msg) { msg.style.color='#10b981'; msg.innerText = '✓ آواتار رندوم ساخته و ذخیره شد'; setTimeout(()=>msg.innerText='', 3000); }
+        } else {
+            const err = await res.json();
+            alert(err.detail || 'خطا در خرید');
+        }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
+}
+
+function toggleAvatarGallery() {
+    const wrap = document.getElementById('avatarGalleryWrap');
+    const chevron = document.getElementById('avatarGalleryChevron');
+    if (wrap.style.display === 'none') {
+        wrap.style.display = 'block';
+        chevron.innerText = '▲';
+        renderAvatarGallery(); // آپدیت گالری موقع باز شدن
+    } else {
+        wrap.style.display = 'none';
+        chevron.innerText = '▼';
+    }
+}
+
+async function toggleHighlight(avatarUrl) {
+    if (!currentUser) return;
+    
+    const highlighted = currentUser.highlighted_avatars || [];
+    const isCurrentlyHighlighted = highlighted.includes(avatarUrl);
+    
+    if (isCurrentlyHighlighted) {
+        currentUser.highlighted_avatars = highlighted.filter(u => u !== avatarUrl);
+    } else {
+        currentUser.highlighted_avatars = [...highlighted, avatarUrl];
+    }
+    
+    renderAvatarGallery(); // آپدیت لحظه‌ای
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/toggle-highlight', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ avatar_url: avatarUrl })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            currentUser.highlighted_avatars = data.highlighted_avatars;
+            renderAvatarGallery();
+        }
+    } catch (e) { console.error(e); }
+}
+async function deleteRandomAvatar(avatarUrl) {
+    if (!currentUser) return;
+    
+    const isHighlighted = currentUser.highlighted_avatars?.includes(avatarUrl);
+    const confirmMsg = isHighlighted 
+        ? '⚠️ این آواتار هایلایت شده است. آیا از حذف آن مطمئن هستید؟'
+        : 'آیا از حذف این آواتار مطمئن هستید؟';
+        
+    if (!confirm(confirmMsg)) return;
+
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/delete-avatar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ avatar_url: avatarUrl })
+        });
+        
+        if (res.ok) {
+            // رفرش کامل پروفایل برای آپدیت لیست‌ها
+            await fetchUserProfile();
+            renderAvatarGallery();
+            
+            const msg = document.getElementById('avatarMsg');
+            if(msg) { 
+                msg.style.color='#10b981'; 
+                msg.innerText = '✓ آواتار با موفقیت حذف شد'; 
+                setTimeout(()=>msg.innerText='', 2000); 
+            }
+        } else {
+            const err = await res.json();
+            alert(err.detail || 'خطا در حذف آواتار');
+        }
+    } catch (e) { 
+        alert('خطا در ارتباط با سرور'); 
+    }
 }
 
 // شروع

@@ -1,10 +1,9 @@
 import json
-import os
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -19,11 +18,6 @@ SECRET_KEY = "YOUR_SECRET_KEY_HERE"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
-# مسیر ذخیره‌ی آواتارها
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FRONTEND_DIR = os.path.join(os.path.dirname(BASE_DIR), "frontend")
-AVATARS_DIR = os.path.join(FRONTEND_DIR, "assets", "avatars")
-os.makedirs(AVATARS_DIR, exist_ok=True)
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
@@ -92,8 +86,10 @@ def _build_user_out(user: models.User) -> dict:
         "xp_needed": xp_needed,
         "progress_percent": round(progress_percent, 1),
         "owned_skins": json.loads(user.owned_skins or "[]"),
+        "owned_avatars": json.loads(user.owned_avatars or '["1", "2", "3", "4"]'),
+        "highlighted_avatars": json.loads(user.highlighted_avatars or "[]"),
         "extra_notes": user.extra_notes or 0,
-        "avatar_url": user.avatar_url,
+        "selected_avatar": user.selected_avatar or "default",
         "language": user.language or "fa",
         "fall_speed": user.fall_speed or 200,
         "note_size": user.note_size or 1.0,
@@ -150,7 +146,6 @@ def update_profile(
     db: Session = Depends(database.get_db),
 ):
     new_token = None
-    old_email = current_user.email
 
     if data.username and data.username != current_user.username:
         if db.query(models.User).filter(models.User.username == data.username).first():
@@ -202,6 +197,8 @@ def update_settings(
     if data.sound_volume is not None: current_user.sound_volume = data.sound_volume
     if data.note_display_mode is not None: current_user.note_display_mode = data.note_display_mode
     if data.active_skin is not None: current_user.active_skin = data.active_skin
+    if data.selected_avatar is not None: current_user.selected_avatar = data.selected_avatar
+    
     db.commit(); db.refresh(current_user)
     return schemas.SettingsOut(
         language=current_user.language,
@@ -211,48 +208,8 @@ def update_settings(
         sound_volume=current_user.sound_volume,
         note_display_mode=current_user.note_display_mode,
         active_skin=current_user.active_skin,
+        selected_avatar=current_user.selected_avatar,
     )
-
-
-# ===== Avatar Upload =====
-@router.post("/avatar")
-async def upload_avatar(
-    file: UploadFile = File(...),
-    current_user: models.User = Depends(get_current_user),
-    db: Session = Depends(database.get_db),
-):
-    # فقط تصویر
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="فقط فایل تصویری مجاز است")
-
-    # پسوند
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
-        raise HTTPException(status_code=400, detail="فرمت تصویر پشتیبانی نمی‌شود")
-
-    # حذف آواتار قبلی
-    if current_user.avatar_url:
-        old_name = current_user.avatar_url.split("/")[-1].split("?")[0]
-        old_path = os.path.join(AVATARS_DIR, old_name)
-        if os.path.exists(old_path):
-            try: os.remove(old_path)
-            except: pass
-
-    # نام فایل یکتا
-    unique_name = f"user_{current_user.id}_{uuid.uuid4().hex[:8]}{ext}"
-    save_path = os.path.join(AVATARS_DIR, unique_name)
-
-    content = await file.read()
-    if len(content) > 3 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="حجم تصویر باید کمتر از ۳ مگابایت باشد")
-
-    with open(save_path, "wb") as f:
-        f.write(content)
-
-    current_user.avatar_url = f"/assets/avatars/{unique_name}"
-    db.commit()
-
-    return {"message": "آواتار آپلود شد", "avatar_url": current_user.avatar_url}
 
 
 # ===== Buy Coins (mock) =====
@@ -300,18 +257,15 @@ def game_reward(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    # ۱. اعمال پاداش یا جریمه (tokens_earned می‌تونه منفی باشه)
     current_user.coins = (current_user.coins or 0) + reward.tokens_earned
     if current_user.coins < 0:
-        current_user.coins = 0 # جلوگیری از منفی شدن سکه
+        current_user.coins = 0 
 
-    # ۲. اعمال XP فقط اگر دقت ۷۵ یا بالاتر باشد
     xp_gained = 0
     if reward.accuracy >= 75:
         xp_gained = 20
         current_user.xp = (current_user.xp or 0) + xp_gained
 
-    # ۳. بررسی Level-up
     old_level = get_level_from_xp((current_user.xp or 0) - xp_gained)
     new_level = get_level_from_xp(current_user.xp or 0)
 
@@ -414,3 +368,85 @@ def reset_calibration(
     current_user.calibration_data = "{}"
     db.commit()
     return {"message": "کالیبراسیون پاک شد"}
+
+# ===== Buy Avatar =====
+@router.post("/buy-avatar", response_model=schemas.TokenBalance)
+def buy_avatar(
+    data: schemas.AvatarPurchase,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    if current_user.coins < data.cost:
+        raise HTTPException(status_code=400, detail="سکه کافی نیست")
+
+    avatars = json.loads(current_user.owned_avatars or '["1", "2", "3", "6"]')
+    highlighted = json.loads(current_user.highlighted_avatars or "[]")
+
+    # منطق محدودیت فقط برای آواتارهای رندوم (که با http شروع می‌شن)
+    if data.avatar_id.startswith("http"):
+        random_list = [a for a in avatars if a.startswith("http")]
+        if len(random_list) >= 5:
+            unhighlighted = [a for a in random_list if a not in highlighted]
+            if not unhighlighted:
+                raise HTTPException(status_code=400, detail="همه ۵ آواتار رندوم شما هایلایت شده‌اند. برای گرفتن آواتار جدید، ابتدا هایلایت یکی را بردارید.")
+            # حذف قدیمی‌ترین آواتار هایلایت‌نشده
+            oldest_unhighlighted = unhighlighted[0]
+            avatars.remove(oldest_unhighlighted)
+
+    if data.avatar_id not in avatars:
+        avatars.append(data.avatar_id)
+
+    current_user.coins -= data.cost
+    current_user.owned_avatars = json.dumps(avatars)
+    db.commit()
+    return schemas.TokenBalance(new_balance=current_user.coins)
+
+ # ____هایلایت/انهایلایت_______
+
+@router.post("/toggle-highlight")
+def toggle_highlight(
+    data: schemas.HighlightToggle,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    avatars = json.loads(current_user.owned_avatars or "[]")
+    highlighted = json.loads(current_user.highlighted_avatars or "[]")
+
+    if data.avatar_url not in avatars:
+        raise HTTPException(status_code=400, detail="این آواتار را ندارید")
+
+    if data.avatar_url in highlighted:
+        highlighted.remove(data.avatar_url)
+    else:
+        highlighted.append(data.avatar_url)
+
+    current_user.highlighted_avatars = json.dumps(highlighted)
+    db.commit()
+    return {"highlighted": data.avatar_url in highlighted, "highlighted_avatars": highlighted}
+
+@router.post("/delete-avatar")
+def delete_avatar(
+    data: schemas.HighlightToggle,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    avatars = json.loads(current_user.owned_avatars or "[]")
+    highlighted = json.loads(current_user.highlighted_avatars or "[]")
+
+    if data.avatar_url not in avatars:
+        raise HTTPException(status_code=400, detail="این آواتار در لیست شما وجود ندارد")
+
+    # حذف از لیست آواتارها و هایلایت‌ها
+    avatars.remove(data.avatar_url)
+    if data.avatar_url in highlighted:
+        highlighted.remove(data.avatar_url)
+
+    current_user.owned_avatars = json.dumps(avatars)
+    current_user.highlighted_avatars = json.dumps(highlighted)
+
+    # اگر این آواتار در حال حاضر انتخاب شده بود، به حالت پیش‌فرض برگردون
+    if current_user.selected_avatar == data.avatar_url:
+        current_user.selected_avatar = "default"
+
+    db.commit()
+    return {"message": "آواتار با موفقیت حذف شد"}
