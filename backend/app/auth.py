@@ -8,13 +8,15 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+import os
+from dotenv import load_dotenv
 
 from . import models, schemas, database
 from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS
-
+load_dotenv()
 
 # ===== تنظیمات =====
-SECRET_KEY = "YOUR_SECRET_KEY_HERE"
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-insecure-key-change-in-prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
@@ -197,8 +199,14 @@ def update_settings(
     if data.sound_volume is not None: current_user.sound_volume = data.sound_volume
     if data.note_display_mode is not None: current_user.note_display_mode = data.note_display_mode
     if data.active_skin is not None: current_user.active_skin = data.active_skin
-    if data.selected_avatar is not None: current_user.selected_avatar = data.selected_avatar
-    
+    if data.selected_avatar is not None: 
+        # 👇 اعتبارسنجی آواتار (فقط آدرس‌های http یا آواتارهای پیش‌فرض مجازند)
+        is_valid = data.selected_avatar.startswith("http") or data.selected_avatar == "default" or data.selected_avatar in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+        if is_valid:
+            current_user.selected_avatar = data.selected_avatar
+        else:
+            raise HTTPException(status_code=400, detail="آدرس آواتار نامعتبر است")
+        
     db.commit(); db.refresh(current_user)
     return schemas.SettingsOut(
         language=current_user.language,
@@ -257,15 +265,33 @@ def game_reward(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    current_user.coins = (current_user.coins or 0) + reward.tokens_earned
+    # 👇 ۱. اعتبارسنجی دقت (بین ۰ تا ۱۰۰)
+    acc = max(0, min(100, reward.accuracy))
+    
+    # 👇 ۲. محاسبه سکه در بک‌اند (نه اعتماد به کلاینت)
+    if acc >= 75:
+        earned = 15
+        xp_gained = 20
+    elif acc >= 50:
+        earned = 10
+        xp_gained = 0
+    elif acc >= 25:
+        earned = 0
+        xp_gained = 0
+    else:
+        earned = -5
+        xp_gained = 0
+
+    # ۳. اعمال سکه
+    current_user.coins = (current_user.coins or 0) + earned
     if current_user.coins < 0:
         current_user.coins = 0 
 
-    xp_gained = 0
-    if reward.accuracy >= 75:
-        xp_gained = 20
+    # ۴. اعمال XP
+    if xp_gained > 0:
         current_user.xp = (current_user.xp or 0) + xp_gained
 
+    # ۵. بررسی Level-up
     old_level = get_level_from_xp((current_user.xp or 0) - xp_gained)
     new_level = get_level_from_xp(current_user.xp or 0)
 
@@ -376,27 +402,35 @@ def buy_avatar(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    if current_user.coins < data.cost:
+    # 👇 ۱. تعیین قیمت توسط بک‌اند (نه کلاینت)
+    if data.avatar_id == "random":
+        cost = 20
+    elif data.avatar_id in ["1", "2", "3", "4"]: # آواتارهای رایگان
+        cost = 0
+    else:
+        cost = 50 # آواتارهای پولی
+
+    # ۲. بررسی موجودی
+    if current_user.coins < cost:
         raise HTTPException(status_code=400, detail="سکه کافی نیست")
 
-    avatars = json.loads(current_user.owned_avatars or '["1", "2", "3", "6"]')
+    avatars = json.loads(current_user.owned_avatars or '["1", "2", "3", "4"]')
     highlighted = json.loads(current_user.highlighted_avatars or "[]")
 
-    # منطق محدودیت فقط برای آواتارهای رندوم (که با http شروع می‌شن)
+    # ۳. منطق محدودیت ۵ آواتار رندوم
     if data.avatar_id.startswith("http"):
         random_list = [a for a in avatars if a.startswith("http")]
         if len(random_list) >= 5:
             unhighlighted = [a for a in random_list if a not in highlighted]
             if not unhighlighted:
-                raise HTTPException(status_code=400, detail="همه ۵ آواتار رندوم شما هایلایت شده‌اند. برای گرفتن آواتار جدید، ابتدا هایلایت یکی را بردارید.")
-            # حذف قدیمی‌ترین آواتار هایلایت‌نشده
-            oldest_unhighlighted = unhighlighted[0]
-            avatars.remove(oldest_unhighlighted)
+                raise HTTPException(status_code=400, detail="همه ۵ آواتار رندوم شما هایلایت شده‌اند.")
+            oldest = unhighlighted[0]
+            avatars.remove(oldest)
 
     if data.avatar_id not in avatars:
         avatars.append(data.avatar_id)
 
-    current_user.coins -= data.cost
+    current_user.coins -= cost
     current_user.owned_avatars = json.dumps(avatars)
     db.commit()
     return schemas.TokenBalance(new_balance=current_user.coins)
