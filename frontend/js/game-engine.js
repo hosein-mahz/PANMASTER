@@ -50,18 +50,23 @@ const HANDPAN_LAYOUT_9 = {
     "4": [284, 300, 38], "5": [536, 199, 38], "6": [284, 199, 38],
     "7": [461, 128, 38], "8": [359, 128, 38]
 };
+// 👇 اسکین‌ها (دایره ساده + اسکین‌های عکس‌دار)
 const SKINS = {
-    default: { 
-        name: "پیش‌فرض", 
-        bodyColor: "#1e293b", 
-        edgeColor: "#475569", 
-        innerColor: "#0f172a", 
-        innerRingColor: "#334155", 
-        noteDefaultFill: "#1e293b", 
-        noteDefaultEdge: "#475569", 
-        noteHighlightFill: "#1e3a8a" 
-    }
+    default: { name: "ساده", id: "default" },
+    wood: { name: "چوبی", id: "wood" }, 
+    silver: { name: "نقره‌ای", id: "silver" },
+    gold: { name: "طلایی", id: "gold" }, 
+    rainbow: { name: "رنگین‌کمان", id: "rainbow" },
+    marble: { name: "مرمری", id: "marble" }, 
+    ice_blue: { name: "کریستال آبی", id: "ice_blue" },
+    bronze: { name: "برنزی", id: "bronze" }, 
+    turquoise: { name: "فیروزه‌ای", id: "turquoise" },
+    dark: { name: "تاریکی", id: "dark" }, 
+    royal: { name: "سلطنتی", id: "royal" }
 };
+
+// کش برای نگهداری عکس‌های لود شده اسکین‌ها
+const SKIN_IMAGES = {};
 
 const KEY_TO_NAME = {
     "D": "D", "1": "A1", "2": "D2", "3": "C3", "4": "E4", 
@@ -144,6 +149,28 @@ async function loadAudioSamples() {
     console.log(`🎵 ${loadedCount} فایل صوتی WAV لود شد.`);
 }
 
+// لود عکس اسکین‌ها
+async function loadSkinImages() {
+    const skinIds = Object.keys(SKINS).filter(id => id !== 'default');
+    
+    for (const id of skinIds) {
+        const img = new Image();
+        img.src = `/assets/skins/${id}.png`;
+        // منتظر لود شدن عکس نمی‌مونیم تا بقیه چیزها سریع‌تر لود بشن
+        img.onload = () => {
+            SKIN_IMAGES[id] = img;
+            // اگر در حال حاضر اسکین فعلی اینه، یه بار رفرش کن تا نمایش داده بشه
+            if (currentUser?.active_skin === id) {
+                const c = document.getElementById('handpanCanvasFree');
+                if (c) drawHandpan(c.getContext('2d'));
+                const c2 = document.getElementById('handpanCanvasFalling');
+                if (c2) drawHandpan(c2.getContext('2d'));
+            }
+        };
+        img.onerror = () => console.warn(`عکس اسکین ${id} پیدا نشد.`);
+    }
+}
+
 function playSound(noteKey) {
     const ctx = initAudio();
     if (!ctx) return;
@@ -192,7 +219,12 @@ async function login(){
     const fd=new URLSearchParams(); fd.append('username',username); fd.append('password',password);
     try{
         const res=await fetch('/api/users/login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:fd});
-        if(res.ok){ const d=await res.json(); localStorage.setItem('pm_token',d.access_token); document.getElementById('authError').innerText = ''; showGame(); }
+        if(res.ok){ 
+            const d=await res.json(); 
+            localStorage.setItem('pm_token',d.access_token); 
+            document.getElementById('authError').innerText = ''; 
+            showGame(); 
+        }
         else document.getElementById('authError').innerText = 'نام کاربری یا رمز عبور اشتباه است.';
     }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
 }
@@ -205,8 +237,15 @@ async function register(){
     if(!email.includes('@') || !email.includes('.')) { document.getElementById('authError').innerText = 'فرمت ایمیل صحیح نیست.'; return; }
     try{
         const res=await fetch('/api/users/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
-        if(res.ok){ alert('✅ ثبت‌نام موفق!'); toggleAuth('login'); document.getElementById('authError').innerText = ''; }
-        else { const err=await res.json(); document.getElementById('authError').innerText = err.detail || 'خطا'; }
+        if(res.ok){ 
+            alert('✅ ثبت‌نام موفق!'); 
+            toggleAuth('login'); 
+            document.getElementById('authError').innerText = ''; 
+        }
+        else { 
+            const err=await res.json(); 
+            document.getElementById('authError').innerText = err.detail || 'خطا'; 
+        }
     }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
 }
 function logout(){
@@ -232,6 +271,14 @@ function updateUIFromUser(d){
 
     document.getElementById('tokenDisplay').innerText = d.coins;
     document.getElementById('usernameDisplay').innerText = d.username;
+    
+    // 👇 نمایش نشان VIP
+    const nameDisplay = document.getElementById('usernameDisplay');
+    if (d.is_vip) {
+        nameDisplay.innerHTML = `${d.username} <span class="vip-badge">VIP</span>`;
+    } else {
+        nameDisplay.innerText = d.username;
+    }
     document.getElementById('levelBadge').innerText = `${t('header.level_prefix')} ${d.level}`;
     document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
     document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
@@ -239,11 +286,9 @@ function updateUIFromUser(d){
     // 👇 آپدیت آواتار هدر
     const av = document.getElementById('headerAvatar');
     if (d.selected_avatar && d.selected_avatar !== 'default') {
-        // تشخیص اینکه آواتار محلی است یا از API دایس‌بر
         const avSrc = d.selected_avatar.startsWith('http') ? d.selected_avatar : `/assets/avatars/${d.selected_avatar}.png`;
         av.innerHTML = `<img src="${avSrc}" class="avatar-mini" alt="avatar" style="pointer-events:none; user-select:none;">`;
         
-        // 👇 آپدیت آواتار بزرگ پروفایل
         const pImg = document.getElementById('profileAvatarImg');
         const pPlace = document.getElementById('profileAvatarPlaceholder');
         if(pImg) { pImg.src = avSrc; pImg.style.display = 'block'; pPlace.style.display = 'none'; }
@@ -276,20 +321,6 @@ function applySettingsToUI(d){
     const sfs=document.getElementById('setFallSpeed'); if(sfs){ sfs.value=d.fall_speed; document.getElementById('fallSpeedVal').innerText=d.fall_speed; }
     const sns=document.getElementById('setNoteSize'); if(sns){ sns.value=d.note_size; document.getElementById('noteSizeVal').innerText=d.note_size.toFixed(2); }
     const ssv=document.getElementById('setSoundVolume'); if(ssv){ ssv.value=d.sound_volume; document.getElementById('soundVolVal').innerText=d.sound_volume.toFixed(2); }
-    const sas = document.getElementById('activeSkinSelect'); 
-    if(sas) { 
-        sas.innerHTML = ''; 
-        const owned = ['default', ...(d.owned_skins || [])]; 
-        owned.forEach(skinId => { 
-            const skin = SKINS[skinId]; 
-            if (!skin) return; 
-            const opt = document.createElement('option'); 
-            opt.value = skinId; 
-            opt.innerText = skin.name; 
-            sas.appendChild(opt); 
-        }); 
-        sas.value = d.active_skin || 'default'; 
-    }
 }
 
 function applyLanguage(){
@@ -312,6 +343,7 @@ function showGame(){
     document.getElementById('auth-section').style.display='none';
     document.getElementById('game-section').style.display='flex';
     fetchUserProfile().then(()=>backToMenu());
+    loadSkinImages();
     loadAudioSamples();
     loadCalibration();
 }
@@ -331,6 +363,14 @@ async function goToFreePlay(){
 
 async function goToFallingGame(){
     await fetchUserProfile();
+    
+    // 👇 نمایش تبلیغ قبل از بازی (اگر VIP نباشد)
+    if (!currentUser?.is_vip) {
+        await new Promise((resolve) => {
+            showAd(resolve);
+        });
+    }
+
     if (needsRecalibration()) {
         const go = confirm('🎯 کالیبراسیون ساز شما قدیمی است. آیا می‌خواهید دوباره کالیبره کنید؟');
         if (go) { startCalibration(); return; }
@@ -346,11 +386,9 @@ async function goToFallingGame(){
     
     showView('falling-view');
     
-    // 👇 رفع باگ: متغیر c به جای hc تعریف شد
     const c=document.getElementById('handpanCanvasFalling');
     if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c,'falling'); }
     
-    // ریست کردن حالت میکروفون اگر باز مانده بود
     isMicMode = false;
     const micBtn = document.getElementById('micBtn');
     if(micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "#ef4444"; micBtn.style.color = "#ef4444"; }
@@ -364,47 +402,91 @@ async function goToFallingGame(){
     startCountdown();
 }
 
-function goToWallet(){ showView('wallet-view'); fetchUserProfile(); loadCoinPackages(); }
+function goToWallet(){ 
+    showView('wallet-view'); 
+    fetchUserProfile(); 
+    loadCoinPackages(); 
+    
+    // 👇 آپدیت وضعیت VIP در کیف پول (با چک کردن وجود المان‌ها)
+    setTimeout(() => {
+        if (!currentUser) return;
+        const statusEl = document.getElementById('vipStatusText');
+        const btnEl = document.getElementById('buyVipBtn');
+        if (statusEl && btnEl) {
+            if (currentUser.is_vip) {
+                const expireDate = new Date(currentUser.vip_expire_date).toLocaleDateString('fa-IR');
+                statusEl.innerText = `✅ شما VIP هستید (تا ${expireDate})`;
+                btnEl.innerText = 'تمدید VIP (۱۰۰۰ سکه)';
+            } else {
+                statusEl.innerText = 'شما کاربر عادی هستید.';
+                btnEl.innerText = 'خرید VIP (۱۰۰۰ سکه)';
+            }
+        }
+    }, 500);
+}
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
-function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); }
+function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); renderSkinGallery(); }
 function onLanguageChange(l){ setLang(l); document.querySelectorAll('[data-i18n]').forEach(el=>{ const tr=t(el.getAttribute('data-i18n')); if(tr) el.innerText=tr; }); }
 function previewFont(f){ applyFont(f); }
 
 // ==========================================================
 // DRAWING
 // ==========================================================
-function drawHandpan(ctx, highlight=null){
-    const W=820,H=500; ctx.clearRect(0,0,W,H);
-    const cx=410,cy=250,r=220;
-    const s = ACTIVE_SKIN || SKINS.default; 
+function drawHandpan(ctx, highlight = null) {
+    const W = 820, H = 500; ctx.clearRect(0, 0, W, H);
+    const cx = 410, cy = 250, r = 220;
+    const currentSkinId = currentUser?.active_skin || 'default';
     const mode = currentUser?.note_display_mode || 'number';
     
-    ctx.shadowColor='#000'; ctx.shadowBlur=25;
-    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
-    ctx.shadowBlur=0; ctx.strokeStyle='#475569'; ctx.lineWidth=3; ctx.stroke();
-    ctx.beginPath(); ctx.arc(cx,cy,r-10,0,Math.PI*2); ctx.fillStyle='#0f172a'; ctx.fill();
-    ctx.strokeStyle='#334155'; ctx.lineWidth=2; ctx.stroke();
-
-    for(const [key,[x,y,bR]] of Object.entries(ACTIVE_LAYOUT)){
-        const r2=getNoteRadius(bR);
-        const col=NOTE_COLORS[key]||"#60a5fa"; 
-        const hl=highlight===key;
+    // 👇 اگر اسکین عکس‌دار انتخاب شده و عکسش لود شده
+    if (currentSkinId !== 'default' && SKIN_IMAGES[currentSkinId]) {
+        const skinImg = SKIN_IMAGES[currentSkinId];
         
-        ctx.beginPath(); ctx.arc(x,y,r2+2,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
-        ctx.beginPath(); ctx.arc(x,y,r2,0,Math.PI*2); 
-        ctx.fillStyle = hl ? '#1e3a8a' : '#1e293b';
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.clip(); 
+        ctx.drawImage(skinImg, cx - r, cy - r, r * 2, r * 2);
+        ctx.restore();
+
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
+    } 
+    // 👇 اگر اسکین پیش‌فرض بود
+    else {
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 25;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#1e293b'; ctx.fill();
+        ctx.shadowBlur = 0; ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r - 10, 0, Math.PI * 2); ctx.fillStyle = '#0f172a'; ctx.fill();
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+        // 👇 رسم نت‌ها (در هر دو حالت)
+    for (const [key, [x, y, bR]] of Object.entries(ACTIVE_LAYOUT)) {
+        const r2 = getNoteRadius(bR), col = NOTE_COLORS[key] || "#60a5fa", hl = highlight === key;
+        
+        // سایه مشکی دور نت (حالا شفاف شده)
+        ctx.beginPath(); ctx.arc(x, y, r2 + 2, 0, Math.PI * 2); 
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; 
         ctx.fill();
         
-        ctx.strokeStyle=hl?'#fff':'#475569'; ctx.lineWidth=hl?3:2; ctx.stroke();
-        ctx.beginPath(); ctx.arc(x,y,r2-5,0,Math.PI*2); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, r2, 0, Math.PI * 2); 
         
-        let displayTxt = key;
-        if (mode === 'name') displayTxt = KEY_TO_NAME[key] || key;
-
-        ctx.fillStyle = hl?'#fff':'#cbd5e1';
-        const fs=r2>=50?32:(r2>=32?24:18);
-        ctx.font=`bold ${fs}px Arial`; 
-        ctx.textAlign='center'; ctx.textBaseline='middle';
+        // 👇 رنگ نت‌ها با شفافیت ۷۰ درصد (آلفا 0.3)
+        if (currentSkinId !== 'default' && SKIN_IMAGES[currentSkinId]) {
+            ctx.fillStyle = hl ? 'rgba(30, 58, 138, 0.3)' : 'rgba(15, 23, 42, 0.3)';
+        } else {
+            ctx.fillStyle = hl ? 'rgba(30, 58, 138, 0.3)' : 'rgba(30, 41, 59, 0.3)';
+        }
+        ctx.fill();
+        
+        ctx.strokeStyle = hl ? '#fff' : '#475569'; ctx.lineWidth = hl ? 3 : 2; ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, r2 - 5, 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke();
+        
+        let displayTxt = (mode === 'name') ? (KEY_TO_NAME[key] || key) : key;
+        ctx.fillStyle = hl ? '#fff' : '#cbd5e1';
+        ctx.font = `bold ${r2 >= 50 ? 32 : (r2 >= 32 ? 24 : 18)}px Arial`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(displayTxt, x, y);
     }
 }
@@ -477,7 +559,6 @@ function animateFalling(time){
     animationId=requestAnimationFrame(animateFalling);
 }
 function executeHit(note, mode, fromMic = false) {
-    // 👇 اگر از میکروفون اومده، به هیچ وجه صدا پخش نکن (حتی اگر میکروفون خاموش شده باشه)
     if (!fromMic && !isMicMode) {
         playSound(note); 
     }
@@ -506,8 +587,6 @@ function checkHit(note){
         fallingNotes[idx].hit = true; 
         fallingNotes.splice(idx, 1); 
         score += 100; hits++;
-        
-        // 👇 فقط امتیاز رو ثبت میکنیم، بدون افکت سنگین روی کل صفحه
         checkEndGame(); 
     }
 }
@@ -624,7 +703,7 @@ async function saveSettings(){
         language: document.getElementById('setLanguage').value, 
         font_family: document.getElementById('setFont').value, 
         note_display_mode: document.getElementById('setNoteDisplay')?.value || 'number', 
-        active_skin: document.getElementById('activeSkinSelect')?.value || 'default',
+        active_skin: currentUser?.active_skin || 'default',
         selected_avatar: currentUser?.selected_avatar || 'default', 
         fall_speed: parseInt(document.getElementById('setFallSpeed').value), 
         note_size: parseFloat(document.getElementById('setNoteSize').value), 
@@ -734,7 +813,6 @@ function needsRecalibration() {
 }
 
 function handleMicNote(noteKey, freq) {
-    // 👇 کدهای مربوط به دیباگ کاملاً حذف شد تا لگ نداشته باشیم
     let mode = null;
     if (document.getElementById('free-view').classList.contains('active')) mode = 'free';
     else if (document.getElementById('falling-view').classList.contains('active')) mode = 'falling';
@@ -754,7 +832,7 @@ async function toggleMicMode() {
         try {
             await window.pitchDetector.start(
                 (noteKey, freq) => handleMicNote(noteKey, freq),
-                () => {} // 👈 حذف کامل آپدیت DOM در هر فریم (باعث لگ می‌شد)
+                () => {} 
             );
             isMicMode = true; 
             btn.innerText = "⏹️ خاموش کردن میکروفون"; 
@@ -923,13 +1001,17 @@ async function diagnoseMic() {
         alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 0.5 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه'}`);
     } catch(e) { alert(`\n❌ getUserMedia خطا: ${e.name}\n${e.message}`); }
 }
+
 // ==========================================================
 // گالری آواتار و DiceBear
 // ==========================================================
-// 👇 اسم فایل‌های SVG که توی پوشه assets/avatars ذخیره کردی رو اینجا بنویس (بدون پسوند .svg)
 const AVATAR_LIST = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 const FREE_AVATARS = ['1', '2', '3', '4'];
-const AVATAR_PRICE = 50;
+const AVATAR_PRICES = {
+    "1": 0, "2": 0, "3": 0, "4": 0,
+    "5": 50, "6": 50, "7": 100, "8": 100,
+    "9": 150, "10": 150, "11": 200, "12": 200
+};
 
 function renderAvatarGallery() {
     const gallery = document.getElementById('avatarGallery');
@@ -939,7 +1021,6 @@ function renderAvatarGallery() {
     const owned = currentUser?.owned_avatars || FREE_AVATARS;
     const highlighted = currentUser?.highlighted_avatars || [];
 
-    // آواتارهای پیش‌فرض (بدون ستاره)
     AVATAR_LIST.forEach(avName => {
         const isFree = FREE_AVATARS.includes(avName);
         const isOwned = owned.includes(avName);
@@ -959,7 +1040,7 @@ function renderAvatarGallery() {
         if (!isFree && !isOwned) {
             img.style.opacity = '0.4';
             const lock = document.createElement('div');
-            lock.innerHTML = `🔒<br><span style="font-size:10px; color:#fbbf24;">${AVATAR_PRICE}</span>`;
+            lock.innerHTML = `🔒<br><span style="font-size:10px; color:#fbbf24;">${AVATAR_PRICES[avName]}</span>`;
             lock.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; font-size:18px; text-shadow:1px 1px 3px #000; pointer-events:none;';
             wrap.appendChild(lock);
         }
@@ -971,7 +1052,6 @@ function renderAvatarGallery() {
         gallery.appendChild(wrap);
     });
 
-    // آواتارهای رندوم (با ستاره و دکمه حذف)
     const randomAvatars = owned.filter(id => id.startsWith('http'));
     randomAvatars.forEach(url => {
         const wrap = document.createElement('div');
@@ -986,44 +1066,36 @@ function renderAvatarGallery() {
         if (currentUser?.selected_avatar === url) img.classList.add('selected');
         wrap.appendChild(img);
         
-        // 👇 ستاره هایلایت
         const isHighlighted = highlighted.includes(url);
         const star = document.createElement('div');
         star.className = 'avatar-star' + (isHighlighted ? ' active' : '');
         star.innerText = isHighlighted ? '⭐' : '☆';
         star.style.pointerEvents = 'auto';
-        star.onclick = (e) => {
-            e.stopPropagation();
-            toggleHighlight(url);
-        };
+        star.onclick = (e) => { e.stopPropagation(); toggleHighlight(url); };
         wrap.appendChild(star);
 
-        // 👇 دکمه حذف
         const delBtn = document.createElement('div');
         delBtn.className = 'avatar-delete';
         delBtn.innerHTML = '✕';
         delBtn.style.pointerEvents = 'auto';
-        delBtn.onclick = (e) => {
-            e.stopPropagation();
-            deleteRandomAvatar(url);
-        };
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteRandomAvatar(url); };
         wrap.appendChild(delBtn);
         
         wrap.onclick = () => selectAvatar(url);
         gallery.appendChild(wrap);
     });
-    
 }
 
 async function promptBuyAvatar(avName) {
-    if (!confirm(`آواتار ${avName} قفل است. آیا ${AVATAR_PRICE} سکه می‌پردازید؟`)) return;
+    const price = AVATAR_PRICES[avName] || 50;
+    if (!confirm(`آواتار ${avName} قفل است. آیا ${price} سکه می‌پردازید؟`)) return;
     
     const token = localStorage.getItem('pm_token');
     try {
         const res = await fetch('/api/users/buy-avatar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ avatar_id: avName, cost: AVATAR_PRICE })
+            body: JSON.stringify({ avatar_id: avName, cost: price })
         });
         
         if (res.ok) {
@@ -1031,7 +1103,6 @@ async function promptBuyAvatar(avName) {
             userTokens = data.new_balance;
             document.getElementById('tokenDisplay').innerText = userTokens;
             
-            // آپدیت حافظه موقت و انتخاب خودکار آواتار جدید
             if (!currentUser.owned_avatars) currentUser.owned_avatars = [...FREE_AVATARS];
             currentUser.owned_avatars.push(avName);
             
@@ -1047,10 +1118,10 @@ async function promptBuyAvatar(avName) {
 async function selectAvatar(avName) {
     if (!currentUser) return;
     
-    const oldAvatar = currentUser.selected_avatar; // ذخیره حالت قبلی برای بازگشت در صورت خطا
-    currentUser.selected_avatar = avName; // آپدیت حافظه موقت
-    renderAvatarGallery(); // آپدیت گالری
-    updateUIFromUser(currentUser); // آپدیت هدر و پروفایل
+    const oldAvatar = currentUser.selected_avatar; 
+    currentUser.selected_avatar = avName; 
+    renderAvatarGallery(); 
+    updateUIFromUser(currentUser); 
     
     const token = localStorage.getItem('pm_token');
     try {
@@ -1064,7 +1135,6 @@ async function selectAvatar(avName) {
             const msg = document.getElementById('avatarMsg');
             if(msg) { msg.style.color='#10b981'; msg.innerText = '✓ آواتار با موفقیت ذخیره شد'; setTimeout(()=>msg.innerText='', 2000); }
         } else {
-            // اگر سرور خطا داد، به آواتار قبلی برگرد
             currentUser.selected_avatar = oldAvatar;
             renderAvatarGallery();
             updateUIFromUser(currentUser);
@@ -1083,7 +1153,6 @@ async function generateRandomAvatar() {
     
     const cost = 20;
     
-    // 👇 چک کردن محدودیت ۵ آواتار رندوم
     const owned = currentUser.owned_avatars || [];
     const highlighted = currentUser.highlighted_avatars || [];
     const randomList = owned.filter(a => a.startsWith('http'));
@@ -1122,9 +1191,7 @@ async function generateRandomAvatar() {
             userTokens = data.new_balance;
             document.getElementById('tokenDisplay').innerText = userTokens;
             
-            // رفرش کامل پروفایل برای گرفتن لیست آپدیت‌شده آواتارها
             await fetchUserProfile();
-            
             await selectAvatar(dicebearUrl);
             
             const msg = document.getElementById('avatarMsg');
@@ -1142,7 +1209,7 @@ function toggleAvatarGallery() {
     if (wrap.style.display === 'none') {
         wrap.style.display = 'block';
         chevron.innerText = '▲';
-        renderAvatarGallery(); // آپدیت گالری موقع باز شدن
+        renderAvatarGallery(); 
     } else {
         wrap.style.display = 'none';
         chevron.innerText = '▼';
@@ -1161,7 +1228,7 @@ async function toggleHighlight(avatarUrl) {
         currentUser.highlighted_avatars = [...highlighted, avatarUrl];
     }
     
-    renderAvatarGallery(); // آپدیت لحظه‌ای
+    renderAvatarGallery(); 
     
     const token = localStorage.getItem('pm_token');
     try {
@@ -1177,6 +1244,7 @@ async function toggleHighlight(avatarUrl) {
         }
     } catch (e) { console.error(e); }
 }
+
 async function deleteRandomAvatar(avatarUrl) {
     if (!currentUser) return;
     
@@ -1196,7 +1264,6 @@ async function deleteRandomAvatar(avatarUrl) {
         });
         
         if (res.ok) {
-            // رفرش کامل پروفایل برای آپدیت لیست‌ها
             await fetchUserProfile();
             renderAvatarGallery();
             
@@ -1213,6 +1280,179 @@ async function deleteRandomAvatar(avatarUrl) {
     } catch (e) { 
         alert('خطا در ارتباط با سرور'); 
     }
+}
+
+// ==========================================================
+// VIP & Ads System
+// ==========================================================
+let adInterval = null;
+
+async function buyVip() {
+    if (!confirm('آیا برای خرید VIP (۳۰ روزه) ۱۰۰۰ سکه می‌پردازید؟')) return;
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/buy-vip', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            userTokens = data.new_balance;
+            document.getElementById('tokenDisplay').innerText = userTokens;
+            
+            await fetchUserProfile(); 
+            goToWallet(); 
+            
+            alert('👑 تبریک! شما به مدت ۳۰ روز عضو VIP شدید.');
+        } else {
+            const err = await res.json();
+            alert(err.detail || 'خطا در خرید VIP');
+        }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
+}
+
+function showAd(onComplete) {
+    if (currentUser?.is_vip) {
+        onComplete(); 
+        return;
+    }
+    
+    const overlay = document.getElementById('ad-overlay');
+    const timerEl = document.getElementById('ad-timer');
+    const btnEl = document.getElementById('ad-close-btn');
+    
+    if (!overlay || !timerEl || !btnEl) { 
+        onComplete(); // اگر المان‌های تبلیغات در HTML نبود، مستقیم برو بازی
+        return; 
+    }
+    
+    overlay.style.display = 'flex';
+    let timeLeft = 5;
+    timerEl.innerText = timeLeft;
+    btnEl.classList.remove('ready');
+    btnEl.innerText = 'لطفاً صبر کنید...';
+    btnEl.disabled = true;
+    
+    clearInterval(adInterval);
+    adInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(adInterval);
+            timerEl.innerText = '✓';
+            btnEl.classList.add('ready');
+            btnEl.innerText = 'بستن تبلیغ و ادامه';
+            btnEl.disabled = false;
+            btnEl.onclick = () => {
+                overlay.style.display = 'none';
+                onComplete();
+            };
+        }
+    }, 1000);
+}
+
+// ==========================================================
+// گالری اسکین‌ها
+// ==========================================================
+const SKIN_PRICES = {
+    "wood": 150, "silver": 200, "gold": 300, "rainbow": 500,
+    "marble": 400, "ice_blue": 350, "bronze": 250, "turquoise": 600,
+    "dark": 800, "royal": 1000
+};
+
+function renderSkinGallery() {
+    const gallery = document.getElementById('skinGallery');
+    if (!gallery) return;
+    gallery.innerHTML = '';
+    
+    const owned = currentUser?.owned_skins || [];
+
+    Object.keys(SKINS).forEach(skinId => {
+        const skin = SKINS[skinId];
+        const isDefault = skinId === 'default';
+        const isOwned = owned.includes(skinId) || isDefault;
+        
+        const wrap = document.createElement('div');
+        wrap.style.position = 'relative';
+        wrap.style.cursor = 'pointer';
+        
+        const img = document.createElement('img');
+        if (isDefault) {
+            img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="35" fill="%231e293b" stroke="%23475569" stroke-width="3"/><circle cx="35" cy="35" r="8" fill="%230f172a"/></svg>';
+        } else {
+            img.src = `/assets/skins/${skinId}.png`;
+        }
+        img.className = 'skin-option';
+        img.style.pointerEvents = 'none';
+        
+        if (currentUser?.active_skin === skinId) img.classList.add('selected');
+        wrap.appendChild(img);
+        
+        if (!isOwned) {
+            img.classList.add('locked');
+            const priceTag = SKIN_PRICES[skinId] || 0;
+            const badge = document.createElement('div');
+            badge.className = 'skin-price-badge';
+            badge.innerHTML = `🔒<br>${priceTag}`;
+            wrap.appendChild(badge);
+        }
+        
+        wrap.onclick = () => {
+            if (isOwned) {
+                selectSkin(skinId);
+            } else {
+                promptBuySkin(skinId);
+            }
+        };
+        gallery.appendChild(wrap);
+    });
+}
+
+async function selectSkin(skinId) {
+    if (!currentUser) return;
+    currentUser.active_skin = skinId;
+    renderSkinGallery();
+    updateUIFromUser(currentUser); 
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        await fetch('/api/users/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ active_skin: skinId })
+        });
+    } catch (e) { console.error(e); }
+}
+
+async function promptBuySkin(skinId) {
+    const price = SKIN_PRICES[skinId] || 0;
+    if (!confirm(`آیا این اسکین را به قیمت ${price} سکه می‌خرید؟`)) return;
+    
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/buy-skin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ skin_id: skinId })
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            userTokens = data.new_balance;
+            document.getElementById('tokenDisplay').innerText = userTokens;
+            
+            if (!currentUser.owned_skins) currentUser.owned_skins = [];
+            currentUser.owned_skins.push(skinId);
+            
+            await selectSkin(skinId);
+            alert('✅ خرید موفق! اسکین شما تغییر کرد.');
+        } else {
+            const err = await res.json();
+            alert(err.detail || 'خطا در خرید');
+        }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
 }
 
 // شروع

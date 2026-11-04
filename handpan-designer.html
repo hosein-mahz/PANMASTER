@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 ابزار طراحی اسکین PanMaster</title>
+    <style>
+        * { box-sizing: border-box; font-family: Tahoma, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; border-radius: 20px; padding: 20px; display: flex; gap: 20px; border: 1px solid #334155; max-width: 1000px; width: 100%; flex-wrap: wrap; }
+        
+        .canvas-area { flex: 1; min-width: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .preview-box {
+            width: 500px; height: 500px; background: #0f172a; border: 2px dashed #475569;
+            border-radius: 10px; position: relative; overflow: hidden; cursor: grab;
+            display: flex; justify-content: center; align-items: center;
+            background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), linear-gradient(-45deg, #1e293b 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1e293b 75%), linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .preview-box:active { cursor: grabbing; }
+        canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+
+        .controls { width: 350px; display: flex; flex-direction: column; gap: 15px; }
+        .controls h2 { color: #38bdf8; font-size: 18px; margin: 0 0 10px 0; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        
+        .control-group { display: flex; flex-direction: column; gap: 8px; background: #0f172a; padding: 15px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 10px; }
+        .control-group label { font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; }
+        
+        .btn { padding: 10px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 14px; width: 100%; margin-bottom: 5px; }
+        .btn:hover { background: #475569; }
+        .btn-primary { background: linear-gradient(135deg, #10b981, #059669); font-weight: bold; padding: 15px; margin-top: 10px;}
+        
+        input[type="range"] { width: 100%; accent-color: #38bdf8; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="canvas-area">
+            <div class="preview-box" id="previewBox">
+                <canvas id="mainCanvas" width="500" height="500"></canvas>
+            </div>
+            <p style="color:#94a3b8; font-size:12px; margin-top:10px;">با موس یا انگشت، هنگ‌درام را بگیر و جابه‌جا کن.</p>
+        </div>
+
+        <div class="controls">
+            <h2>⚙️ تنظیمات لایه‌ها</h2>
+            
+            <div class="control-group">
+                <label>🖼️ لایه پس‌زمینه (اختیاری)</label>
+                <label for="bgFile" class="btn" style="text-align:center; background:#475569; cursor:pointer;">آپلود پس‌زمینه</label>
+                <input type="file" id="bgFile" accept="image/*">
+                <button class="btn" onclick="clearLayer('bg')" style="background:#ef4444; font-size:12px;">حذف پس‌زمینه</button>
+            </div>
+
+            <div class="control-group">
+                <label>🎵 لایه هنگ‌درام (اصلی)</label>
+                <label for="fgFile" class="btn" style="text-align:center; background:#38bdf8; color:#0f172a; font-weight:bold; cursor:pointer;">آپلود هنگ‌درام</label>
+                <input type="file" id="fgFile" accept="image/*">
+                
+                <label style="margin-top:10px;">زاویه چرخش <span id="rotVal">0</span>°</label>
+                <input type="range" id="rotationSlider" min="-180" max="180" value="0" oninput="drawLayers()">
+                
+                <label style="margin-top:10px;">بزرگنمایی <span id="zoomVal">1.0</span>x</label>
+                <input type="range" id="zoomSlider" min="0.1" max="2" step="0.05" value="1" oninput="drawLayers()">
+            </div>
+
+            <button class="btn btn-primary" onclick="exportMerged()">
+                💾 دانلود عکس نهایی (Merge شده)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const previewBox = document.getElementById('previewBox');
+        const W = 500, H = 500;
+
+        let bgImg = null;
+        let fgImg = null;
+        
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0, translateY = 0;
+
+        // خواندن فایل‌ها
+        document.getElementById('bgFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                bgImg = new Image();
+                bgImg.onload = drawLayers;
+                bgImg.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('fgFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                fgImg = new Image();
+                fgImg.onload = () => {
+                    translateX = 0; translateY = 0; // ریست موقعیت
+                    drawLayers();
+                };
+                fgImg.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function clearLayer(type) {
+            if (type === 'bg') bgImg = null;
+            if (type === 'fg') { fgImg = null; translateX = 0; translateY = 0; }
+            drawLayers();
+        }
+
+        // 🖱️ قابلیت درگ کردن (جابه‌جایی)
+        previewBox.addEventListener('mousedown', (e) => {
+            if (!fgImg) return;
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            drawLayers();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        // 📱 درگ در موبایل
+        previewBox.addEventListener('touchstart', (e) => {
+            if (!fgImg) return;
+            isDragging = true;
+            startX = e.touches[0].clientX - translateX;
+            startY = e.touches[0].clientY - translateY;
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            translateX = e.touches[0].clientX - startX;
+            translateY = e.touches[0].clientY - startY;
+            drawLayers();
+        }, { passive: false });
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        function drawLayers() {
+            ctx.clearRect(0, 0, W, H);
+
+            const rot = parseInt(document.getElementById('rotationSlider').value) * Math.PI / 180;
+            const zoom = parseFloat(document.getElementById('zoomSlider').value);
+            
+            document.getElementById('rotVal').innerText = document.getElementById('rotationSlider').value;
+            document.getElementById('zoomVal').innerText = zoom.toFixed(2);
+
+            // 👇 ۱. کشیدن و چرخش پس‌زمینه
+            if (bgImg) {
+                ctx.save();
+                ctx.translate(W / 2, H / 2);
+                ctx.rotate(rot);
+                ctx.scale(zoom, zoom);
+                
+                // اگر بخوای پس‌زمینه کل کادر رو پر کنه
+                const aspect = bgImg.width / bgImg.height;
+                let dw = W;
+                let dh = H;
+                if (aspect > 1) { dh = W / aspect; } else { dw = H * aspect; }
+                
+                ctx.drawImage(bgImg, -dw/2, -dh/2, dw, dh);
+                ctx.restore();
+            }
+
+            // 👇 ۲. کشیدن هنگ‌درام (بدون چرخش)
+            if (fgImg) {
+                const aspect = fgImg.width / fgImg.height;
+                let dw = W * 0.8;
+                let dh = dw / aspect;
+                if (dh > H * 0.8) { dh = H * 0.8; dw = dh * aspect; }
+
+                ctx.drawImage(fgImg, (W - dw) / 2 + translateX, (H - dh) / 2 + translateY, dw, dh);
+            }
+        }
+        function exportMerged() {
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `handpan_design_${Date.now()}.png`;
+            a.click();
+        }
+        
+        drawLayers();
+    </script>
+</body>
+</html>

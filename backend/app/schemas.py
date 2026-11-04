@@ -129,3 +129,6 @@ class AvatarPurchase(BaseModel):
 
 class HighlightToggle(BaseModel):
     avatar_url: str
+
+class SkinPurchase(BaseModel):
+    skin_id: str

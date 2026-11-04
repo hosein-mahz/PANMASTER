@@ -35,6 +35,27 @@ COIN_PACKAGES = {
     "ultimate": {"coins": 3000, "price": "$19.99", "name": "بسته نهایی"},
 }
 
+# ===== قیمت‌گذاری آواتارها و اسکین‌ها =====
+# قیمت آواتارها (آواتارهای 1 تا 4 رایگان هستند)
+AVATAR_PRICES = {
+    "1": 0, "2": 0, "3": 0, "4": 0,     # رایگان
+    "5": 50, "6": 50, "7": 100, "8": 100, # متوسط
+    "9": 150, "10": 150, "11": 200, "12": 200 # گران‌قیمت
+}
+
+# قیمت اسکین‌ها (هر اسکینی که اینجا نباشه، یعنی از طریق لول‌آپ به دست میاد)
+SKIN_PRICES = {
+    "wood": 150,
+    "silver": 200,
+    "gold": 300,
+    "rainbow": 500,
+    "marble": 400,
+    "ice_blue": 350,
+    "bronze": 250,
+    "turquoise": 600,
+    "dark": 800,
+    "royal": 1000
+}
 
 # ===== توابع کمکی =====
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -402,22 +423,16 @@ def buy_avatar(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    # 👇 ۱. تعیین قیمت توسط بک‌اند (نه کلاینت)
-    if data.avatar_id == "random":
-        cost = 20
-    elif data.avatar_id in ["1", "2", "3", "4"]: # آواتارهای رایگان
-        cost = 0
-    else:
-        cost = 50 # آواتارهای پولی
+    # خواندن قیمت از دیکشنری
+    cost = AVATAR_PRICES.get(data.avatar_id, 50) # اگر پیدا نشد، پیش‌فرض 50
+    if data.avatar_id == "random": cost = 20
 
-    # ۲. بررسی موجودی
     if current_user.coins < cost:
         raise HTTPException(status_code=400, detail="سکه کافی نیست")
 
     avatars = json.loads(current_user.owned_avatars or '["1", "2", "3", "4"]')
     highlighted = json.loads(current_user.highlighted_avatars or "[]")
 
-    # ۳. منطق محدودیت ۵ آواتار رندوم
     if data.avatar_id.startswith("http"):
         random_list = [a for a in avatars if a.startswith("http")]
         if len(random_list) >= 5:
@@ -484,3 +499,26 @@ def delete_avatar(
 
     db.commit()
     return {"message": "آواتار با موفقیت حذف شد"}
+
+# ===== Buy Skin =====
+@router.post("/buy-skin", response_model=schemas.TokenBalance)
+def buy_skin(
+    data: schemas.SkinPurchase,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    cost = SKIN_PRICES.get(data.skin_id)
+    if cost is None:
+        raise HTTPException(status_code=400, detail="این اسکین قابل خرید نیست")
+
+    if current_user.coins < cost:
+        raise HTTPException(status_code=400, detail="سکه کافی نیست")
+
+    skins = json.loads(current_user.owned_skins or "[]")
+    if data.skin_id not in skins:
+        skins.append(data.skin_id)
+        current_user.owned_skins = json.dumps(skins)
+
+    current_user.coins -= cost
+    db.commit()
+    return schemas.TokenBalance(new_balance=current_user.coins)

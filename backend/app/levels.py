@@ -75,7 +75,7 @@ LEVEL_REWARDS = {
     # --- ۲ تا ۱۰: سکه ---
     2:  {"type": "coins", "amount": 10,   "name": "10 سکه"},
     3:  {"type": "coins", "amount": 30,   "name": "30 سکه"},
-    4:  {"type": "handpan_skin", "id": "wood",      "name": "هنگ‌درام چوبی"},
+    4:  {"type": "handpan_skin", "id": "wood",      "name": "هنگ‌درام جوبی"},
     5:  {"type": "coins", "amount": 50,  "name": "50 سکه"},
     6:  {"type": "coins", "amount": 70,  "name": "70 سکه"},
     7:  {"type": "handpan_skin", "id": "silver",    "name": "هنگ‌درام نقره‌ای"},

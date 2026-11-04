@@ -95,6 +95,12 @@
         .avatar-option:hover, .avatar-option.selected {border-color: var(--primary);transform: scale(1.05);}
         .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 10px; margin-bottom: 15px;}
 
+        .skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 10px; }
+        .skin-option { width: 70px; height: 70px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover; background: #0f172a; }
+        .skin-option:hover, .skin-option.selected { border-color: var(--primary); transform: scale(1.05); }
+        .skin-option.locked { opacity: 0.4; }
+        .skin-price-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; font-size: 12px; color: #fbbf24; text-shadow: 1px 1px 3px #000; pointer-events: none; font-weight: bold; }
+
     </style>
 </head>
 <body>
@@ -276,9 +282,9 @@
                         <label data-i18n="settings.note_display">حالت نمایش نت‌ها</label>
                         <select id="setNoteDisplay"><option value="number">عدد</option><option value="name">حروف</option></select>
                     </div>
-                    <div class="setting-row">
+                    <div class="setting-row" style="text-align: right;">
                         <label data-i18n="settings.active_skin">طرح هنگ‌درام (اسکین)</label>
-                        <select id="activeSkinSelect"></select>
+                        <div id="skinGallery" class="skin-grid"></div>
                     </div>
                     <div class="setting-row">
                         <label data-i18n="settings.language">زبان</label>
@@ -313,6 +319,6 @@
     </div>
         
     <script src="/js/pitch-detector.js?v=21"></script>
-    <script src="/js/game-engine.js?v=84"></script>
+    <script src="/js/game-engine.js?v=87"></script>
 </body>
 </html>
