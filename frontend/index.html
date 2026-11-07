@@ -43,7 +43,7 @@
         .back-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .back-btn:hover { border-color: var(--primary); color: var(--primary); }
         .top-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10; }
-        .end-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .end-btn { background: var(--danger-color, #ef4444); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
         #countdown-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
         #countdown-text { font-size: 120px; font-weight: 900; color: var(--primary); text-shadow: 0 0 40px rgba(56, 189, 248, 0.6); animation: pulse 1s infinite; }
@@ -57,18 +57,18 @@
         
         .wallet-balance { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 15px 0; }
         .wallet-balance img { width: 42px; height: 42px; }
-        .wallet-balance span { font-size: 38px; font-weight: 900; color: #fbbf24; }
+        .wallet-balance span { font-size: 38px; font-weight: 900; color: var(--coin-text); }
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
         .pkg-card { background: var(--bg-main); border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; text-align: center; transition: 0.2s; }
-        .pkg-card:hover { border-color: #fbbf24; transform: translateY(-2px); }
-        .pkg-coins { font-size: 22px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.pkg-card:hover { border-color: var(--coin-text); transform: translateY(-2px); }
+.pkg-coins { font-size: 22px; font-weight: 900; color: var(--coin-text); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .pkg-coins img { width: 24px; height: 24px; }
 
         .avatar-big-wrap { display: inline-block; margin-bottom: 12px; }
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--bg-main); }
         .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
         .avatar-star {position: absolute;top: -6px;right: -6px;width: 22px;height: 22px;background: var(--bg-card);border: 1px solid var(--border);border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;cursor: pointer;z-index: 5;transition: 0.2s;}
-        .avatar-star.active {background: #fbbf24;border-color: #fbbf24;color: #0f172a;transform: scale(1.1);}
+        .avatar-star.active {background: var(--coin-text);border-color: var(--coin-text);color: var(--bg-card);transform: scale(1.1);}
         .avatar-delete {position: absolute;top: -6px;left: -6px;width: 22px;height: 22px;background: rgba(239, 68, 68, 0.9);border: 1px solid #b91c1c;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;color: white;cursor: pointer;z-index: 5;transition: 0.2s;}
         .avatar-delete:hover {transform: scale(1.1);background: #ef4444;}
         

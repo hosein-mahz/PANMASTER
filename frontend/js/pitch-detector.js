@@ -13,6 +13,9 @@ class PitchDetector {
         this.cooldownMs = 500;
         this.threshold = 0.15;
         this.calibration = {};
+        this.minRms = 0.001;
+        this.gainValue = 5.0;
+        this.fftSize = 2048;
 
         this.NOTE_FREQS = {
             "D": 293.66,
@@ -21,8 +24,15 @@ class PitchDetector {
         };
     }
 
+    setConfig(config) {
+        if (config.cooldownMs !== undefined) this.cooldownMs = config.cooldownMs;
+        if (config.threshold !== undefined) this.threshold = config.threshold;
+        if (config.minRms !== undefined) this.minRms = config.minRms;
+        if (config.gainValue !== undefined) this.gainValue = config.gainValue;
+        if (config.fftSize !== undefined) this.fftSize = config.fftSize;
+    }
+
     async start(onNoteDetected, onRawPitch) {
-        // 👇 هر بار کالبک‌ها رو تازه تنظیم کن، حتی اگه قبلاً استارت شده بود
         this.onNoteDetected = onNoteDetected;
         this.onRawPitch = onRawPitch;
 
@@ -51,15 +61,13 @@ class PitchDetector {
             }
 
             this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 2048;
+            this.analyser.fftSize = this.fftSize;
             this.analyser.smoothingTimeConstant = 0;
 
             const source = this.audioContext.createMediaStreamSource(this.mediaStream);
-            
-            // 👇 تقویت صدای میکروفون تا ۵ برابر (برای گوشی‌هایی که میکروفون ضعیفی دارن)
             const gainNode = this.audioContext.createGain();
-            gainNode.gain.value = 5.0;
-            
+            gainNode.gain.value = this.gainValue;
+
             source.connect(gainNode);
             gainNode.connect(this.analyser);
 
@@ -180,9 +188,11 @@ class PitchDetector {
 
     _findClosestNote(frequency) {
         // اول چک کردن کالیبراسیون
-        for (const [note, range] of Object.entries(this.calibration || {})) {
-            if (range.min && range.max && frequency >= range.min && frequency <= range.max) {
-                return note;
+        if (this.calibration && Object.keys(this.calibration).length > 0) {
+            for (const [note, range] of Object.entries(this.calibration)) {
+                if (range.min && range.max && frequency >= range.min && frequency <= range.max) {
+                    return note;
+                }
             }
         }
 

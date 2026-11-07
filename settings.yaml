@@ -1,0 +1,10 @@
+llm-pi-ai:
+  providers:
+    groq:
+      displayName: Groq
+      apiKeyEnv: GROQ_API_KEY
+      api: openai-completions
+      baseURL: https://api.groq.com/openai/v1
+      models:
+        - id: llama-3.3-70b-versatile
+          name: Llama 3.3

@@ -35,7 +35,6 @@ class UserOut(BaseModel):
     is_vip: bool = False                
     vip_expire_date: Optional[datetime] = None
     theme: str = "dark"
-    theme: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

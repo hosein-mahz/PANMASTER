@@ -1,6 +1,15 @@
-const savedTheme = localStorage.getItem('pm_theme');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-console.log("✅ Game Engine Loaded!");
+function getThemeColor(colorKey, fallback) {
+    const root = getComputedStyle(document.documentElement);
+    const varName = `--${colorKey.toLowerCase()}`;
+    const value = root.getPropertyValue(varName).trim();
+    return value || fallback;
+}
+
+function getCSSVar(varName, fallback) {
+    const root = getComputedStyle(document.documentElement);
+    const value = root.getPropertyValue(varName).trim();
+    return value || fallback;
+}
 
 // ==========================================================
 // I18N (ترجمه‌ها)
@@ -266,20 +275,44 @@ async function register(){
     const username=document.getElementById('regUser').value.trim();
     const email=document.getElementById('regEmail').value.trim();
     const password=document.getElementById('regPass').value;
-    if(!username || !email || !password) { document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
-    if(!email.includes('@') || !email.includes('.')) { document.getElementById('authError').innerText = 'فرمت ایمیل صحیح نیست.'; return; }
+    const errorEl = document.getElementById('authError');
+    
+    errorEl.innerText = ''; // پاک کردن خطاهای قبلی
+
+    if(!username || !email || !password) { errorEl.innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
+    if(!email.includes('@') || !email.includes('.')) { errorEl.innerText = 'فرمت ایمیل صحیح نیست.'; return; }
+    
     try{
         const res=await fetch('/api/users/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
+        
         if(res.ok){ 
-            alert('✅ ثبت‌نام موفق!'); 
-            toggleAuth('login'); 
-            document.getElementById('authError').innerText = ''; 
+            // 👇 ورود خودکار بعد از ثبت‌نام موفق (بدون استفاده از alert)
+            const loginFd = new URLSearchParams();
+            loginFd.append('username', username);
+            loginFd.append('password', password);
+            
+            const loginRes = await fetch('/api/users/login', {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}, 
+                body: loginFd
+            });
+            
+            if (loginRes.ok) {
+                const loginData = await loginRes.json();
+                localStorage.setItem('pm_token', loginData.access_token);
+                showGame(); // مستقیم میره به بازی
+            } else {
+                errorEl.innerText = 'ثبت‌نام انجام شد اما ورود خودکار ناموفق بود. لطفاً دستی وارد شوید.';
+                toggleAuth('login');
+            }
         }
         else { 
             const err=await res.json(); 
-            document.getElementById('authError').innerText = err.detail || 'خطا'; 
+            errorEl.innerText = err.detail || 'خطا در ثبت‌نام'; 
         }
-    }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
+    }catch(e){ 
+        errorEl.innerText = t('msg.error_server'); 
+    }
 }
 function logout(){
     localStorage.removeItem('pm_token'); currentUser=null;
@@ -425,7 +458,7 @@ async function goToFallingGame(){
     
     isMicMode = false;
     const micBtn = document.getElementById('micBtn');
-    if(micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "#ef4444"; micBtn.style.color = "#ef4444"; }
+    if(micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "var(--danger-color)"; micBtn.style.color = "var(--danger-color)"; }
     const fv = document.getElementById('falling-view');
     if (fv) fv.classList.remove('mic-active');
     HIT_Y = 220;
@@ -489,15 +522,15 @@ function drawHandpan(ctx, highlight = null) {
         ctx.restore();
 
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.strokeStyle = getCSSVar('--border', '#475569'); ctx.lineWidth = 3; ctx.stroke();
     } 
     // 👇 اگر اسکین پیش‌فرض بود
     else {
         ctx.shadowColor = '#000'; ctx.shadowBlur = 25;
-        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#1e293b'; ctx.fill();
-        ctx.shadowBlur = 0; ctx.strokeStyle = '#475569'; ctx.lineWidth = 3; ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, r - 10, 0, Math.PI * 2); ctx.fillStyle = '#0f172a'; ctx.fill();
-        ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = getCSSVar('--bg-card', '#1e293b'); ctx.fill();
+        ctx.shadowBlur = 0; ctx.strokeStyle = getCSSVar('--border', '#475569'); ctx.lineWidth = 3; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r - 10, 0, Math.PI * 2); ctx.fillStyle = getCSSVar('--bg-main', '#0f172a'); ctx.fill();
+        ctx.strokeStyle = getCSSVar('--border', '#334155'); ctx.lineWidth = 2; ctx.stroke();
     }
 
         // 👇 رسم نت‌ها (در هر دو حالت)
@@ -573,7 +606,7 @@ function animateFalling(time){
     
     ctxFall.clearRect(0, 0, 820, isMicMode ? 500 : 280);
     ctxFall.beginPath(); ctxFall.moveTo(0,HIT_Y); ctxFall.lineTo(820,HIT_Y);
-    ctxFall.strokeStyle='#38bdf8'; ctxFall.lineWidth=4; ctxFall.stroke();
+    ctxFall.strokeStyle=getCSSVar('--primary', '#38bdf8'); ctxFall.lineWidth=4; ctxFall.stroke();
     
     const sm=currentUser?.note_size||1.0; const nr=25*sm;
     const mode = currentUser?.note_display_mode || 'number';
@@ -685,16 +718,16 @@ async function endFallingGame(){
 
 function renderResultToken(r){
     const isPenalty = r.earned < 0;
-    const color = isPenalty ? '#ef4444' : (r.earned > 0 ? '#38bdf8' : '#94a3b8');
+    const color = isPenalty ? getCSSVar('--danger-color', '#ef4444') : (r.earned > 0 ? getCSSVar('--primary', '#38bdf8') : getCSSVar('--text-muted', '#94a3b8'));
     const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
     const sign = r.earned > 0 ? '+' : '';
-    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:#94a3b8;margin-top:5px;display:block;">${t(r.key)}</span>`;
+    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:var(--text-muted);margin-top:5px;display:block;">${t(r.key)}</span>`;
 }
 
 function showRewardModal(rewards){
     const m=document.getElementById('reward-modal'); const msg=document.getElementById('rewardMessage'); const items=document.getElementById('rewardItems');
     const last=rewards[rewards.length-1].level;
-    msg.innerHTML=`${t('reward.message_1')} <span style="color:#fbbf24;font-weight:900;">${last}</span> ${t('reward.message_2')}`;
+    msg.innerHTML=`${t('reward.message_1')} <span style="color:var(--coin-text);font-weight:900;">${last}</span> ${t('reward.message_2')}`;
     items.innerHTML='';
     rewards.forEach(r=>{ const d=document.createElement('div'); d.className='reward-item'; d.innerText=`${t('reward.level_prefix')} ${r.level}: ${r.name}`; items.appendChild(d); });
     m.classList.add('show');
@@ -730,20 +763,20 @@ async function saveProfileInfo(){
     const msg=document.getElementById('profileMsg'); msg.innerText='';
     try{
         const res=await fetch('/api/users/profile',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({username:u,email:em})});
-        if(res.ok){ const d=await res.json(); if(d.access_token) localStorage.setItem('pm_token',d.access_token); msg.style.color='#10b981'; msg.innerText=d.access_token?t('msg.saved_token'):t('msg.saved'); await fetchUserProfile(); }
-        else { const e=await res.json(); msg.style.color='#ef4444'; msg.innerText=e.detail||t('msg.error_generic'); }
-    }catch(e){ msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
+        if(res.ok){ const d=await res.json(); if(d.access_token) localStorage.setItem('pm_token',d.access_token); msg.style.color='var(--success-color)'; msg.innerText=d.access_token?t('msg.saved_token'):t('msg.saved'); await fetchUserProfile(); }
+        else { const e=await res.json(); msg.style.color='var(--danger-color)'; msg.innerText=e.detail||t('msg.error_generic'); }
+    }catch(e){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.error_server'); }
 }
 async function changePassword(){
     const token=localStorage.getItem('pm_token');
     const o=document.getElementById('setOldPass').value; const n=document.getElementById('setNewPass').value;
     const msg=document.getElementById('passwordMsg'); msg.innerText='';
-    if(n.length<6){ msg.style.color='#ef4444'; msg.innerText=t('msg.pass_short'); return; }
+    if(n.length<6){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.pass_short'); return; }
     try{
         const res=await fetch('/api/users/password',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({current_password:o,new_password:n})});
-        if(res.ok){ msg.style.color='#10b981'; msg.innerText=t('msg.pass_changed'); document.getElementById('setOldPass').value=''; document.getElementById('setNewPass').value=''; }
-        else { const e=await res.json(); msg.style.color='#ef4444'; msg.innerText=e.detail||t('msg.error_generic'); }
-    }catch(e){ msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
+        if(res.ok){ msg.style.color='var(--success-color)'; msg.innerText=t('msg.pass_changed'); document.getElementById('setOldPass').value=''; document.getElementById('setNewPass').value=''; }
+        else { const e=await res.json(); msg.style.color='var(--danger-color)'; msg.innerText=e.detail||t('msg.error_generic'); }
+    }catch(e){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.error_server'); }
 }
 async function saveSettings(){
     const token = localStorage.getItem('pm_token');
@@ -771,7 +804,7 @@ async function saveSettings(){
         });
         
         if(res.ok){ 
-            if (msg) { msg.style.color='#10b981'; msg.innerText=t('msg.saved'); }
+            if (msg) { msg.style.color='var(--success-color)'; msg.innerText=t('msg.saved'); }
             
             // آپدیت آبجکت کاربر در حافظه
             if (currentUser) Object.assign(currentUser, payload);
@@ -786,10 +819,10 @@ async function saveSettings(){
         }
         else { 
             const e = await res.json(); 
-            if (msg) { msg.style.color='#ef4444'; msg.innerText = e.detail || t('msg.error_generic'); }
+            if (msg) { msg.style.color='var(--danger-color)'; msg.innerText = e.detail || t('msg.error_generic'); }
         }
     } catch(e) { 
-        if (msg) { msg.style.color='#ef4444'; msg.innerText=t('msg.error_server'); }
+        if (msg) { msg.style.color='var(--danger-color)'; msg.innerText=t('msg.error_server'); }
         console.error("Save settings error:", e);
     }
 }
@@ -844,11 +877,11 @@ function renderHistoryList(entries) {
         const date = new Date(e.played_at);
         const dateStr = date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
         const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-        const accuracyColor = e.accuracy >= 80 ? '#10b981' : (e.accuracy >= 50 ? '#fbbf24' : '#ef4444');
+        const accuracyColor = e.accuracy >= 80 ? getCSSVar('--success-color', '#10b981') : (e.accuracy >= 50 ? getCSSVar('--warning-color', '#fbbf24') : getCSSVar('--danger-color', '#ef4444'));
         const modeIcon = e.mode === 'falling' ? '🌧️' : '🎵';
         const item = document.createElement('div');
-        item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172a; border-radius:8px; border:1px solid #334155; font-size:13px;';
-        item.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span>${modeIcon}</span><span style="color:#94a3b8; font-size:11px;">${dateStr} · ${timeStr}</span></div><div style="display:flex; gap:12px;"><span style="color:#cbd5e1;">${e.score}</span><span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span></div>`;
+        item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-main); border-radius:8px; border:1px solid var(--border); font-size:13px;';
+        item.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span>${modeIcon}</span><span style="color:var(--text-muted); font-size:11px;">${dateStr} · ${timeStr}</span></div><div style="display:flex; gap:12px;"><span style="color:var(--text-main);">${e.score}</span><span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span></div>`;
         list.appendChild(item);
     });
 }
@@ -908,14 +941,23 @@ async function toggleMicMode() {
     
     if (!isMicMode) {
         try {
+            if (window.pitchDetector.setConfig) {
+                window.pitchDetector.setConfig({
+                    cooldownMs: 500,
+                    threshold: 0.15,
+                    minRms: 0.001,
+                    gainValue: 5.0,
+                    fftSize: 2048
+                });
+            }
             await window.pitchDetector.start(
                 (noteKey, freq) => handleMicNote(noteKey, freq),
                 () => {} 
             );
             isMicMode = true; 
             btn.innerText = t('menu.mic_on');
-            btn.style.borderColor = "#10b981"; 
-            btn.style.color = "#10b981";
+            btn.style.borderColor = "var(--success-color)"; 
+            btn.style.color = "var(--success-color)";
             
             if (fv) fv.classList.add('mic-active'); 
             if (hc) hc.style.display = 'none'; 
@@ -928,8 +970,8 @@ async function toggleMicMode() {
         window.pitchDetector.stop(); 
         isMicMode = false; 
         btn.innerText = t('menu.mic_mode'); 
-        btn.style.borderColor = "#ef4444"; 
-        btn.style.color = "#ef4444";
+        btn.style.borderColor = "var(--danger-color)"; 
+        btn.style.color = "var(--danger-color)";
         
         if (fv) fv.classList.remove('mic-active'); 
         if (hc) hc.style.display = 'block'; 
@@ -945,6 +987,15 @@ async function startCalibration() {
     showView('calibration-view'); updateCalibrationUI();
     try { window.pitchDetector.stop(); } catch(e) {}
     await new Promise(r => setTimeout(r, 300));
+    if (window.pitchDetector.setConfig) {
+        window.pitchDetector.setConfig({
+            cooldownMs: 2000,
+            threshold: 0.15,
+            minRms: 0.002,
+            gainValue: 5.0,
+            fftSize: 2048
+        });
+    }
     try { await window.pitchDetector.start(() => {}, (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)); } catch(e) { alert('خطای میکروفون: ' + e.message); cancelCalibration(); }
 }
 
@@ -955,9 +1006,9 @@ function onCalibrationPitch(rawPitch, rms) {
     if (calibrationState.movingNext) return;
     if (now < calibCooldownUntil) {
         const remaining = Math.ceil((calibCooldownUntil - now) / 1000);
-        if (cooldownEl) cooldownEl.innerHTML = `⏱️ <strong style="color:#fbbf24;">${remaining}</strong> ثانیه صبر کن...`;
+        if (cooldownEl) cooldownEl.innerHTML = `⏱️ <strong style="color:var(--coin-text);">${remaining}</strong> ثانیه صبر کن...`;
         return;
-    } else { if (cooldownEl && cooldownEl.innerText.includes('صبر')) cooldownEl.innerHTML = `<strong style="color:#10b981;">✅ آماده ضربه بعدی</strong>`; }
+    } else { if (cooldownEl && cooldownEl.innerText.includes('صبر')) cooldownEl.innerHTML = `<strong style="color:var(--success-color);">✅ آماده ضربه بعدی</strong>`; }
 
     const currentNote = calibrationState.allNotes[calibrationState.currentIdx]; if (!currentNote) return;
     const arr = calibrationState.samples[currentNote];
@@ -972,16 +1023,16 @@ function onCalibrationPitch(rawPitch, rms) {
             const median = sorted[Math.floor(sorted.length / 2)];
             const consistent = sorted.filter(p => Math.abs(p - median) / median < 0.05);
             if ((consistent.length / sorted.length) < 0.6) {
-                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ صدای نویز شناسایی شد. دوباره بزنید.`; cooldownEl.style.color = '#ef4444'; }
+                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ صدای نویز شناسایی شد. دوباره بزنید.`; cooldownEl.style.color = 'var(--danger-color)'; }
                 calibCollecting = false; calibCollectBuffer = []; return;
             }
             if (median < 50 || median > 4000) {
-                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ فرکانس نامعتبر. دوباره بزنید.`; cooldownEl.style.color = '#ef4444'; }
+                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ فرکانس نامعتبر. دوباره بزنید.`; cooldownEl.style.color = 'var(--danger-color)'; }
                 calibCollecting = false; calibCollectBuffer = []; return;
             }
             arr.push(median); updateCalibrationUI();
             calibCooldownUntil = now + CALIB_COOLDOWN_MS;
-            if (cooldownEl) { cooldownEl.innerHTML = `✅ ثبت شد: <strong style="color:#10b981;">${median.toFixed(1)} Hz</strong> (${arr.length}/۳)`; cooldownEl.style.color = '#38bdf8'; }
+            if (cooldownEl) { cooldownEl.innerHTML = `✅ ثبت شد: <strong style="color:var(--success-color);">${median.toFixed(1)} Hz</strong> (${arr.length}/۳)`; cooldownEl.style.color = 'var(--primary)'; }
             calibCollecting = false; calibCollectBuffer = [];
             if (arr.length >= calibrationState.MIN_SAMPLES) {
                 calibrationState.movingNext = true;
@@ -990,7 +1041,7 @@ function onCalibrationPitch(rawPitch, rms) {
                     calibrationState.movingNext = false;
                     if (calibrationState.currentIdx < calibrationState.allNotes.length - 1) {
                         calibrationState.currentIdx++; calibCooldownUntil = 0; updateCalibrationUI();
-                        if (cooldownEl) { cooldownEl.innerHTML = `<strong style="color:#10b981;">✅ نت بعدی</strong>`; cooldownEl.style.color = '#10b981'; }
+                        if (cooldownEl) { cooldownEl.innerHTML = `<strong style="color:var(--success-color);">✅ نت بعدی</strong>`; cooldownEl.style.color = 'var(--success-color)'; }
                     } else { finishCalibration(); }
                 }, CALIB_COOLDOWN_MS + 200);
             }
@@ -1118,7 +1169,7 @@ function renderAvatarGallery() {
         if (!isFree && !isOwned) {
             img.style.opacity = '0.4';
             const lock = document.createElement('div');
-            lock.innerHTML = `🔒<br><span style="font-size:10px; color:#fbbf24;">${AVATAR_PRICES[avName]}</span>`;
+            lock.innerHTML = `🔒<br><span style="font-size:10px; color:var(--coin-text);">${AVATAR_PRICES[avName]}</span>`;
             lock.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; font-size:18px; text-shadow:1px 1px 3px #000; pointer-events:none;';
             wrap.appendChild(lock);
         }
@@ -1212,7 +1263,7 @@ async function selectAvatar(avName) {
         
         if (res.ok) {
             const msg = document.getElementById('avatarMsg');
-            if(msg) { msg.style.color='#10b981'; msg.innerText = '✓ آواتار با موفقیت ذخیره شد'; setTimeout(()=>msg.innerText='', 2000); }
+            if(msg) { msg.style.color='var(--success-color)'; msg.innerText = '✓ آواتار با موفقیت ذخیره شد'; setTimeout(()=>msg.innerText='', 2000); }
         } else {
             currentUser.selected_avatar = oldAvatar;
             renderAvatarGallery();
@@ -1266,7 +1317,7 @@ async function generateRandomAvatar() {
             await fetchUserProfile();
             await selectAvatar(dicebearUrl);
             const msg = document.getElementById('avatarMsg');
-            if(msg) { msg.style.color='#10b981'; msg.innerText = t('msg.avatar_uploaded'); setTimeout(()=>msg.innerText='', 3000); }
+            if(msg) { msg.style.color='var(--success-color)'; msg.innerText = t('msg.avatar_uploaded'); setTimeout(()=>msg.innerText='', 3000); }
         } else {
             const err = await res.json();
             alert(err.detail || t('msg.error_generic'));
