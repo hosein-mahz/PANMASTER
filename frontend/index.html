@@ -10,20 +10,24 @@
     <style>
         #auth-section { display: flex; }
         #game-section { display: none; width: 100%; height: 100vh; flex-direction: column; padding: 10px; overflow: hidden; position: relative; }
+
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--bg-card); border-radius: 15px; margin-bottom: 10px; flex-shrink: 0; border: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
         .header h1 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
         .user-info { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: bold; flex-wrap: wrap; }
-        .avatar-mini { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); background: #0f172a; }
-        .avatar-placeholder { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+        .avatar-mini { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); background: var(--bg-main); }
+        .avatar-placeholder { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
         .user-level-block { display: flex; flex-direction: column; min-width: 130px; gap: 3px; }
         .user-level-row { display: flex; align-items: center; gap: 6px; }
-        .level-badge { background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .xp-bar { width: 100%; height: 6px; background: #0f172a; border-radius: 3px; overflow: hidden; border: 1px solid #334155; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); width: 0%; transition: width 0.4s ease; }
-        .xp-text { font-size: 10px; color: #94a3b8; }
+        .level-badge { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .xp-bar { width: 100%; height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.4s ease; }
+        .xp-text { font-size: 10px; color: var(--text-muted); }
         .view { display: none; flex-direction: column; flex: 1; width: 100%; align-items: center; justify-content: flex-start; background: var(--bg-main); border-radius: 20px; position: relative; overflow-y: auto; padding: 60px 15px 20px; }
         .view.active { display: flex; }
-        .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 10px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--border); border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; display: block; text-align: center; }
+        
+        .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 15px; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-main) 100%); color: var(--primary); border: 1px solid var(--border); border-bottom: 5px solid var(--btn-shadow); /* 👈 خط ضخیم پایین برای سه بعدی */border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: all 0.1s ease; display: block; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .menu-btn:hover { background: var(--bg-card); border-color: var(--primary); }
+        .menu-btn:active { border-bottom-width: 2px; transform: translateY(3px);background: var(--btn-shadow);}
         .menu-btn:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--primary); transform: translateY(-2px); }
         .menu-btn img { display: inline-block; vertical-align: middle; width: 20px; height: 20px; margin: 0 4px; }
         
@@ -36,7 +40,7 @@
         #falling-view.mic-active #handpanCanvasFalling { display: none !important; }
         #falling-view.mic-active #fallingCanvas { aspect-ratio: auto !important; height: 65vh !important; max-height: none !important; }
 
-        .back-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10; transition: 0.3s; }
+        .back-btn { position: absolute; top: 15px; right: 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .back-btn:hover { border-color: var(--primary); color: var(--primary); }
         .top-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 10; }
         .end-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
@@ -45,62 +49,73 @@
         #countdown-text { font-size: 120px; font-weight: 900; color: var(--primary); text-shadow: 0 0 40px rgba(56, 189, 248, 0.6); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        .result-card, .card-section { background: var(--bg-card); padding: 30px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 90%; margin: auto auto 15px auto; }
+        .result-card, .card-section { background: var(--bg-card); padding: 30px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 90%; margin: auto auto 15px auto; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .result-card h2, .card-section h2 { color: var(--primary); font-size: 24px; margin-bottom: 18px; }
         .result-stat, .stat { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 17px; }
-        .stat { padding: 10px 15px; background: #0f172a; border-radius: 10px; border: 1px solid #334155; margin-bottom: 8px; }
+        .stat { padding: 10px 15px; background: var(--bg-main); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 8px; }
         .result-stat span:last-child, .stat span:last-child { color: var(--primary); font-weight: bold; }
         
         .wallet-balance { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 15px 0; }
         .wallet-balance img { width: 42px; height: 42px; }
         .wallet-balance span { font-size: 38px; font-weight: 900; color: #fbbf24; }
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-        .pkg-card { background: #0f172a; border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; text-align: center; }
+        .pkg-card { background: var(--bg-main); border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .pkg-card:hover { border-color: #fbbf24; transform: translateY(-2px); }
         .pkg-coins { font-size: 22px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .pkg-coins img { width: 24px; height: 24px; }
 
         .avatar-big-wrap { display: inline-block; margin-bottom: 12px; }
-        .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #0f172a; }
-        .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
-        .avatar-star {position: absolute;top: -6px;right: -6px;width: 22px;height: 22px;background: rgba(15, 23, 42, 0.9);border: 1px solid #475569;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;cursor: pointer;z-index: 5;transition: 0.2s;}
+        .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--bg-main); }
+        .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
+        .avatar-star {position: absolute;top: -6px;right: -6px;width: 22px;height: 22px;background: var(--bg-card);border: 1px solid var(--border);border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;cursor: pointer;z-index: 5;transition: 0.2s;}
         .avatar-star.active {background: #fbbf24;border-color: #fbbf24;color: #0f172a;transform: scale(1.1);}
         .avatar-delete {position: absolute;top: -6px;left: -6px;width: 22px;height: 22px;background: rgba(239, 68, 68, 0.9);border: 1px solid #b91c1c;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;color: white;cursor: pointer;z-index: 5;transition: 0.2s;}
         .avatar-delete:hover {transform: scale(1.1);background: #ef4444;}
         
         .settings-block { margin-bottom: 22px; text-align: right; }
-        .settings-block h3 { color: var(--primary); font-size: 15px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
         .setting-row { margin-bottom: 12px; }
         .setting-row label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
-        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        
+        /* 👇 اصلاح شد: حذف color:#fff تا متن در تم روشن دیده شود */
+        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { 
+            width: 100%; padding: 10px 12px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; 
+        }
+        .setting-row input:focus, .setting-row select:focus { border-color: var(--primary); }
         .setting-row input[type="range"] { width: 100%; accent-color: var(--primary); }
         .range-value { font-size: 12px; color: var(--primary); font-weight: bold; margin-right: 6px; }
-        .btn-sm { padding: 10px 18px; background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; }
-        .btn-ghost { background: #334155; color: #f1f5f9; }
+        
+        .btn-sm { padding: 10px 18px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; transition: 0.2s; }
+        .btn-sm:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-ghost { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); }
         .msg-success { color: #10b981; font-size: 13px; margin-top: 6px; min-height: 18px; }
         .msg-error { color: #ef4444; font-size: 13px; margin-top: 6px; min-height: 18px; }
-        .avatar-upload-wrap { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .avatar-upload-wrap input[type="file"] { display: none; }
         
         .reward-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
         .reward-modal.show { display: flex; }
-        .reward-content { background: var(--bg-card); border-radius: 20px; padding: 30px 22px; max-width: 380px; width: 100%; text-align: center; border: 2px solid #fbbf24; }
-        .reward-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; font-weight: bold; color: var(--primary); font-size: 14px; }
+        .reward-content { background: var(--bg-card); border-radius: 20px; padding: 30px 22px; max-width: 380px; width: 100%; text-align: center; border: 2px solid #fbbf24; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .reward-item { background: var(--bg-main); padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); font-weight: bold; color: var(--primary); font-size: 14px; }
 
-        #micDebug { display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 999; color: #38bdf8; min-width: 220px; text-align: center; border: 1px solid #38bdf8; font-family: monospace; }
+        #micDebug { display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 999; color: var(--primary); min-width: 220px; text-align: center; border: 1px solid var(--primary); font-family: monospace; }
 
-                /* ===== استایل آواتار و گالری ===== */
+        /* ===== استایل آواتار و گالری ===== */
         .avatar-protected {position: relative;display: inline-flex;justify-content: center;align-items: center;}
-        .avatar-protected::after {content: "PanMaster";position: absolute;bottom: 12px;left: 50%;transform: translateX(-50%);font-size: 10px;color: rgba(255, 255, 255, 0.6);font-weight: bold;letter-spacing: 1px;text-shadow: 1px 1px 3px rgba(0,0,0,0.9);pointer-events: none;z-index: 10;}
-        .avatar-option {width: 65px;height: 65px;border-radius: 50%;border: 3px solid transparent;cursor: pointer;transition: 0.2s;object-fit: cover;background: #0f172a;}
+        .avatar-protected::after {content: "PanMaster";position: absolute;bottom: 12px;left: 50%;transform: translateX(-50%);font-size: 10px;color: rgba(255, 255, 255, 0.8);font-weight: bold;letter-spacing: 1px;text-shadow: 1px 1px 3px rgba(0,0,0,0.9);pointer-events: none;z-index: 10;}
+        .avatar-option {width: 65px;height: 65px;border-radius: 50%;border: 3px solid transparent;cursor: pointer;transition: 0.2s;object-fit: cover;background: var(--bg-main);}
         .avatar-option:hover, .avatar-option.selected {border-color: var(--primary);transform: scale(1.05);}
         .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 10px; margin-bottom: 15px;}
 
         .skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 10px; }
-        .skin-option { width: 70px; height: 70px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover; background: #0f172a; }
+        .skin-option { width: 70px; height: 70px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover; background: var(--bg-main); }
         .skin-option:hover, .skin-option.selected { border-color: var(--primary); transform: scale(1.05); }
-        .skin-option.locked { opacity: 0.4; }
+        .skin-option.locked { opacity: 0.5; }
         .skin-price-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; font-size: 12px; color: #fbbf24; text-shadow: 1px 1px 3px #000; pointer-events: none; font-weight: bold; }
 
+        .vip-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0f172a; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 900; margin-right: 5px; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+
+        /* ===== 👇 استایل سه بعدی (3D) برای کشوها ===== */
+        .acc-btn, .custom-accordion-btn {width: 100%; padding: 12px 15px; background: linear-gradient(180deg, var(--bg-btn) 0%, var(--bg-card) 100%);color: var(--text-main); border: 1px solid var(--border); border-bottom: 4px solid var(--btn-shadow);border-radius: 10px; font-size: 14px; font-weight: bold;cursor: pointer; display: flex; justify-content: space-between; align-items: center;transition: all 0.1s ease; margin-bottom: 10px;box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .acc-btn:active, .custom-accordion-btn:active {border-bottom-width: 1px;transform: translateY(3px);background: var(--bg-btn-hover);}
+        .acc-content, .custom-accordion-content {display: none; background: var(--bg-main); color: var(--text-main); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);}
     </style>
 </head>
 <body>
@@ -143,7 +158,7 @@
                     <img src="/assets/coin.svg" alt="coin">
                     <span id="tokenDisplay">0</span>
                 </div>
-                <button class="logout-btn" onclick="logout()" data-i18n="header.logout">خروج</button>
+                
             </div>
         </div>
 
@@ -153,9 +168,7 @@
             <button class="menu-btn" onclick="goToFallingGame()" style="border-color: #fbbf24; color: #fbbf24;">
                 <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin">)
             </button>
-            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;">🎤 حالت ساز واقعی (میکروفون)</button>
-            <button class="menu-btn" onclick="diagnoseMic()" style="border-color: #06b6d4; color: #06b6d4;">🔬 تست میکروفون (عیب‌یابی)</button>
-            <button class="menu-btn" onclick="startCalibration()" style="border-color: #a78bfa; color: #a78bfa;">🎯 کالیبراسیون ساز واقعی</button>
+            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">حالت ساز واقعی (میکروفون)</button>
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
@@ -181,22 +194,22 @@
         </div>
 
         <div id="calibration-view" class="view">
-            <button class="back-btn" onclick="cancelCalibration()">← لغو</button>
+            <button class="back-btn" onclick="cancelCalibration()" data-i18n="game.back">← بازگشت</button>
             <div style="max-width: 500px; width: 90%; text-align: center; margin: 0 auto; padding-top: 40px;">
-                <h2 style="color: var(--primary); margin-bottom: 20px;">🎯 کالیبراسیون هنگ‌درام</h2>
-                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
-                    برای هر نت <strong style="color: #38bdf8;">۳ ضربه</strong> بزنید:<br>۱. آرام &nbsp;|&nbsp; ۲. متوسط &nbsp;|&nbsp; ۳. محکم
+                <h2 style="color: var(--primary); margin-bottom: 20px;" data-i18n="calib.title">🎯 کالیبراسیون هنگ‌درام</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;" data-i18n="calib.instruction">
+                    برای هر نت ۳ ضربه بزنید: ۱. آرام | ۲. متوسط | ۳. محکم
                 </p>
                 <div style="font-size: 48px; font-weight: 900; color: #fbbf24; margin: 15px 0;"><span id="calibNoteName">۱</span></div>
-                <div style="font-size: 16px; color: var(--text-main); margin-bottom: 10px;">
+                <div style="font-size: 16px; color: var(--text-main); margin-bottom: 10px;" id="calibCountText">
                     ضربه‌های گرفته شده: <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 3
                 </div>
-                <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">فرکانس: — | Vol: 0%</div>
-                <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;">آماده ضربه اول</div>
-                <div style="background:#0f172a; border-radius:10px; padding:15px; font-size:13px; color:#94a3b8; margin-bottom: 20px;">
+                <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">—</div>
+                <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;" data-i18n="calib.ready_first">آماده ضربه اول</div>
+                <div style="background:#0f172a; border-radius:10px; padding:15px; font-size:13px; color:#94a3b8; margin-bottom: 20px;" id="calibDoneText">
                     نت‌های کالیبره شده: <span id="calibDoneList">—</span>
                 </div>
-                <button class="btn" onclick="skipCalibNote()" style="background: #475569;">رد کردن این نت</button>
+                <button class="btn" onclick="skipCalibNote()" style="background: #475569;" data-i18n="calib.skip">رد کردن این نت</button>
             </div>
         </div>
 
@@ -215,10 +228,23 @@
 
         <div id="wallet-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            
             <div class="card-section">
                 <h2 data-i18n="wallet.title">💰 موجودی کیف پول</h2>
                 <div class="wallet-balance"><img src="/assets/coin.svg" alt="coin"><span id="walletBalance">0</span></div>
             </div>
+            
+            <div class="card-section" style="margin-top: 15px;">
+                <h2 data-i18n="wallet.vip_title">👑 اشتراک VIP</h2>
+                <p id="vipStatusText" style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">...</p>
+                <button class="btn" id="buyVipBtn" onclick="buyVip()" data-i18n="wallet.buy_vip_btn">خرید VIP (۱۰۰۰ سکه)</button>
+                
+                <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
+                <button class="btn-sm" onclick="devToggleVip()" style="background: #ef4444; margin-top: 10px; width: 100%; font-size: 12px;">🛠️ خاموش / روشن کردن VIP (تست)</button>
+                <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
+            </div>
+            
+            <!-- 👇 این بخش حالا به درستی داخل کیف پول قرار گرفته -->
             <div class="card-section">
                 <h2 data-i18n="wallet.buy">🛒 خرید سکه</h2>
                 <div class="packages-grid" id="packagesGrid"></div>
@@ -240,10 +266,13 @@
                     <div class="stat"><span data-i18n="profile.coins">سکه</span><span id="profileCoins">0</span></div>
                     <div class="stat"><span data-i18n="profile.total_xp">مجموع XP</span><span id="profileTotalXp">0</span></div>
                 </div>
-                
                 <div style="margin-top: 20px; text-align: right;">
-                    <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
+                    <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);"data-i18n="profile.history_title">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
                     <div id="historyList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
+                </div>
+                <!-- 👇 دکمه خروج ایمن در انتهای پروفایل -->
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+                    <button onclick="logout()"style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 8px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; width: auto; display: inline-block;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'" data-i18n="profile.logout_btn"> خروج از حساب کاربری</button>
                 </div>
             </div>
         </div>
@@ -253,62 +282,109 @@
             <div class="card-section">
                 <h2 data-i18n="settings.title">⚙️ تنظیمات</h2>
                                 
+                <!-- 👇 کشوی آواتار -->
                 <div class="settings-block">
-                    <h3>🖼️ انتخاب آواتار</h3>
-                    <button class="btn-sm" onclick="toggleAvatarGallery()" style="width: 100%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: #334155;">
-                        <span>مشاهده / تغییر آواتار</span>
-                        <span id="avatarGalleryChevron">▼</span>
+                    <button class="acc-btn" onclick="toggleAccordion('avatarGalleryWrap', 'avatarChevron')">
+                        <span data-i18n="settings.avatar_title">🖼️ انتخاب آواتار</span>
+                        <span id="avatarChevron">▼</span>
                     </button>
-                    
-                    <div id="avatarGalleryWrap" style="display: none; background: #0f172a; padding: 15px; border-radius: 10px; border: 1px solid #334155;">
-                        <!-- 👇 انتخاب جنسیت برای آواتار رندوم -->
+                    <div id="avatarGalleryWrap" class="acc-content">
                         <div class="setting-row" style="margin-bottom: 10px;">
-                            <label style="font-size: 12px; color: #94a3b8;">جنسیت آواتار رندوم</label>
-                            <select id="avatarGender" style="width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff;">
-                                <option value="male">👨 آقا</option>
-                                <option value="female">👩 خانم</option>
+                            <label style="font-size: 12px; color: #94a3b8;" data-i18n="settings.avatar_gender">جنسیت آواتار رندوم</label>
+                            <select id="avatarGender" style="width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
+                                <option value="male" data-i18n="settings.gender_male">👨 آقا</option>
+                                <option value="female" data-i18n="settings.gender_female">👩 خانم</option>
                             </select>
                         </div>
-                        <button class="btn-sm" onclick="generateRandomAvatar()" style="margin-bottom: 10px; background: #818cf8; width: 100%;">🎲 ساخت آواتار رندوم (۲۰ سکه)</button>
-                        <button class="btn-sm" onclick="selectAvatar('default')" style="margin-bottom: 10px; background: #475569; width: 100%;">🚫 بدون آواتار (حروف)</button>
+                        <button class="btn-sm" onclick="generateRandomAvatar()" style="margin-bottom: 10px; background: #818cf8; width: 100%;" data-i18n="settings.avatar_random_btn">🎲 ساخت آواتار رندوم (۲۰ سکه)</button>
+                        <button class="btn-sm" onclick="selectAvatar('default')" style="margin-bottom: 10px; background: #475569; width: 100%;" data-i18n="settings.avatar_none_btn">🚫 بدون آواتار (حروف)</button>
                         <div id="avatarGallery" class="avatar-grid"></div>
                         <div class="msg-success" id="avatarMsg"></div>
                     </div>
                 </div>
 
+                <!-- 👇 کشوی ظاهر بازی (شامل تم، زبان و اسلایدرها) -->
                 <div class="settings-block">
-                    <h3 data-i18n="settings.appearance">🎨 ظاهر بازی</h3>
-                    <div class="setting-row">
-                        <label data-i18n="settings.note_display">حالت نمایش نت‌ها</label>
-                        <select id="setNoteDisplay"><option value="number">عدد</option><option value="name">حروف</option></select>
+                    <button class="acc-btn" onclick="toggleAccordion('appearanceWrap', 'appearanceChevron')">
+                        <span data-i18n="settings.appearance">🎨 ظاهر بازی</span>
+                        <span id="appearanceChevron">▼</span>
+                    </button>
+                    <div id="appearanceWrap" class="acc-content">
+                        <div class="setting-row">
+                            <label data-i18n="settings.theme">تم بازی</label>
+                            <select id="setTheme" onchange="previewTheme(this.value)">
+                                <option value="dark" data-i18n="theme.dark">🌙 شب (تیره)</option>
+                                <option value="light" data-i18n="theme.light">☀️ روز (روشن)</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <label data-i18n="settings.language">زبان</label>
+                            <select id="setLanguage" onchange="onLanguageChange(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
+                        </div>
+                        <div class="setting-row">
+                            <label><span data-i18n="settings.fall_speed">سرعت سقوط نت‌ها</span> <span class="range-value" id="fallSpeedVal">200</span></label>
+                            <input type="range" id="setFallSpeed" min="100" max="500" step="10" oninput="document.getElementById('fallSpeedVal').innerText=this.value">
+                        </div>
+                        <div class="setting-row">
+                            <label><span data-i18n="settings.note_size">اندازه نت‌ها</span> <span class="range-value" id="noteSizeVal">1.0</span></label>
+                            <input type="range" id="setNoteSize" min="0.7" max="1.5" step="0.05" oninput="document.getElementById('noteSizeVal').innerText=parseFloat(this.value).toFixed(2)">
+                        </div>
+                        <div class="setting-row">
+                            <label><span data-i18n="settings.sound_volume">صدای بازی</span> <span class="range-value" id="soundVolVal">0.50</span></label>
+                            <input type="range" id="setSoundVolume" min="0" max="1" step="0.05" oninput="document.getElementById('soundVolVal').innerText=parseFloat(this.value).toFixed(2)">
+                        </div>
                     </div>
-                    <div class="setting-row" style="text-align: right;">
-                        <label data-i18n="settings.active_skin">طرح هنگ‌درام (اسکین)</label>
+                </div>
+
+                <!-- 👇 کشوی حالت نمایش نت‌ها -->
+                <div class="settings-block">
+                    <button class="acc-btn" onclick="toggleAccordion('noteDisplayWrap', 'noteDisplayChevron')">
+                        <span data-i18n="settings.note_display">🔢 حالت نمایش نت‌ها</span>
+                        <span id="noteDisplayChevron">▼</span>
+                    </button>
+                    <div id="noteDisplayWrap" class="acc-content">
+                        <div class="setting-row">
+                            <select id="setNoteDisplay" style="margin-top: 5px;">
+                                <option value="number" data-i18n="display.number">عدد</option>
+                                <option value="name" data-i18n="display.name">حروف</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 👇 کشوی اسکین‌ها -->
+                <div class="settings-block">
+                    <button class="acc-btn" onclick="toggleAccordion('skinGalleryWrap', 'skinChevron')">
+                        <span data-i18n="settings.active_skin">🎵 طرح هنگ‌درام (اسکین)</span>
+                        <span id="skinChevron">▼</span>
+                    </button>
+                    <div id="skinGalleryWrap" class="acc-content">
                         <div id="skinGallery" class="skin-grid"></div>
                     </div>
-                    <div class="setting-row">
-                        <label data-i18n="settings.language">زبان</label>
-                        <select id="setLanguage" onchange="onLanguageChange(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
-                    </div>
-                    <div class="setting-row">
-                        <label><span data-i18n="settings.fall_speed">سرعت سقوط نت‌ها</span> <span class="range-value" id="fallSpeedVal">200</span></label>
-                        <input type="range" id="setFallSpeed" min="100" max="500" step="10" oninput="document.getElementById('fallSpeedVal').innerText=this.value">
-                    </div>
-                    <div class="setting-row">
-                        <label><span data-i18n="settings.note_size">اندازه نت‌ها</span> <span class="range-value" id="noteSizeVal">1.0</span></label>
-                        <input type="range" id="setNoteSize" min="0.7" max="1.5" step="0.05" oninput="document.getElementById('noteSizeVal').innerText=parseFloat(this.value).toFixed(2)">
-                    </div>
-                    <div class="setting-row">
-                        <label><span data-i18n="settings.sound_volume">صدای بازی</span> <span class="range-value" id="soundVolVal">0.50</span></label>
-                        <input type="range" id="setSoundVolume" min="0" max="1" step="0.05" oninput="document.getElementById('soundVolVal').innerText=parseFloat(this.value).toFixed(2)">
-                    </div>
-                    <button class="btn-sm" onclick="saveSettings()" data-i18n="settings.save_settings">ذخیره تنظیمات</button>
-                    <div class="msg-success" id="settingsMsg"></div>
                 </div>
+                <!-- 👇 کشوی تنظیمات میکروفون و کالیبراسیون -->
+                <div class="settings-block">
+                    <button class="acc-btn" onclick="toggleAccordion('micSettingsWrap', 'micSettingsChevron')">
+                        <span data-i18n="settings.mic_title">🎤 تنظیمات ساز و میکروفون</span>
+                        <span id="micSettingsChevron">▼</span>
+                    </button>
+                    <div id="micSettingsWrap" class="acc-content" style="text-align: center;">
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;" data-i18n="settings.mic_desc">
+                            برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.
+                        </p>
+                        <button class="btn-sm" onclick="diagnoseMic()" style="margin-bottom: 10px; width: 100%; background: #06b6d4;" data-i18n="menu.mic_test">🔬 تست میکروفون (عیب‌یابی)</button>
+                        <button class="btn-sm" onclick="startCalibration()" style="width: 100%; background: #a78bfa;" data-i18n="menu.calibration">🎯 کالیبراسیون ساز واقعی</button>
+                    </div>
+                </div>
+                
+                <!-- دکمه ذخیره (همیشه در پایین و بیرون از کشوها) -->
+                <button class="btn-sm" onclick="saveSettings()" data-i18n="settings.save_settings" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">ذخیره تنظیمات</button>
+                <div class="msg-success" id="settingsMsg"></div>
             </div>
         </div>
     </div>
 
+        <!-- مودال جایزه (بدون تبلیغات داخلش) -->
     <div id="reward-modal" class="reward-modal">
         <div class="reward-content">
             <h2 data-i18n="reward.title">🎉 تبریک!</h2>
@@ -317,8 +393,19 @@
             <button class="btn" onclick="closeRewardModal()" style="margin-top:10px;" data-i18n="reward.ok">عالی!</button>
         </div>
     </div>
+
+    <!-- 👇 مودال تبلیغات (باید مستقل باشه) -->
+    <div id="ad-overlay" class="reward-modal" style="background: rgba(0,0,0,0.95); z-index: 1000;">
+        <div class="reward-content" style="border-color: #38bdf8;">
+            <h2 style="color: #38bdf8;" data-i18n="ad.title">📺 تبلیغات</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="ad.hint">برای ادامه بازی، لطفاً ۵ ثانیه صبر کنید.</p>
+            <div style="font-size: 60px; font-weight: 900; color: #fbbf24; margin: 20px 0;" id="ad-timer">5</div>
+            <button class="btn" id="ad-close-btn" disabled style="opacity: 0.5;" data-i18n="ad.wait_btn">لطفاً صبر کنید...</button>
+        </div>
+    </div>
+        
         
     <script src="/js/pitch-detector.js?v=21"></script>
-    <script src="/js/game-engine.js?v=87"></script>
+    <script src="/js/game-engine.js?v=96"></script>
 </body>
 </html>

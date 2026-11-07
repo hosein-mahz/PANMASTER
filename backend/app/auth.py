@@ -120,6 +120,9 @@ def _build_user_out(user: models.User) -> dict:
         "sound_volume": user.sound_volume or 0.5,
         "note_display_mode": user.note_display_mode or "number",
         "active_skin": user.active_skin or "default",
+        "is_vip": bool(user.is_vip and user.vip_expire_date and user.vip_expire_date > datetime.utcnow()),
+        "vip_expire_date": user.vip_expire_date.isoformat() if user.vip_expire_date else None,
+        "theme": user.theme or "dark",
     }
 
 
@@ -214,6 +217,7 @@ def update_settings(
     db: Session = Depends(database.get_db),
 ):
     if data.language is not None: current_user.language = data.language
+    if data.theme is not None: current_user.theme = data.theme
     if data.fall_speed is not None: current_user.fall_speed = data.fall_speed
     if data.note_size is not None: current_user.note_size = data.note_size
     if data.font_family is not None: current_user.font_family = data.font_family
@@ -238,6 +242,7 @@ def update_settings(
         note_display_mode=current_user.note_display_mode,
         active_skin=current_user.active_skin,
         selected_avatar=current_user.selected_avatar,
+        theme=current_user.theme,
     )
 
 
@@ -522,3 +527,44 @@ def buy_skin(
     current_user.coins -= cost
     db.commit()
     return schemas.TokenBalance(new_balance=current_user.coins)
+
+# ===== Buy VIP =====
+@router.post("/buy-vip", response_model=schemas.TokenBalance)
+def buy_vip(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    cost = 1000
+    if current_user.coins < cost:
+        raise HTTPException(status_code=400, detail="سکه کافی نیست (نیاز به ۱۰۰۰ سکه)")
+
+    # کسر سکه
+    current_user.coins -= cost
+    
+    # تنظیم وضعیت VIP برای ۳۰ روز
+    current_user.is_vip = True
+    current_user.vip_expire_date = datetime.utcnow() + timedelta(days=30)
+
+    db.commit()
+    return schemas.TokenBalance(new_balance=current_user.coins)
+
+# ==========================================
+# 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑
+# ==========================================
+@router.post("/dev/toggle-vip")
+def dev_toggle_vip(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    if current_user.is_vip:
+        current_user.is_vip = False
+        current_user.vip_expire_date = None
+    else:
+        current_user.is_vip = True
+        current_user.vip_expire_date = datetime.utcnow() + timedelta(days=30)
+    
+    db.commit()
+    return {"message": "VIP toggled", "is_vip": current_user.is_vip}
+# ==========================================
+# 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑
+# ==========================================

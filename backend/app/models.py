@@ -29,6 +29,7 @@ class User(Base):
     active_skin = Column(String, default="default", nullable=False)
     calibration_data = Column(String, default="{}", nullable=False)
     selected_avatar = Column(String, default="default", nullable=False)
+    theme = Column(String, default="dark", nullable=False)
 
 class Song(Base):
     __tablename__ = "songs"

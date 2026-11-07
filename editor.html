@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنظیم دستی مختصات هنگ‌درام</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: Tahoma, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .toolbar { margin-bottom: 15px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        
+        /* کانواس دقیقاً هم‌اندازه بازی (820 در 500) */
+        .canvas-container { position: relative; width: 820px; height: 500px; background: #111; border: 2px solid #334155; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* 👇 عکس دقیقاً مثل بازی فشرده میشه توی 440x440 و مرکز 410, 250 */
+        #bg-image { position: absolute; top: 30px; left: 190px; width: 440px; height: 440px; border-radius: 50%; object-fit: fill; pointer-events: none; opacity: 0.9; }
+        
+        /* دایره راهنما برای اینکه ببینی مرز بازی کجاست */
+        .guide-circle { position: absolute; top: 30px; left: 190px; width: 440px; height: 440px; border-radius: 50%; border: 2px dashed #ef4444; pointer-events: none; box-sizing: border-box; }
+
+        /* استایل نت‌ها */
+        .note { position: absolute; border-radius: 50%; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #fff; cursor: grab; user-select: none; transform: translate(-50%, -50%); box-shadow: 0 0 10px rgba(0,0,0,0.5); text-shadow: 1px 1px 2px #000; z-index: 10; }
+        .note:active { cursor: grabbing; border-color: #fbbf24; }
+        .note.ding { font-size: 24px; }
+        .note.normal { font-size: 18px; }
+
+        textarea { width: 820px; height: 150px; margin-top: 15px; background: #1e293b; color: #10b981; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 14px; direction: ltr; }
+        button, label.file-btn { padding: 10px 20px; background: #38bdf8; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block; font-size: 14px;}
+        button:hover, label.file-btn:hover { background: #0ea5e9; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <h2 style="color: #38bdf8; margin: 0;">🎯 ابزار تنظیم مختصات (دقیقاً هم‌اندازه بازی)</h2>
+        <p style="color: #94a3b8; margin: 0;">عکس رو لود کن. نت‌ها رو بکش و دقیقاً وسط فرورفتگی‌ها بذار.</p>
+        
+        <label class="file-btn" for="imageLoader">📁 بارگذاری عکس هنگ‌درام</label>
+        <input type="file" id="imageLoader" accept="image/*">
+    </div>
+
+    <div class="canvas-container" id="canvas-container">
+        <img id="bg-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Handpan_%28instrument%29.jpg/800px-Handpan_%28instrument%29.jpg" alt="هنگ‌درام">
+        <div class="guide-circle"></div>
+    </div>
+
+    <button onclick="copyCode()">📋 کپی کد مختصات</button>
+    <textarea id="output" readonly></textarea>
+
+    <script>
+        // 👇 مختصات جدید بر اساس عکسی که فرستادی (تخمینی و بسیار نزدیک)
+        const layout = {
+            "D": [410, 250, 58],
+            "1": [480, 380, 38], "2": [340, 380, 38],
+            "3": [560, 300, 38], "4": [260, 300, 38],
+            "5": [560, 200, 38], "6": [260, 200, 38],
+            "7": [480, 120, 38], "8": [340, 120, 38]
+        };
+
+        const colors = {
+            "D": "#60a5fa", "1": "#f472b6", "2": "#34d399", "3": "#38bdf8", "4": "#2dd4bf", 
+            "5": "#818cf8", "6": "#fbbf24", "7": "#a78bfa", "8": "#fb7185"
+        };
+
+        const container = document.getElementById('canvas-container');
+        const imageLoader = document.getElementById('imageLoader');
+        const bgImage = document.getElementById('bg-image');
+        let activeNote = null;
+        let startX, startY, initialX, initialY;
+
+        imageLoader.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                bgImage.src = URL.createObjectURL(file);
+            }
+        });
+
+        for (const [key, data] of Object.entries(layout)) {
+            const el = document.createElement('div');
+            el.className = `note ${key === 'D' ? 'ding' : 'normal'}`;
+            el.id = `note-${key}`;
+            el.innerText = key;
+            el.style.width = (data[2] * 2) + 'px';
+            el.style.height = (data[2] * 2) + 'px';
+            el.style.backgroundColor = colors[key] + 'aa'; 
+            el.style.left = data[0] + 'px';
+            el.style.top = data[1] + 'px';
+            
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
+
+            container.appendChild(el);
+        }
+
+        function startDrag(e) {
+            e.preventDefault();
+            activeNote = e.target;
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const rect = container.getBoundingClientRect();
+            startX = clientX - rect.left;
+            startY = clientY - rect.top;
+            
+            initialX = parseFloat(activeNote.style.left);
+            initialY = parseFloat(activeNote.style.top);
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchmove', onDrag, {passive: false});
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!activeNote) return;
+            e.preventDefault();
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const rect = container.getBoundingClientRect();
+            const currentX = clientX - rect.left;
+            const currentY = clientY - rect.top;
+
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+
+            let newLeft = initialX + dx;
+            let newTop = initialY + dy;
+
+            newLeft = Math.max(0, Math.min(820, newLeft));
+            newTop = Math.max(0, Math.min(500, newTop));
+
+            activeNote.style.left = newLeft + 'px';
+            activeNote.style.top = newTop + 'px';
+
+            updateOutput();
+        }
+
+        function stopDrag() {
+            if (!activeNote) return;
+            const key = activeNote.innerText;
+            const x = Math.round(parseFloat(activeNote.style.left));
+            const y = Math.round(parseFloat(activeNote.style.top));
+            layout[key][0] = x;
+            layout[key][1] = y;
+            activeNote = null;
+
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('touchend', stopDrag);
+            
+            updateOutput();
+        }
+
+        function updateOutput() {
+            let code = "const HANDPAN_LAYOUT_9 = {\n";
+            for (const [key, data] of Object.entries(layout)) {
+                code += `    "${key}": [${Math.round(data[0])}, ${Math.round(data[1])}, ${data[2]}],\n`;
+            }
+            code += "};";
+            document.getElementById('output').value = code;
+        }
+
+        function copyCode() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+            alert('✅ کد کپی شد! حالا اون رو در game-engine.js جایگزین کن.');
+        }
+
+        updateOutput();
+    </script>
+</body>
+</html>

@@ -32,6 +32,10 @@ class UserOut(BaseModel):
     active_skin: str = "default"
     owned_avatars: List[str] = []
     highlighted_avatars: List[str] = []
+    is_vip: bool = False                
+    vip_expire_date: Optional[datetime] = None
+    theme: str = "dark"
+    theme: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -60,6 +64,7 @@ class SettingsUpdate(BaseModel):
     note_display_mode: Optional[str] = None
     active_skin: Optional[str] = None
     selected_avatar: Optional[str] = None
+    theme: Optional[str] = None 
 
 class SettingsOut(BaseModel):
     language: str
@@ -69,6 +74,7 @@ class SettingsOut(BaseModel):
     sound_volume: float
     note_display_mode: str
     active_skin: str
+    theme: str
 
 class PracticeHistoryCreate(BaseModel):
     mode: str = "falling"
