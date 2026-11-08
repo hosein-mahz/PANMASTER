@@ -36,11 +36,13 @@ class Song(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True, nullable=False)
     artist = Column(String, nullable=True)
-    difficulty = Column(String, default="Easy")
     notes_data = Column(JSON, nullable=False)
+    fall_speed = Column(Float, default=1.0)
     is_premium = Column(Boolean, default=False)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_public = Column(Boolean, default=True)
+    difficulty = Column(String, default="Easy", nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Instrument(Base):

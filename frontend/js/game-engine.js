@@ -24,7 +24,7 @@ const I18N = {
         "wallet.title":"💰 موجودی کیف پول","wallet.hint":"سکه‌های شما برای ورود به بازی‌ها و خرید استفاده می‌شوند","wallet.buy":"🛒 خرید سکه","wallet.pkg_starter":"بسته شروع","wallet.pkg_standard":"بسته استاندارد","wallet.pkg_premium":"بسته پریمیوم","wallet.pkg_ultimate":"بسته نهایی",
         "wallet.vip_title": "👑 اشتراک VIP", "wallet.buy_vip_btn": "خرید VIP (۱۰۰۰ سکه)", "wallet.renew_vip_btn": "تمدید VIP (۱۰۰۰ سکه)", "wallet.vip_active": "✅ شما VIP هستید (تا {date})", "wallet.vip_inactive": "شما کاربر عادی هستید.",
         "profile.coins":"سکه","profile.total_xp":"مجموع XP","profile.extra_notes":"هنگ‌درام‌های اضافی","profile.skins":"اسکین‌های باز‌شده", "profile.history_title":"📊 تاریخچه تمرین (۱۰ مورد اخیر)", "profile.history_empty": "هنوز تمرینی ثبت نشده است",
-        "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت سقوط نت‌ها","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها","settings.active_skin":"طرح هنگ‌درام (اسکین)",
+        "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت گام‌","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها","settings.active_skin":"طرح هنگ‌درام (اسکین)",
         "settings.avatar_gender": "جنسیت آواتار رندوم", "settings.avatar_random_btn": "🎲 ساخت آواتار رندوم (۲۰ سکه)", "settings.avatar_none_btn": "🚫 بدون آواتار (حروف)",
         "display.number": "عدد", "display.name": "حروف",
         "msg.saved":"✓ تغییرات ذخیره شد","msg.saved_token":"✓ تغییرات ذخیره شد (توکن جدید صادر شد)","msg.pass_changed":"✓ رمز عبور تغییر کرد","msg.avatar_uploaded":"✓ آواتار آپلود شد","msg.uploading":"در حال آپلود...","msg.error_server":"خطا در ارتباط با سرور","msg.error_generic":"خطا","msg.pass_short":"رمز جدید حداقل ۶ کاراکتر باید باشد",
@@ -40,6 +40,10 @@ const I18N = {
         "settings.theme": "تم بازی", "theme.dark": "🌙 شب (تیره)", "theme.light": "☀️ روز (روشن)",       
         "settings.mic_title": "🎤 تنظیمات ساز و میکروفون","settings.mic_desc": "برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.","profile.logout_btn": "خروج از حساب کاربری",
         "editor.title": "🎼 آهنگساز","editor.song_title": "عنوان آهنگ","editor.artist": "خواننده","editor.difficulty": "سختی","editor.select_notes": "نت‌ها را انتخاب کنید:","editor.notes_count": "تعداد نت‌ها:","editor.save_btn": "💾 ذخیره آهنگ","editor.clear_btn": "🗑 پاک کردن","editor.my_songs": "آهنگ‌های من",    
+        "menu.training":"📚 تمرین کن و یاد بگیر","training.title":"📚 تمرین کن و یاد بگیر","training.my_songs":"🎵 آهنگ‌های من",
+        "editor.fall_speed": "سرعت گام ها","editor.commit_step": "✅ ثبت این گام","editor.new_step": "➕ گام جدید","editor.current_step": "گام فعلی (نت‌های انتخاب شده):","editor.steps_list": "لیست گام‌ها:","editor.cost_note": "💰 هزینه ساخت آهنگ: ۱۵۰ سکه","editor.no_steps": "هنوز گامی ثبت نشده است","editor.no_notes": "هنوز نتی انتخاب نشده — از دکمه‌های بالا نت انتخاب کنید","editor.song_saved": "✅ آهنگ با موفقیت ذخیره شد!","difficulty.easy": "آسان","difficulty.medium": "متوسط","difficulty.hard": "سخت","result.reward_song_full": "عالی! پاداش ویژه آهنگ + ۲۵ سکه (بالای ۸۰٪)",
+        "menu.editor": "🎼 آهنگساز","editor.current_step": "گام فعلی (نت‌های انتخاب شده):","editor.no_notes": "هنوز نتی انتخاب نشده — از دکمه‌های بالا نت انتخاب کنید","editor.steps_list": "لیست گام‌ها:","editor.no_steps": "هنوز گامی ثبت نشده است","editor.cost_note": "💰 هزینه ساخت آهنگ: ۱۵۰ سکه","editor.loading": "در حال بارگذاری...","editor.no_songs": "هنوز آهنگی نساخته‌اید",
+
     },
 
     en: {
@@ -51,7 +55,7 @@ const I18N = {
         "wallet.title":"💰 Wallet Balance","wallet.hint":"Your coins are used for game entries and purchases","wallet.buy":"🛒 Buy Coins","wallet.pkg_starter":"Starter Pack","wallet.pkg_standard":"Standard Pack","wallet.pkg_premium":"Premium Pack","wallet.pkg_ultimate":"Ultimate Pack",
         "wallet.vip_title": "👑 VIP Subscription", "wallet.buy_vip_btn": "Buy VIP (1000 Coins)", "wallet.renew_vip_btn": "Renew VIP (1000 Coins)", "wallet.vip_active": "✅ You are VIP (Until {date})", "wallet.vip_inactive": "You are a regular user.",
         "profile.coins":"Coins","profile.total_xp":"Total XP","profile.extra_notes":"Extra Notes","profile.skins":"Unlocked Skins", "profile.history_title":"📊 Practice History (Last 10)", "profile.history_empty": "No practice history yet",
-        "settings.title":"⚙️ Settings","settings.account":"📝 Account Info","settings.username":"Username","settings.email":"Email","settings.save_profile":"Save Changes","settings.password":"🔒 Change Password","settings.current_password":"Current Password","settings.new_password":"New Password (min 6 chars)","settings.change_password":"Change Password","settings.avatar":"🖼️ Profile Avatar","settings.choose_image":"Choose Image","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.font":"Font","settings.fall_speed":"Note Fall Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.font_vazir":"Vazirmatn (Default)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "Note Display Mode","settings.active_skin":"Handpan Skin",
+        "settings.title":"⚙️ Settings","settings.account":"📝 Account Info","settings.username":"Username","settings.email":"Email","settings.save_profile":"Save Changes","settings.password":"🔒 Change Password","settings.current_password":"Current Password","settings.new_password":"New Password (min 6 chars)","settings.change_password":"Change Password","settings.avatar":"🖼️ Profile Avatar","settings.choose_image":"Choose Image","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.font":"Font","settings.fall_speed":"Step Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.font_vazir":"Vazirmatn (Default)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "Note Display Mode","settings.active_skin":"Handpan Skin",
         "settings.avatar_gender": "Random Avatar Gender", "settings.avatar_random_btn": "🎲 Generate Random Avatar (20 Coins)", "settings.avatar_none_btn": "🚫 No Avatar (Letters)",
         "display.number": "Number", "display.name": "Letters",
         "msg.saved":"✓ Changes saved","msg.saved_token":"✓ Changes saved (New token issued)","msg.pass_changed":"✓ Password changed","msg.avatar_uploaded":"✓ Avatar uploaded","msg.uploading":"Uploading...","msg.error_server":"Server connection error","msg.error_generic":"Error","msg.pass_short":"New password must be at least 6 characters",
@@ -68,7 +72,11 @@ const I18N = {
         "settings.theme": "App Theme", "theme.dark": "🌙 Night (Dark)", "theme.light": "☀️ Day (Light)",
         "settings.mic_title": "🎤 Instrument & Mic Settings","settings.mic_desc": "For best real-instrument performance, test the mic and then calibrate the instrument.","profile.logout_btn": "Logout of Account",
         "editor.title": "🎼 Song Editor","editor.song_title": "Song Title","editor.artist": "Artist","editor.difficulty": "Difficulty","editor.select_notes": "Select notes:","editor.notes_count": "Notes count:","editor.save_btn": "💾 Save Song","editor.clear_btn": "🗑 Clear","editor.my_songs": "My Songs",   
-     }
+        "menu.training":"📚 Practice & Learn","training.title":"📚 Practice & Learn","training.my_songs":"🎵 My Songs",
+        "editor.fall_speed": "Note Step Speed","editor.commit_step": "✅ Commit Step","editor.new_step": "➕ New Step","editor.current_step": "Current Step (Selected Notes):","editor.steps_list": "Steps List:","editor.cost_note": "💰 Song Creation Cost: 150 Coins","editor.no_steps": "No steps committed yet","editor.no_notes": "No notes selected yet — choose notes from above","editor.song_saved": "✅ Song saved successfully!","difficulty.easy": "Easy","difficulty.medium": "Medium","difficulty.hard": "Hard","result.reward_song_full": "Excellent! Special Song Reward + 25 Coins (Above 80%)",
+        "menu.editor": "🎼 Song Editor","editor.current_step": "Current Step (Selected Notes):","editor.no_notes": "No notes selected yet — choose from the buttons above","editor.steps_list": "Steps List:","editor.no_steps": "No steps committed yet","editor.cost_note": "💰 Song Creation Cost: 150 Coins","editor.loading": "Loading...","editor.no_songs": "You haven't created any songs yet",
+
+    }
 };
 
 const LEVEL_NAMES_I18N = {
@@ -426,6 +434,8 @@ function showGame(){
 function backToMenu(){
     showView('menu-view');
     stopFallingGame(); clearInterval(countdownInterval);
+    currentSongData = null;
+    currentStepIdx = 0;
     document.getElementById('countdown-overlay').style.display='none';
     fetchUserProfile();
 }
@@ -437,38 +447,64 @@ async function goToFreePlay(){
     if (c) { drawHandpan(c.getContext('2d')); setupInteraction(c,'free'); }
 }
 
-async function goToFallingGame(){
+async function goToFallingGame(song = null) {
     await fetchUserProfile();
     
+    currentSongData = (song && Array.isArray(song.notes_data) && song.notes_data.length > 0) ? song : null;
+    currentStepIdx = 0;
 
-    if (needsRecalibration()) {
+    let entryCost = 0;
+    if (currentSongData) {
+        const isVip = currentUser?.is_vip;
+        const createdDate = currentSongData.created_at ? new Date(currentSongData.created_at) : new Date();
+        const daysOld = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+        
+        if (daysOld > 14 && !isVip) {
+            entryCost = 20; // آهنگ قدیمی‌تر از ۱۴ روز
+        }
+    } else {
+        entryCost = 10; // حالت تستی
+    }
+
+    if (!currentSongData && needsRecalibration()) {
         const go = confirm(t('msg.confirm_recalib'));
         if (go) { startCalibration(); return; }
     }
     applyUserAssets();
-    if(userTokens<10){ alert(t('misc.not_enough_coins')); return; }
-    const token=localStorage.getItem('pm_token');
-    try{
-        const res=await fetch('/api/users/spend-tokens',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({amount:10})});
-        if(res.ok){ const d=await res.json(); userTokens=d.new_balance; document.getElementById('tokenDisplay').innerText=userTokens; }
-        else { alert(t('misc.coin_deduct_error')); return; }
-    }catch(e){ alert(t('misc.connection_error')); return; }
-    
+
+    if (entryCost > 0) {
+        if (userTokens < entryCost) { alert(t('misc.not_enough_coins')); return; }
+        const token = localStorage.getItem('pm_token');
+        try {
+            const res = await fetch('/api/users/spend-tokens', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ amount: entryCost })
+            });
+            if (res.ok) {
+                const d = await res.json();
+                userTokens = d.new_balance;
+                document.getElementById('tokenDisplay').innerText = userTokens;
+            } else {
+                alert(t('misc.coin_deduct_error')); return;
+            }
+        } catch (e) { alert(t('misc.connection_error')); return; }
+    }
+
     showView('falling-view');
-    
-    const c=document.getElementById('handpanCanvasFalling');
-    if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c,'falling'); }
+    const c = document.getElementById('handpanCanvasFalling');
+    if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c, 'falling'); }
     
     isMicMode = false;
     const micBtn = document.getElementById('micBtn');
-    if(micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "var(--danger-color)"; micBtn.style.color = "var(--danger-color)"; }
+    if (micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "var(--danger-color)"; micBtn.style.color = "var(--danger-color)"; }
     const fv = document.getElementById('falling-view');
     if (fv) fv.classList.remove('mic-active');
     HIT_Y = 220;
     const fc = document.getElementById('fallingCanvas');
     if (fc) { fc.width = 820; fc.height = 280; }
 
-    score=0; hits=0; misses=0; totalSpawned=0; fallingNotes=[];
+    score = 0; hits = 0; misses = 0; totalSpawned = 0; fallingNotes = [];
     startCountdown();
 }
 
@@ -502,6 +538,21 @@ async function goToSongEditor() {
         initSongEditor(); // 👈 فراخوانی تابع راه‌اندازی
     }
     applyLanguage(); // برای اعمال ترجمه‌ها روی صفحه جدید
+}
+
+function goToTrainingMenu() {
+    showView('training-view');
+}
+
+function goToTutorialLevel(n) {
+    alert('📖 مرحله ' + n + ' به‌زودی فعال می‌شود!');
+}
+
+function goToMySongs() {
+    showView('my-songs-view');
+    if (typeof loadMySongsInto === 'function') {
+        loadMySongsInto('my-songs-list-menu');
+    }
 }
 
 function onLanguageChange(l) {
@@ -582,7 +633,9 @@ function drawHandpan(ctx, highlight = null) {
 let fallingNotes=[];
 let animationId=null, lastTime=0;
 let score=0,hits=0,misses=0,totalSpawned=0;
-let MAX_NOTES=20, HIT_Y=220; 
+let MAX_NOTES=20, HIT_Y=220;
+let currentSongData = null;
+let currentStepIdx = 0;
 let isGameRunning=false, noteSpawnTimer=0, countdownInterval=null;
 const ctxFall=document.getElementById('fallingCanvas').getContext('2d');
 const TEST_SEQUENCE=["D","1","2","3","4","5","6","7","8"];
@@ -598,25 +651,56 @@ function startCountdown(){
         else tx.innerText=count;
     },1000);
 }
-function startFallingLoop(){
-    isGameRunning=true; lastTime=performance.now();
-    spawnNote(); noteSpawnTimer=1.5;
-    if(animationId) cancelAnimationFrame(animationId);
+
+function startFallingLoop() {
+    isGameRunning = true;
+    lastTime = performance.now();
+    spawnNote();
+    noteSpawnTimer = currentSongData ? (1.35 / (currentSongData.fall_speed || 1.0)) : 1.5;
+    if (animationId) cancelAnimationFrame(animationId);
     requestAnimationFrame(animateFalling);
 }
-function spawnNote(){
-    if(!isGameRunning || totalSpawned>=MAX_NOTES) return;
+
+function spawnNote() {
+    if (!isGameRunning) return;
+
+    // حالت آهنگ: گام‌ها به ترتیب
+    if (currentSongData) {
+        if (currentStepIdx >= currentSongData.notes_data.length) return;
+        const step = currentSongData.notes_data[currentStepIdx];
+        currentStepIdx++;
+        totalSpawned++;
+        const stepNotes = Array.isArray(step.notes) ? step.notes : (step.note ? [step.note] : []);
+        const speed = 200 * (currentSongData.fall_speed || 1.0);
+        stepNotes.forEach(note => {
+            if (ACTIVE_LAYOUT[note]) {
+                fallingNotes.push({
+                    note,
+                    x: ACTIVE_LAYOUT[note][0],
+                    y: -50,
+                    speed,
+                    hit: false
+                });
+            }
+        });
+        return;
+    }
+
+    // حالت تستی (قبلی)
+    if (totalSpawned >= MAX_NOTES) return;
     totalSpawned++;
-    const avail=TEST_SEQUENCE.filter(n=>ACTIVE_LAYOUT[n]);
-    if(!avail.length) return;
-    const note=avail[Math.floor(Math.random()*avail.length)];
-    fallingNotes.push({note,x:ACTIVE_LAYOUT[note][0],y:-50,speed:currentUser?.fall_speed||200,hit:false});
+    const avail = TEST_SEQUENCE.filter(n => ACTIVE_LAYOUT[n]);
+    if (!avail.length) return;
+    const note = avail[Math.floor(Math.random() * avail.length)];
+    fallingNotes.push({ note, x: ACTIVE_LAYOUT[note][0], y: -50, speed: currentUser?.fall_speed || 200, hit: false });
 }
+
 function animateFalling(time){
     if(!isGameRunning) return;
     const dt=(time-lastTime)/1000; lastTime=time; noteSpawnTimer+=dt;
-    if(noteSpawnTimer>1.5){ spawnNote(); noteSpawnTimer=0; }
-    
+    const _spawnInterval = currentSongData ? (1.35 / (currentSongData.fall_speed || 1.0)) : 1.5;
+    if(noteSpawnTimer > _spawnInterval){ spawnNote(); noteSpawnTimer = 0; }
+
     ctxFall.clearRect(0, 0, 820, isMicMode ? 500 : 280);
     ctxFall.beginPath(); ctxFall.moveTo(0,HIT_Y); ctxFall.lineTo(820,HIT_Y);
     ctxFall.strokeStyle=getCSSVar('--primary', '#38bdf8'); ctxFall.lineWidth=4; ctxFall.stroke();
@@ -683,7 +767,19 @@ function checkHit(note, fromMic = false) {
     }
 }
 
-function checkEndGame(){ if(totalSpawned>=MAX_NOTES && fallingNotes.length===0 && isGameRunning) endFallingGame(); }
+function checkEndGame() {
+    if (!isGameRunning) return;
+    if (currentSongData) {
+        if (currentStepIdx >= currentSongData.notes_data.length && fallingNotes.length === 0) {
+            endFallingGame();
+        }
+    } else {
+        if (totalSpawned >= MAX_NOTES && fallingNotes.length === 0) {
+            endFallingGame();
+        }
+    }
+}
+
 function stopFallingGame(){ isGameRunning=false; if(animationId) cancelAnimationFrame(animationId); }
 
 async function endFallingGame(){
@@ -693,14 +789,22 @@ async function endFallingGame(){
     const att=hits+misses; 
     const acc=att>0?Math.round((hits/att)*100):0;
     
+    const practiceMode = currentSongData ? 'song' : 'falling';
+
     let earned = 0; let key = ''; let xpStr = '0';
 
-    if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
-    else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
-    else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
-    else { earned = -5; key = 'result.reward_penalty'; }
+    if (practiceMode === 'song') {
+        if (acc >= 80) { earned = 25; key = 'result.reward_song_full'; xpStr = '+20'; }
+        else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; xpStr = '+10'; }
+        else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
+        else { earned = -5; key = 'result.reward_penalty'; }
+    } else {
+        if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
+        else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
+        else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
+        else { earned = -5; key = 'result.reward_penalty'; }
+    }
 
-    // 👇 تابعی که کارهای مربوط به نمایش نتایج و ارسال به سرور رو انجام میده
     const showResults = async () => {
         document.getElementById('resScore').innerText = score;
         document.getElementById('resHits').innerText = hits;
@@ -714,7 +818,7 @@ async function endFallingGame(){
 
         const token = localStorage.getItem('pm_token');
         try {
-            const res = await fetch('/api/users/game-reward', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score}) });
+            const res = await fetch('/api/users/game-reward', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score, mode: practiceMode}) });
             if(res.ok) {
                 const d = await res.json();
                 userTokens = d.new_balance;
@@ -724,16 +828,18 @@ async function endFallingGame(){
                 document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
                 if(d.leveled_up && d.rewards_granted?.length) { window._lastRewards = d.rewards_granted; showRewardModal(d.rewards_granted); }
             }
-            await fetch('/api/users/practice-history', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ mode: 'falling', score: score, accuracy: acc }) });
+            await fetch('/api/users/practice-history', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ mode: practiceMode, score: score, accuracy: acc }) });
         } catch(e) { console.error(e); }
     };
 
-    // 👇 نمایش تبلیغ بعد از بازی (اگر VIP نباشه)
     if (!currentUser?.is_vip) {
         showAd(showResults);
     } else {
         showResults();
     }
+    
+    currentSongData = null;
+    currentStepIdx = 0;
 }
 
 function renderResultToken(r){

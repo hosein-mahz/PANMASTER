@@ -165,16 +165,39 @@
         <!-- منوی اصلی -->
         <div id="menu-view" class="view active">
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
-            <button class="menu-btn" onclick="goToFreePlay()" data-i18n="menu.free_play">🎵 بداهه‌نوازی (رایگان)</button>
-            <button class="menu-btn" onclick="goToFallingGame()" style="border-color: #fbbf24; color: #fbbf24;">
-                <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin">)
-            </button>
-            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;">🎼 آهنگساز</button>
-            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
+            <button class="menu-btn" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;" data-i18n="menu.training">📚 تمرین کن و یاد بگیر</button>
+            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;" data-i18n="menu.editor">🎼 آهنگساز</button>            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
-            <p style="color: var(--text-muted); margin-top: 10px; font-size: 13px;" data-i18n="menu.hint">💡 دقت بالای ۸۰٪ = ۲۰ XP + جایزه مرحله</p>
+            <p style="color: var(--text-muted); margin-top: 10px; font-size: 13px;" data-i18n="menu.hint">💡 دقت بالای ۷۵٪ = ۲۰ XP + جایزه مرحله</p>
+        </div>
+
+        <!-- منوی تمرین کن و یاد بگیر -->
+        <div id="training-view" class="view">
+            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            <h2 style="color:var(--primary); margin-bottom: 22px; padding-top: 40px;" data-i18n="training.title">📚 تمرین کن و یاد بگیر</h2>
+            <button class="menu-btn" onclick="goToFreePlay()" data-i18n="menu.free_play">🎵 بداهه‌نوازی (رایگان)</button>
+            <button class="menu-btn" onclick="goToFallingGame()" style="border-color:#fbbf24;color:#fbbf24;">
+                <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin" style="width:16px;height:16px;vertical-align:middle;">)
+            </button>
+            <button class="menu-btn" onclick="goToTutorialLevel(1)" style="opacity:0.6;">📖 مرحله ۱ (به‌زودی)</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(2)" style="opacity:0.6;">📖 مرحله ۲ (به‌زودی)</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(3)" style="opacity:0.6;">📖 مرحله ۳ (به‌زودی)</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(4)" style="opacity:0.6;">📖 مرحله ۴ (به‌زودی)</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(5)" style="opacity:0.6;">📖 مرحله ۵ (به‌زودی)</button>
+            <button class="menu-btn" onclick="goToMySongs()" style="border-color:#a78bfa;color:#a78bfa;" data-i18n="training.my_songs">🎵 آهنگ‌های من</button>
+        </div>
+
+        <!-- آهنگ‌های من (منوی تمرین) -->
+        <div id="my-songs-view" class="view">
+            <button class="back-btn" onclick="goToTrainingMenu()" data-i18n="game.back">← بازگشت</button>
+            <div class="card-section" style="max-width: 500px; width: 90%; margin-top: 40px;">
+                <h2 data-i18n="training.my_songs">🎵 آهنگ‌های من</h2>
+                <div id="my-songs-list-menu">
+                    <div style="text-align:center; color:var(--text-muted); padding:20px;">در حال بارگذاری...</div>
+                </div>
+            </div>
         </div>
 
         <!-- بداهه -->
@@ -317,8 +340,7 @@
                             <select id="setLanguage" onchange="onLanguageChange(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
                         </div>
                         <div class="setting-row">
-                            <label><span data-i18n="settings.fall_speed">سرعت سقوط نت‌ها</span> <span class="range-value" id="fallSpeedVal">200</span></label>
-                            <input type="range" id="setFallSpeed" min="100" max="500" step="10" oninput="document.getElementById('fallSpeedVal').innerText=this.value">
+                            <label><span data-i18n="settings.fall_speed">سرعت گام‌ها</span> <span class="range-value" id="fallSpeedVal">200</span></label>                            <input type="range" id="setFallSpeed" min="100" max="500" step="10" oninput="document.getElementById('fallSpeedVal').innerText=this.value">
                         </div>
                         <div class="setting-row">
                             <label><span data-i18n="settings.note_size">اندازه نت‌ها</span> <span class="range-value" id="noteSizeVal">1.0</span></label>
@@ -385,7 +407,7 @@
             </div>
         </div>
 
-                <!-- 👇 آهنگساز -->
+        <!-- 👇 آهنگساز -->
         <div id="editor-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
@@ -396,27 +418,41 @@
                 <div class="setting-row">
                     <label data-i18n="editor.difficulty">سختی</label>
                     <select id="song-difficulty">
-                        <option value="Easy">آسان</option>
-                        <option value="Medium">متوسط</option>
-                        <option value="Hard">سخت</option>
+                        <option value="Easy" data-i18n="difficulty.easy">آسان</option>
+                        <option value="Medium" data-i18n="difficulty.medium">متوسط</option>
+                        <option value="Hard" data-i18n="difficulty.hard">سخت</option>
                     </select>
+                </div>
+                
+                <div class="setting-row">
+                    <label data-i18n="editor.fall_speed">سرعت گام ها</label>
+                    <input type="range" id="song-fall-speed" min="0.25" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('fallSpeedEditorVal').innerText=this.value">
+                    <span id="fallSpeedEditorVal" style="color:var(--primary); font-weight:bold; margin-right:6px;">1.00</span>
                 </div>
                 
                 <div style="margin-top: 15px; margin-bottom: 15px;">
                     <label data-i18n="editor.select_notes" style="font-size: 13px; color: var(--text-muted);">نت‌ها را انتخاب کنید:</label>
-                    <div id="note-buttons" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; justify-content: center;">
-                        <!-- دکمه‌های نت توسط جاوااسکریپت ساخته می‌شوند -->
-                    </div>
+                    <div id="note-buttons" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; justify-content: center;"></div>
                 </div>
 
                 <div style="background: var(--bg-main); padding: 10px; border-radius: 10px; min-height: 50px; border: 1px dashed var(--border); margin-bottom: 15px;">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" data-i18n="editor.notes_count">تعداد نت‌ها:</div>
-                    <div id="editor-notes-count" style="color: var(--primary); font-weight: bold; margin-bottom: 8px;">0</div>
-                    <div id="editor-notes-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                    <div data-i18n="editor.current_step" style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">گام فعلی (نت‌های انتخاب شده):</div>                    <div id="editor-notes-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
                 </div>
 
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <button class="btn" onclick="commitStep()" data-i18n="editor.commit_step" style="flex:1; background:var(--success-color); color:#fff;">✅ ثبت این گام</button>
+                    <button class="btn btn-ghost" onclick="newStep()" data-i18n="editor.new_step" style="flex:1;">➕ گام جدید</button>
+                </div>
+
+                <div style="background: var(--bg-main); padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; max-height: 200px; overflow-y: auto;">
+                    <div data-i18n="editor.steps_list" style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">لیست گام‌ها:</div>
+                    <div id="song-steps-list"></div>
+                </div>
+                
+                <div style="font-size:13px; color:var(--coin-text); margin-bottom:10px;" data-i18n="editor.cost_note">💰 هزینه ساخت آهنگ: ۱۵۰ سکه</div>
+
                 <button class="btn" onclick="saveSong()" data-i18n="editor.save_btn">💾 ذخیره آهنگ</button>
-                <button class="btn btn-ghost" onclick="clearSongNotes()" data-i18n="editor.clear_btn">🗑 پاک کردن</button>
+                <button class="btn btn-ghost" onclick="clearSongNotes()" data-i18n="editor.clear_btn">🗑 پاک کردن همه</button>
                 
                 <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                     <h3 data-i18n="editor.my_songs" style="color: var(--primary); margin-bottom: 10px;">آهنگ‌های من</h3>

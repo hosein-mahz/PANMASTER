@@ -99,6 +99,7 @@ class GameRewardInput(BaseModel):
     tokens_earned: int
     accuracy: float
     score: int = 0
+    mode: str = "falling"
 
 class GameRewardResponse(BaseModel):
     new_balance: int
@@ -145,6 +146,7 @@ class SongCreate(BaseModel):
     difficulty: str = "Easy"
     notes_data: List[dict] = []
     is_public: bool = True
+    fall_speed: float = 1.0
 
 class SongOut(BaseModel):
     id: int
@@ -155,5 +157,7 @@ class SongOut(BaseModel):
     is_premium: bool = False
     created_by: Optional[int] = None
     is_public: bool = True
+    fall_speed: float = 1.0
+    created_at: Optional[datetime] = None
     class Config:
         from_attributes = True

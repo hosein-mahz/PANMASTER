@@ -294,19 +294,32 @@ def game_reward(
     # 👇 ۱. اعتبارسنجی دقت (بین ۰ تا ۱۰۰)
     acc = max(0, min(100, reward.accuracy))
     
-    # 👇 ۲. محاسبه سکه در بک‌اند (نه اعتماد به کلاینت)
-    if acc >= 75:
-        earned = 15
-        xp_gained = 20
-    elif acc >= 50:
-        earned = 10
-        xp_gained = 0
-    elif acc >= 25:
-        earned = 0
-        xp_gained = 0
-    else:
-        earned = -5
-        xp_gained = 0
+    if reward.mode == "song":
+        if acc >= 80:
+            earned = 25
+            xp_gained = 20
+        elif acc >= 50:
+            earned = 10
+            xp_gained = 10
+        elif acc >= 25:
+            earned = 0
+            xp_gained = 0
+        else:
+            earned = -5
+            xp_gained = 0
+    else: # حالت‌های falling (تستی) و tutorial (آموزشی)
+        if acc >= 75:
+            earned = 15
+            xp_gained = 20
+        elif acc >= 50:
+            earned = 10
+            xp_gained = 0
+        elif acc >= 25:
+            earned = 0
+            xp_gained = 0
+        else:
+            earned = -5
+            xp_gained = 0
 
     # ۳. اعمال سکه
     current_user.coins = (current_user.coins or 0) + earned
@@ -576,11 +589,17 @@ def create_song(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
+    cost = 150
+    if current_user.coins < cost:
+        raise HTTPException(status_code=400, detail="سکه کافی نیست (نیاز به ۱۵۰ سکه)")
+    current_user.coins -= cost
+
     song = models.Song(
         title=data.title,
         artist=data.artist,
         difficulty=data.difficulty,
         notes_data=data.notes_data,
+        fall_speed=data.fall_speed,
         is_public=data.is_public,
         created_by=current_user.id,
     )
