@@ -1,23 +1,18 @@
 # PanMaster Code Formatting Rules
 
 ## 1. Python (FastAPI Backend)
-- استفاده از **4 فاصله (Space)** برای تودرتویی (Indent).
-- نام توابع و متغیرها به صورت **snake_case** (مثلاً `get_current_user`).
-- نام کلاس‌ها به صورت **PascalCase** (مثلاً `UserOut`).
-- حداکثر طول خط 88 کاراکتر باشد.
-- بین توابع 2 خط فاصله خالی بگذار.
+- Indent: 4 spaces.
+- Variables/Functions: snake_case (e.g., `get_current_user`).
+- Classes: PascalCase (e.g., `UserOut`).
+- Max line length: 88.
 
 ## 2. JavaScript (Frontend)
-- استفاده از **2 فاصله (Space)** برای تودرتویی.
-- نام متغیرها و توابع به صورت **camelCase** (مثلاً `drawHandpan`).
-- نام ثابت‌ها (Constants) به صورت **UPPER_SNAKE_CASE** (مثلاً `HANDPAN_LAYOUT_9`).
-- رشته‌ها (Strings) با **تک کوتیشن (')** نوشته شوند.
-- در انتهای هر دستور **سمی‌کالن (;)** قرار بگیرد.
+- Indent: 2 spaces.
+- Variables/Functions: camelCase (e.g., `drawHandpan`).
+- Constants: UPPER_SNAKE_CASE (e.g., `HANDPAN_LAYOUT_9`).
+- Strings: Single quotes (').
+- Semicolons: Always use at the end of statements.
 
-## 3. HTML/CSS
-- ویژگی‌های CSS به صورت **kebab-case** (مثلاً `background-color`).
-- استفاده از متغیرهای CSS (مثل `var(--bg-card)`) به جای رنگ‌های هاردکد شده.
-
-## 4. General
-- حذف فاصله‌های خالی اضافی در انتهای خطوط.
-- یک خط خالی در انتهای هر فایل.
+## 3. General
+- Remove trailing spaces.
+- Leave one empty line at the end of each file.
