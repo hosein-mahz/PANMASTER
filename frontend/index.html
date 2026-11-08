@@ -22,13 +22,13 @@
         .xp-bar { width: 100%; height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
         .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.4s ease; }
         .xp-text { font-size: 10px; color: var(--text-muted); }
+        
         .view { display: none; flex-direction: column; flex: 1; width: 100%; align-items: center; justify-content: flex-start; background: var(--bg-main); border-radius: 20px; position: relative; overflow-y: auto; padding: 60px 15px 20px; }
         .view.active { display: flex; }
         
-        .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 15px; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-main) 100%); color: var(--primary); border: 1px solid var(--border); border-bottom: 5px solid var(--btn-shadow); /* 👈 خط ضخیم پایین برای سه بعدی */border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: all 0.1s ease; display: block; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 15px; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-main) 100%); color: var(--primary); border: 1px solid var(--border); border-bottom: 5px solid var(--btn-shadow); border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: all 0.1s ease; display: block; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .menu-btn:hover { background: var(--bg-card); border-color: var(--primary); }
-        .menu-btn:active { border-bottom-width: 2px; transform: translateY(3px);background: var(--btn-shadow);}
-        .menu-btn:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--primary); transform: translateY(-2px); }
+        .menu-btn:active { border-bottom-width: 2px; transform: translateY(3px); background: var(--btn-shadow); }
         .menu-btn img { display: inline-block; vertical-align: middle; width: 20px; height: 20px; margin: 0 4px; }
         
         /* تنظیمات کانواس‌ها */
@@ -60,26 +60,25 @@
         .wallet-balance span { font-size: 38px; font-weight: 900; color: var(--coin-text); }
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
         .pkg-card { background: var(--bg-main); border: 2px solid var(--border); border-radius: 14px; padding: 16px 10px; cursor: pointer; text-align: center; transition: 0.2s; }
-.pkg-card:hover { border-color: var(--coin-text); transform: translateY(-2px); }
-.pkg-coins { font-size: 22px; font-weight: 900; color: var(--coin-text); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .pkg-card:hover { border-color: var(--coin-text); transform: translateY(-2px); }
+        .pkg-coins { font-size: 22px; font-weight: 900; color: var(--coin-text); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .pkg-coins img { width: 24px; height: 24px; }
 
-        .avatar-big-wrap { display: inline-block; margin-bottom: 12px; }
+        .avatar-big-wrap { display: inline-block; margin-bottom: 12px; position: relative; }
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--bg-main); }
         .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
-        .avatar-star {position: absolute;top: -6px;right: -6px;width: 22px;height: 22px;background: var(--bg-card);border: 1px solid var(--border);border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;cursor: pointer;z-index: 5;transition: 0.2s;}
-        .avatar-star.active {background: var(--coin-text);border-color: var(--coin-text);color: var(--bg-card);transform: scale(1.1);}
-        .avatar-delete {position: absolute;top: -6px;left: -6px;width: 22px;height: 22px;background: rgba(239, 68, 68, 0.9);border: 1px solid #b91c1c;border-radius: 50%;display: flex;align-items: center;justify-content: center;font-size: 12px;color: white;cursor: pointer;z-index: 5;transition: 0.2s;}
-        .avatar-delete:hover {transform: scale(1.1);background: #ef4444;}
         
+        /* 👇 اصلاح استایل ستاره و حذف آواتار تا از کادر بیرون نزنن */
+        .avatar-star { position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; cursor: pointer; z-index: 5; transition: 0.2s; }
+        .avatar-star.active { background: var(--coin-text); border-color: var(--coin-text); color: #fff; transform: scale(1.1); }
+        .avatar-delete { position: absolute; top: 0px; left: 0px; width: 18px; height: 18px; background: rgba(239, 68, 68, 0.9); border: 1px solid #b91c1c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; cursor: pointer; z-index: 5; transition: 0.2s; }
+        .avatar-delete:hover { transform: scale(1.1); background: #ef4444; }
+
         .settings-block { margin-bottom: 22px; text-align: right; }
         .setting-row { margin-bottom: 12px; }
         .setting-row label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
         
-        /* 👇 اصلاح شد: حذف color:#fff تا متن در تم روشن دیده شود */
-        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { 
-            width: 100%; padding: 10px 12px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; 
-        }
+        .setting-row input[type="text"], .setting-row input[type="email"], .setting-row input[type="password"], .setting-row select { width: 100%; padding: 10px 12px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; }
         .setting-row input:focus, .setting-row select:focus { border-color: var(--primary); }
         .setting-row input[type="range"] { width: 100%; accent-color: var(--primary); }
         .range-value { font-size: 12px; color: var(--primary); font-weight: bold; margin-right: 6px; }
@@ -97,12 +96,11 @@
 
         #micDebug { display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 10px; font-size: 14px; z-index: 999; color: var(--primary); min-width: 220px; text-align: center; border: 1px solid var(--primary); font-family: monospace; }
 
-        /* ===== استایل آواتار و گالری ===== */
-        .avatar-protected {position: relative;display: inline-flex;justify-content: center;align-items: center;}
-        .avatar-protected::after {content: "PanMaster";position: absolute;bottom: 12px;left: 50%;transform: translateX(-50%);font-size: 10px;color: rgba(255, 255, 255, 0.8);font-weight: bold;letter-spacing: 1px;text-shadow: 1px 1px 3px rgba(0,0,0,0.9);pointer-events: none;z-index: 10;}
-        .avatar-option {width: 65px;height: 65px;border-radius: 50%;border: 3px solid transparent;cursor: pointer;transition: 0.2s;object-fit: cover;background: var(--bg-main);}
-        .avatar-option:hover, .avatar-option.selected {border-color: var(--primary);transform: scale(1.05);}
-        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 10px; margin-bottom: 15px;}
+        .avatar-protected { position: relative; display: inline-flex; justify-content: center; align-items: center; }
+        .avatar-protected::after { content: "PanMaster"; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255, 255, 255, 0.8); font-weight: bold; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); pointer-events: none; z-index: 10; }
+        .avatar-option { width: 65px; height: 65px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover; background: var(--bg-main); }
+        .avatar-option:hover, .avatar-option.selected { border-color: var(--primary); transform: scale(1.05); }
+        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 10px; margin-bottom: 15px; }
 
         .skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 10px; }
         .skin-option { width: 70px; height: 70px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: 0.2s; object-fit: cover; background: var(--bg-main); }
@@ -112,10 +110,14 @@
 
         .vip-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0f172a; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 900; margin-right: 5px; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
 
-        /* ===== 👇 استایل سه بعدی (3D) برای کشوها ===== */
-        .acc-btn, .custom-accordion-btn {width: 100%; padding: 12px 15px; background: linear-gradient(180deg, var(--bg-btn) 0%, var(--bg-card) 100%);color: var(--text-main); border: 1px solid var(--border); border-bottom: 4px solid var(--btn-shadow);border-radius: 10px; font-size: 14px; font-weight: bold;cursor: pointer; display: flex; justify-content: space-between; align-items: center;transition: all 0.1s ease; margin-bottom: 10px;box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
-        .acc-btn:active, .custom-accordion-btn:active {border-bottom-width: 1px;transform: translateY(3px);background: var(--bg-btn-hover);}
-        .acc-content, .custom-accordion-content {display: none; background: var(--bg-main); color: var(--text-main); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);}
+        .acc-btn { width: 100%; padding: 12px 15px; background: linear-gradient(180deg, var(--bg-btn) 0%, var(--bg-card) 100%); color: var(--text-main); border: 1px solid var(--border); border-bottom: 4px solid var(--btn-shadow); border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.1s ease; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .acc-btn:active { border-bottom-width: 1px; transform: translateY(3px); background: var(--bg-btn-hover); }
+        .acc-content { display: none; background: var(--bg-main); color: var(--text-main); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+
+        /* آهنگساز */
+        .note-btn { padding: 10px 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .note-btn:hover { border-color: var(--primary); }
+        .current-note-tag { background: var(--bg-card); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; display: inline-block; }
     </style>
 </head>
 <body>
@@ -141,7 +143,6 @@
     </div>
 
     <div id="game-section">
-
         <div class="header">
             <h1>PanMaster</h1>
             <div class="user-info">
@@ -158,28 +159,31 @@
                     <img src="/assets/coin.svg" alt="coin">
                     <span id="tokenDisplay">0</span>
                 </div>
-                
             </div>
         </div>
 
+        <!-- منوی اصلی -->
         <div id="menu-view" class="view active">
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
             <button class="menu-btn" onclick="goToFreePlay()" data-i18n="menu.free_play">🎵 بداهه‌نوازی (رایگان)</button>
             <button class="menu-btn" onclick="goToFallingGame()" style="border-color: #fbbf24; color: #fbbf24;">
                 <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin">)
             </button>
-            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">حالت ساز واقعی (میکروفون)</button>
+            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;">🎼 آهنگساز</button>
+            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
             <p style="color: var(--text-muted); margin-top: 10px; font-size: 13px;" data-i18n="menu.hint">💡 دقت بالای ۸۰٪ = ۲۰ XP + جایزه مرحله</p>
         </div>
 
+        <!-- بداهه -->
         <div id="free-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <canvas id="handpanCanvasFree" width="820" height="500"></canvas>
         </div>
 
+        <!-- فلاینگ -->
         <div id="falling-view" class="view">
             <div id="countdown-overlay">
                 <div id="countdown-text">۴</div>
@@ -187,12 +191,11 @@
             </div>
             <div class="top-controls"><button class="end-btn" onclick="endFallingGame()" data-i18n="game.end">پایان تمرین</button></div>
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
-            
             <canvas id="fallingCanvas" width="820" height="280"></canvas>
-            <!-- 👇 این خط برگشت داده شد -->
             <canvas id="handpanCanvasFalling" width="820" height="500"></canvas>
         </div>
 
+        <!-- کالیبراسیون -->
         <div id="calibration-view" class="view">
             <button class="back-btn" onclick="cancelCalibration()" data-i18n="game.back">← بازگشت</button>
             <div style="max-width: 500px; width: 90%; text-align: center; margin: 0 auto; padding-top: 40px;">
@@ -213,6 +216,7 @@
             </div>
         </div>
 
+        <!-- نتیجه -->
         <div id="result-view" class="view">
             <div class="result-card">
                 <h2 data-i18n="result.title">🎉 نتیجه تمرین</h2>
@@ -226,31 +230,28 @@
             </div>
         </div>
 
+        <!-- کیف پول -->
         <div id="wallet-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
-            
             <div class="card-section">
                 <h2 data-i18n="wallet.title">💰 موجودی کیف پول</h2>
                 <div class="wallet-balance"><img src="/assets/coin.svg" alt="coin"><span id="walletBalance">0</span></div>
             </div>
-            
             <div class="card-section" style="margin-top: 15px;">
                 <h2 data-i18n="wallet.vip_title">👑 اشتراک VIP</h2>
                 <p id="vipStatusText" style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">...</p>
                 <button class="btn" id="buyVipBtn" onclick="buyVip()" data-i18n="wallet.buy_vip_btn">خرید VIP (۱۰۰۰ سکه)</button>
-                
                 <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
                 <button class="btn-sm" onclick="devToggleVip()" style="background: #ef4444; margin-top: 10px; width: 100%; font-size: 12px;">🛠️ خاموش / روشن کردن VIP (تست)</button>
                 <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
             </div>
-            
-            <!-- 👇 این بخش حالا به درستی داخل کیف پول قرار گرفته -->
             <div class="card-section">
                 <h2 data-i18n="wallet.buy">🛒 خرید سکه</h2>
                 <div class="packages-grid" id="packagesGrid"></div>
             </div>
         </div>
 
+        <!-- پروفایل -->
         <div id="profile-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
@@ -267,43 +268,37 @@
                     <div class="stat"><span data-i18n="profile.total_xp">مجموع XP</span><span id="profileTotalXp">0</span></div>
                 </div>
                 <div style="margin-top: 20px; text-align: right;">
-                    <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);"data-i18n="profile.history_title">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
+                    <h3 style="color: var(--primary); font-size: 15px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);" data-i18n="profile.history_title">📊 تاریخچه تمرین (۱۰ مورد اخیر)</h3>
                     <div id="historyList" style="display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;"></div>
                 </div>
-                <!-- 👇 دکمه خروج ایمن در انتهای پروفایل -->
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
-                    <button onclick="logout()"style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 8px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; width: auto; display: inline-block;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'" data-i18n="profile.logout_btn"> خروج از حساب کاربری</button>
+                    <button onclick="logout()" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 8px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; width: auto; display: inline-block;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'" data-i18n="profile.logout_btn">خروج از حساب کاربری</button>
                 </div>
             </div>
         </div>
 
+        <!-- تنظیمات -->
         <div id="settings-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
                 <h2 data-i18n="settings.title">⚙️ تنظیمات</h2>
-                                
-                <!-- 👇 کشوی آواتار -->
+
+                <!-- ۴. میکروفون و کالیبراسیون -->
                 <div class="settings-block">
-                    <button class="acc-btn" onclick="toggleAccordion('avatarGalleryWrap', 'avatarChevron')">
-                        <span data-i18n="settings.avatar_title">🖼️ انتخاب آواتار</span>
-                        <span id="avatarChevron">▼</span>
+                    <button class="acc-btn" onclick="toggleAccordion('micSettingsWrap', 'micSettingsChevron')">
+                        <span data-i18n="settings.mic_title">🎤 تنظیمات ساز و میکروفون</span>
+                        <span id="micSettingsChevron">▼</span>
                     </button>
-                    <div id="avatarGalleryWrap" class="acc-content">
-                        <div class="setting-row" style="margin-bottom: 10px;">
-                            <label style="font-size: 12px; color: #94a3b8;" data-i18n="settings.avatar_gender">جنسیت آواتار رندوم</label>
-                            <select id="avatarGender" style="width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
-                                <option value="male" data-i18n="settings.gender_male">👨 آقا</option>
-                                <option value="female" data-i18n="settings.gender_female">👩 خانم</option>
-                            </select>
-                        </div>
-                        <button class="btn-sm" onclick="generateRandomAvatar()" style="margin-bottom: 10px; background: #818cf8; width: 100%;" data-i18n="settings.avatar_random_btn">🎲 ساخت آواتار رندوم (۲۰ سکه)</button>
-                        <button class="btn-sm" onclick="selectAvatar('default')" style="margin-bottom: 10px; background: #475569; width: 100%;" data-i18n="settings.avatar_none_btn">🚫 بدون آواتار (حروف)</button>
-                        <div id="avatarGallery" class="avatar-grid"></div>
-                        <div class="msg-success" id="avatarMsg"></div>
+                    <div id="micSettingsWrap" class="acc-content" style="text-align: center;">
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;" data-i18n="settings.mic_desc">
+                            برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.
+                        </p>
+                        <button class="btn-sm" onclick="diagnoseMic()" style="margin-bottom: 10px; width: 100%; background: #06b6d4;" data-i18n="menu.mic_test">🔬 تست میکروفون (عیب‌یابی)</button>
+                        <button class="btn-sm" onclick="startCalibration()" style="width: 100%; background: #a78bfa;" data-i18n="menu.calibration">🎯 کالیبراسیون ساز واقعی</button>
                     </div>
                 </div>
 
-                <!-- 👇 کشوی ظاهر بازی (شامل تم، زبان و اسلایدرها) -->
+                <!-- ۱. ظاهر بازی -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('appearanceWrap', 'appearanceChevron')">
                         <span data-i18n="settings.appearance">🎨 ظاهر بازی</span>
@@ -336,7 +331,7 @@
                     </div>
                 </div>
 
-                <!-- 👇 کشوی حالت نمایش نت‌ها -->
+                <!-- ۲. حالت نمایش نت‌ها -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('noteDisplayWrap', 'noteDisplayChevron')">
                         <span data-i18n="settings.note_display">🔢 حالت نمایش نت‌ها</span>
@@ -352,7 +347,7 @@
                     </div>
                 </div>
 
-                <!-- 👇 کشوی اسکین‌ها -->
+                <!-- ۳. اسکین‌ها -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('skinGalleryWrap', 'skinChevron')">
                         <span data-i18n="settings.active_skin">🎵 طرح هنگ‌درام (اسکین)</span>
@@ -362,29 +357,77 @@
                         <div id="skinGallery" class="skin-grid"></div>
                     </div>
                 </div>
-                <!-- 👇 کشوی تنظیمات میکروفون و کالیبراسیون -->
+
+                <!-- ۵. انتخاب آواتار (منتقل شد به آخر) -->
                 <div class="settings-block">
-                    <button class="acc-btn" onclick="toggleAccordion('micSettingsWrap', 'micSettingsChevron')">
-                        <span data-i18n="settings.mic_title">🎤 تنظیمات ساز و میکروفون</span>
-                        <span id="micSettingsChevron">▼</span>
+                    <button class="acc-btn" onclick="toggleAccordion('avatarGalleryWrap', 'avatarChevron')">
+                        <span data-i18n="settings.avatar_title">🖼️ انتخاب آواتار</span>
+                        <span id="avatarChevron">▼</span>
                     </button>
-                    <div id="micSettingsWrap" class="acc-content" style="text-align: center;">
-                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;" data-i18n="settings.mic_desc">
-                            برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.
-                        </p>
-                        <button class="btn-sm" onclick="diagnoseMic()" style="margin-bottom: 10px; width: 100%; background: #06b6d4;" data-i18n="menu.mic_test">🔬 تست میکروفون (عیب‌یابی)</button>
-                        <button class="btn-sm" onclick="startCalibration()" style="width: 100%; background: #a78bfa;" data-i18n="menu.calibration">🎯 کالیبراسیون ساز واقعی</button>
+                    <div id="avatarGalleryWrap" class="acc-content">
+                        <div class="setting-row" style="margin-bottom: 10px;">
+                            <label style="font-size: 12px; color: #94a3b8;" data-i18n="settings.avatar_gender">جنسیت آواتار رندوم</label>
+                            <select id="avatarGender" style="width: 100%; padding: 8px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff;">
+                                <option value="male" data-i18n="settings.gender_male">👨 آقا</option>
+                                <option value="female" data-i18n="settings.gender_female">👩 خانم</option>
+                            </select>
+                        </div>
+                        <button class="btn-sm" onclick="generateRandomAvatar()" style="margin-bottom: 10px; background: #818cf8; width: 100%;" data-i18n="settings.avatar_random_btn">🎲 ساخت آواتار رندوم (۲۰ سکه)</button>
+                        <button class="btn-sm" onclick="selectAvatar('default')" style="margin-bottom: 10px; background: #475569; width: 100%;" data-i18n="settings.avatar_none_btn">🚫 بدون آواتار (حروف)</button>
+                        <div id="avatarGallery" class="avatar-grid"></div>
+                        <div class="msg-success" id="avatarMsg"></div>
                     </div>
                 </div>
                 
-                <!-- دکمه ذخیره (همیشه در پایین و بیرون از کشوها) -->
+                <!-- ذخیره -->
                 <button class="btn-sm" onclick="saveSettings()" data-i18n="settings.save_settings" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">ذخیره تنظیمات</button>
                 <div class="msg-success" id="settingsMsg"></div>
             </div>
         </div>
-    </div>
 
-        <!-- مودال جایزه (بدون تبلیغات داخلش) -->
+                <!-- 👇 آهنگساز -->
+        <div id="editor-view" class="view">
+            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            <div class="card-section">
+                <h2 data-i18n="editor.title">🎼 آهنگساز</h2>
+                
+                <div class="setting-row"><label data-i18n="editor.song_title">عنوان آهنگ</label><input type="text" id="song-title"></div>
+                <div class="setting-row"><label data-i18n="editor.artist">خواننده</label><input type="text" id="song-artist"></div>
+                <div class="setting-row">
+                    <label data-i18n="editor.difficulty">سختی</label>
+                    <select id="song-difficulty">
+                        <option value="Easy">آسان</option>
+                        <option value="Medium">متوسط</option>
+                        <option value="Hard">سخت</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <label data-i18n="editor.select_notes" style="font-size: 13px; color: var(--text-muted);">نت‌ها را انتخاب کنید:</label>
+                    <div id="note-buttons" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; justify-content: center;">
+                        <!-- دکمه‌های نت توسط جاوااسکریپت ساخته می‌شوند -->
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-main); padding: 10px; border-radius: 10px; min-height: 50px; border: 1px dashed var(--border); margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;" data-i18n="editor.notes_count">تعداد نت‌ها:</div>
+                    <div id="editor-notes-count" style="color: var(--primary); font-weight: bold; margin-bottom: 8px;">0</div>
+                    <div id="editor-notes-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                </div>
+
+                <button class="btn" onclick="saveSong()" data-i18n="editor.save_btn">💾 ذخیره آهنگ</button>
+                <button class="btn btn-ghost" onclick="clearSongNotes()" data-i18n="editor.clear_btn">🗑 پاک کردن</button>
+                
+                <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <h3 data-i18n="editor.my_songs" style="color: var(--primary); margin-bottom: 10px;">آهنگ‌های من</h3>
+                    <div id="my-songs-list"></div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- بسته شدن game-section -->
+
+    <!-- مودال جایزه -->
     <div id="reward-modal" class="reward-modal">
         <div class="reward-content">
             <h2 data-i18n="reward.title">🎉 تبریک!</h2>
@@ -394,18 +437,18 @@
         </div>
     </div>
 
-    <!-- 👇 مودال تبلیغات (باید مستقل باشه) -->
+    <!-- مودال تبلیغات -->
     <div id="ad-overlay" class="reward-modal" style="background: rgba(0,0,0,0.95); z-index: 1000;">
         <div class="reward-content" style="border-color: #38bdf8;">
             <h2 style="color: #38bdf8;" data-i18n="ad.title">📺 تبلیغات</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="ad.hint">برای ادامه بازی، لطفاً ۵ ثانیه صبر کنید.</p>
+            <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="ad.hint">برای دیدن نتایج تمرین، لطفاً ۵ ثانیه صبر کنید.</p>
             <div style="font-size: 60px; font-weight: 900; color: #fbbf24; margin: 20px 0;" id="ad-timer">5</div>
             <button class="btn" id="ad-close-btn" disabled style="opacity: 0.5;" data-i18n="ad.wait_btn">لطفاً صبر کنید...</button>
         </div>
     </div>
-        
-        
+
     <script src="/js/pitch-detector.js?v=21"></script>
-    <script src="/js/game-engine.js?v=96"></script>
+    <script src="/js/game-engine.js?v=99"></script>
+    <script src="/js/song-editor.js?v=4"></script>
 </body>
 </html>

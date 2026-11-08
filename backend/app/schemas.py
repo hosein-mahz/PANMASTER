@@ -137,3 +137,23 @@ class HighlightToggle(BaseModel):
 
 class SkinPurchase(BaseModel):
     skin_id: str
+
+# ===== Songs =====
+class SongCreate(BaseModel):
+    title: str
+    artist: Optional[str] = None
+    difficulty: str = "Easy"
+    notes_data: List[dict] = []
+    is_public: bool = True
+
+class SongOut(BaseModel):
+    id: int
+    title: str
+    artist: Optional[str] = None
+    difficulty: str
+    notes_data: List[dict] = []
+    is_premium: bool = False
+    created_by: Optional[int] = None
+    is_public: bool = True
+    class Config:
+        from_attributes = True

@@ -39,7 +39,9 @@ const I18N = {
         "skin.default": "ساده", "skin.wood": "چوبی", "skin.silver": "نقره‌ای", "skin.gold": "طلایی", "skin.rainbow": "رنگین‌کمان", "skin.marble": "مرمری","skin.ice_blue": "کریستال آبی", "skin.bronze": "برنزی", "skin.turquoise": "فیروزه‌ای","skin.dark": "تاریکی", "skin.royal": "سلطنتی",
         "settings.theme": "تم بازی", "theme.dark": "🌙 شب (تیره)", "theme.light": "☀️ روز (روشن)",       
         "settings.mic_title": "🎤 تنظیمات ساز و میکروفون","settings.mic_desc": "برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.","profile.logout_btn": "خروج از حساب کاربری",
+        "editor.title": "🎼 آهنگساز","editor.song_title": "عنوان آهنگ","editor.artist": "خواننده","editor.difficulty": "سختی","editor.select_notes": "نت‌ها را انتخاب کنید:","editor.notes_count": "تعداد نت‌ها:","editor.save_btn": "💾 ذخیره آهنگ","editor.clear_btn": "🗑 پاک کردن","editor.my_songs": "آهنگ‌های من",    
     },
+
     en: {
         "auth.identifier":"Email or Username","auth.password":"Password","auth.login_btn":"Login to Studio","auth.no_account":"No account? Register","auth.username":"Username","auth.email":"Email","auth.register_btn":"Create Account","auth.have_account":"Already registered? Login",
         "header.logout":"Logout","header.level_prefix":"Lvl",
@@ -65,7 +67,8 @@ const I18N = {
         "skin.default": "Simple", "skin.wood": "Wood", "skin.silver": "Silver","skin.gold": "Gold", "skin.rainbow": "Rainbow", "skin.marble": "Marble","skin.ice_blue": "Ice Blue", "skin.bronze": "Bronze", "skin.turquoise": "Turquoise","skin.dark": "Dark", "skin.royal": "Royal",
         "settings.theme": "App Theme", "theme.dark": "🌙 Night (Dark)", "theme.light": "☀️ Day (Light)",
         "settings.mic_title": "🎤 Instrument & Mic Settings","settings.mic_desc": "For best real-instrument performance, test the mic and then calibrate the instrument.","profile.logout_btn": "Logout of Account",
-    }
+        "editor.title": "🎼 Song Editor","editor.song_title": "Song Title","editor.artist": "Artist","editor.difficulty": "Difficulty","editor.select_notes": "Select notes:","editor.notes_count": "Notes count:","editor.save_btn": "💾 Save Song","editor.clear_btn": "🗑 Clear","editor.my_songs": "My Songs",   
+     }
 };
 
 const LEVEL_NAMES_I18N = {
@@ -492,6 +495,15 @@ async function goToWallet(){
 }   
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
 function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); renderSkinGallery(); }
+
+async function goToSongEditor() {
+    showView('editor-view');
+    if (typeof initSongEditor === 'function') {
+        initSongEditor(); // 👈 فراخوانی تابع راه‌اندازی
+    }
+    applyLanguage(); // برای اعمال ترجمه‌ها روی صفحه جدید
+}
+
 function onLanguageChange(l) {
     if (currentUser) currentUser.language = l; // 👈 ست کردن زبان روی آبجکت کاربر
     setLang(l); 
@@ -499,6 +511,7 @@ function onLanguageChange(l) {
         const tr = t(el.getAttribute('data-i18n')); 
         if(tr) el.innerText = tr; 
     });
+
 }function previewFont(f){ applyFont(f); }
 
 // ==========================================================
@@ -637,29 +650,36 @@ function executeHit(note, mode, fromMic = false) {
     
     const id = mode === 'free' ? 'handpanCanvasFree' : 'handpanCanvasFalling';
     const c = document.getElementById(id); 
-    if (c && !isMicMode) {
+    if (c) {
         const ctx = c.getContext('2d');
         drawHandpan(ctx, note); 
         setTimeout(() => drawHandpan(ctx), 150);
     }
     
     if (mode === 'falling' && isGameRunning) {
-        checkHit(note);
+        checkHit(note, fromMic);
     }
 }
 
-function checkHit(note){
+function checkHit(note, fromMic = false) {
     let idx = -1;
-    for(let i=0;i<fallingNotes.length;i++){
+    for (let i = 0; i < fallingNotes.length; i++) {
         const fn = fallingNotes[i];
-        if(fn.note === note && !fn.hit){ idx = i; break; }
+        if (fn.note === note && !fn.hit) {
+            // In mic mode, accept notes within a wider y-window to compensate for latency
+            if (fromMic && isMicMode) {
+                if (fn.y > HIT_Y + 300 || fn.y < HIT_Y - 100) continue;
+            }
+            idx = i;
+            break;
+        }
     }
-    
-    if(idx !== -1){ 
-        fallingNotes[idx].hit = true; 
-        fallingNotes.splice(idx, 1); 
+
+    if (idx !== -1) {
+        fallingNotes[idx].hit = true;
+        fallingNotes.splice(idx, 1);
         score += 100; hits++;
-        checkEndGame(); 
+        checkEndGame();
     }
 }
 
@@ -920,7 +940,7 @@ function needsRecalibration() {
     if (!calibrationData.notes || Object.keys(calibrationData.notes).length === 0) return true;
     const last = new Date(calibrationData.calibrated_at);
     const days = (Date.now() - last.getTime()) / (1000 * 60 * 60 * 24);
-    return days > 60;
+    return days > 25;
 }
 
 function handleMicNote(noteKey, freq) {
@@ -1088,7 +1108,14 @@ async function finishCalibration() {
     const token = localStorage.getItem('pm_token');
     try {
         const res = await fetch('/api/users/calibration', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ notes: result }) });
-        if (res.ok) { alert('✅ کالیبراسیون ذخیره شد!'); window.pitchDetector.setCalibration(result); calibrationState = null; backToMenu(); }
+        if (res.ok) {
+            // 👇 به‌روزرسانی فوری calibrationData تا پیام قدیمی نیاید
+            calibrationData = { notes: result, calibrated_at: new Date().toISOString() };
+            window.pitchDetector.setCalibration(result);
+            alert('✅ کالیبراسیون ذخیره شد!');
+            calibrationState = null;
+            backToMenu();
+        }
     } catch (e) { alert('خطا در ارتباط با سرور'); }
 }
 

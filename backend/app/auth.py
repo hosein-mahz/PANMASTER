@@ -568,3 +568,32 @@ def dev_toggle_vip(
 # ==========================================
 # 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑
 # ==========================================
+
+# ===== Songs =====
+@router.post("/songs", response_model=schemas.SongOut)
+def create_song(
+    data: schemas.SongCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    song = models.Song(
+        title=data.title,
+        artist=data.artist,
+        difficulty=data.difficulty,
+        notes_data=data.notes_data,
+        is_public=data.is_public,
+        created_by=current_user.id,
+    )
+    db.add(song)
+    db.commit()
+    db.refresh(song)
+    return song
+
+
+@router.get("/songs", response_model=List[schemas.SongOut])
+def list_songs(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    return db.query(models.Song).filter(models.Song.created_by == current_user.id).all()
+# ==========================================

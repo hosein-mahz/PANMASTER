@@ -10,12 +10,12 @@ class PitchDetector {
         this.animationId = null;
 
         this.lastDetectedTime = 0;
-        this.cooldownMs = 500;
+        this.cooldownMs = 250;
         this.threshold = 0.15;
         this.calibration = {};
         this.minRms = 0.001;
         this.gainValue = 5.0;
-        this.fftSize = 2048;
+        this.fftSize = 1024;
 
         this.NOTE_FREQS = {
             "D": 293.66,
