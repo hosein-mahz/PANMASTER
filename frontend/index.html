@@ -68,7 +68,6 @@
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: var(--bg-main); }
         .avatar-placeholder-big { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; border: 3px solid var(--primary); }
         
-        /* 👇 اصلاح استایل ستاره و حذف آواتار تا از کادر بیرون نزنن */
         .avatar-star { position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; cursor: pointer; z-index: 5; transition: 0.2s; }
         .avatar-star.active { background: var(--coin-text); border-color: var(--coin-text); color: #fff; transform: scale(1.1); }
         .avatar-delete { position: absolute; top: 0px; left: 0px; width: 18px; height: 18px; background: rgba(239, 68, 68, 0.9); border: 1px solid #b91c1c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; cursor: pointer; z-index: 5; transition: 0.2s; }
@@ -166,9 +165,11 @@
         <div id="menu-view" class="view active">
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
             <button class="menu-btn" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;" data-i18n="menu.training">📚 تمرین کن و یاد بگیر</button>
-            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;" data-i18n="menu.editor">🎼 آهنگساز</button>            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
-            <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
+            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;" data-i18n="menu.editor">🎼 آهنگساز</button>            
+            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
+            <button class="menu-btn" onclick="goToLeaderboard()" style="border-color: #fbbf24; color: #fbbf24;" data-i18n="menu.leaderboard">🏆 جدول امتیازات</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
+            <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
             <p style="color: var(--text-muted); margin-top: 10px; font-size: 13px;" data-i18n="menu.hint">💡 دقت بالای ۷۵٪ = ۲۰ XP + جایزه مرحله</p>
         </div>
@@ -181,11 +182,11 @@
             <button class="menu-btn" onclick="goToFallingGame()" style="border-color:#fbbf24;color:#fbbf24;">
                 <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin" style="width:16px;height:16px;vertical-align:middle;">)
             </button>
-            <button class="menu-btn" onclick="goToTutorialLevel(1)" style="opacity:0.6;">📖 مرحله ۱ (به‌زودی)</button>
-            <button class="menu-btn" onclick="goToTutorialLevel(2)" style="opacity:0.6;">📖 مرحله ۲ (به‌زودی)</button>
-            <button class="menu-btn" onclick="goToTutorialLevel(3)" style="opacity:0.6;">📖 مرحله ۳ (به‌زودی)</button>
-            <button class="menu-btn" onclick="goToTutorialLevel(4)" style="opacity:0.6;">📖 مرحله ۴ (به‌زودی)</button>
-            <button class="menu-btn" onclick="goToTutorialLevel(5)" style="opacity:0.6;">📖 مرحله ۵ (به‌زودی)</button>
+                        <button class="menu-btn" onclick="goToTutorialLevel(1)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_1">📖 مرحله ۱: شروع با نت D</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(2)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_2">📖 مرحله ۲: نت‌های کناری</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(3)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_3">📖 مرحله ۳: ترکیب نت‌ها</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(4)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_4">📖 مرحله ۴: دو نت هم‌زمان</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(5)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_5">📖 مرحله ۵: ملودی نهایی</button>
             <button class="menu-btn" onclick="goToMySongs()" style="border-color:#a78bfa;color:#a78bfa;" data-i18n="training.my_songs">🎵 آهنگ‌های من</button>
         </div>
 
@@ -195,7 +196,7 @@
             <div class="card-section" style="max-width: 500px; width: 90%; margin-top: 40px;">
                 <h2 data-i18n="training.my_songs">🎵 آهنگ‌های من</h2>
                 <div id="my-songs-list-menu">
-                    <div style="text-align:center; color:var(--text-muted); padding:20px;">در حال بارگذاری...</div>
+                    <div style="text-align:center; color:var(--text-muted); padding:20px;" data-i18n="editor.loading">در حال بارگذاری...</div>
                 </div>
             </div>
         </div>
@@ -228,12 +229,12 @@
                 </p>
                 <div style="font-size: 48px; font-weight: 900; color: #fbbf24; margin: 15px 0;"><span id="calibNoteName">۱</span></div>
                 <div style="font-size: 16px; color: var(--text-main); margin-bottom: 10px;" id="calibCountText">
-                    ضربه‌های گرفته شده: <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 3
+                    <span data-i18n="calib.captured_hits">ضربه‌های گرفته شده:</span> <span id="calibCount" style="color:#38bdf8; font-weight:bold;">0</span> / 3
                 </div>
                 <div id="calibLiveFreq" style="color: #94a3b8; font-size: 16px; margin-bottom: 10px; font-family: monospace;">—</div>
                 <div id="calibCooldown" style="font-size: 16px; color: #10b981; min-height: 30px; margin-bottom: 20px; font-weight: bold;" data-i18n="calib.ready_first">آماده ضربه اول</div>
                 <div style="background:#0f172a; border-radius:10px; padding:15px; font-size:13px; color:#94a3b8; margin-bottom: 20px;" id="calibDoneText">
-                    نت‌های کالیبره شده: <span id="calibDoneList">—</span>
+                    <span data-i18n="calib.calibrated_notes">نت‌های کالیبره شده:</span> <span id="calibDoneList">—</span>
                 </div>
                 <button class="btn" onclick="skipCalibNote()" style="background: #475569;" data-i18n="calib.skip">رد کردن این نت</button>
             </div>
@@ -265,7 +266,7 @@
                 <p id="vipStatusText" style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">...</p>
                 <button class="btn" id="buyVipBtn" onclick="buyVip()" data-i18n="wallet.buy_vip_btn">خرید VIP (۱۰۰۰ سکه)</button>
                 <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
-                <button class="btn-sm" onclick="devToggleVip()" style="background: #ef4444; margin-top: 10px; width: 100%; font-size: 12px;">🛠️ خاموش / روشن کردن VIP (تست)</button>
+                <button class="btn-sm" onclick="devToggleVip()" style="background: #ef4444; margin-top: 10px; width: 100%; font-size: 12px;" data-i18n="settings.dev_vip">🛠️ خاموش / روشن کردن VIP (تست)</button>
                 <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
             </div>
             <div class="card-section">
@@ -296,6 +297,28 @@
                 </div>
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
                     <button onclick="logout()" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 8px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s; width: auto; display: inline-block;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'" data-i18n="profile.logout_btn">خروج از حساب کاربری</button>
+                </div>
+            </div>
+        </div>
+
+            <!-- جدول امتیازات -->
+        <div id="leaderboard-view" class="view">
+            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            <div class="card-section" style="max-width: 500px; width: 90%; margin-top: 40px;">
+                <h2 style="color: var(--coin-text);" data-i18n="leaderboard.title">🏆 برترین بازیکنان</h2>
+                
+                <!-- 👇 باکس نمایش لیگ خود کاربر -->
+                <div id="my-league-box" style="background:var(--bg-main); padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <span id="my-league-icon" style="font-size:30px;">🥉</span>
+                    <div style="text-align:right;">
+                        <div style="font-size:12px; color:var(--text-muted);" data-i18n="leaderboard.your_league">لیگ فعلی شما:</div>
+                        <div id="my-league-name" style="font-size:18px; font-weight:bold; color:var(--primary);">برنز</div>
+                    </div>
+                </div>
+                <!-- 👆 پایان باکس لیگ -->
+
+                <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+                    <div style="text-align:center; color:var(--text-muted); padding:20px;" data-i18n="editor.loading">در حال بارگذاری...</div>
                 </div>
             </div>
         </div>
@@ -484,7 +507,7 @@
     </div>
 
     <script src="/js/pitch-detector.js?v=21"></script>
-    <script src="/js/game-engine.js?v=99"></script>
-    <script src="/js/song-editor.js?v=4"></script>
+    <script src="/js/game-engine.js?v=100"></script>
+    <script src="/js/song-editor.js?v=5"></script>
 </body>
 </html>

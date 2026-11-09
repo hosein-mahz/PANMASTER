@@ -149,3 +149,11 @@ def calculate_level(coins: int) -> tuple[int, str]:
     # این تابع منسوخ شده؛ در auth.py از get_level_from_xp استفاده می‌کنیم
     level = get_level_from_xp(coins * 4)  # تبدیل تقریبی
     return level, get_level_name(level)
+
+def get_league_from_level(level: int) -> str:
+    if level <= 5: return "bronze"
+    elif level <= 10: return "silver"
+    elif level <= 15: return "gold"
+    elif level <= 20: return "platinum"
+    elif level <= 25: return "diamond"
+    else: return "legend"

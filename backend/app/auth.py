@@ -15,6 +15,8 @@ from . import models, schemas, database
 from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS
 load_dotenv()
 
+from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
+
 # ===== تنظیمات =====
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback-insecure-key-change-in-prod")
 ALGORITHM = "HS256"
@@ -616,3 +618,20 @@ def list_songs(
 ):
     return db.query(models.Song).filter(models.Song.created_by == current_user.id).all()
 # ==========================================
+# ===== Leaderboard =====
+@router.get("/leaderboard")
+def get_leaderboard(db: Session = Depends(database.get_db)):
+    # گرفتن ۲۰ کاربر برتر بر اساس XP
+    top_users = db.query(models.User).order_by(models.User.xp.desc()).limit(20).all()
+    
+    result = []
+    for rank, u in enumerate(top_users, start=1):
+        result.append({
+            "rank": rank,
+            "username": u.username,
+            "xp": u.xp or 0,
+            "level": get_level_from_xp(u.xp or 0),
+            "league": get_league_from_level(lvl),
+            "selected_avatar": u.selected_avatar or "default"
+        })
+    return result

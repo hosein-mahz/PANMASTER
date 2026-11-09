@@ -19,30 +19,36 @@ const I18N = {
         "auth.identifier":"ایمیل یا نام کاربری","auth.password":"رمز عبور","auth.login_btn":"ورود به استودیو","auth.no_account":"حساب ندارید؟ ثبت‌نام کنید","auth.username":"نام کاربری","auth.email":"ایمیل","auth.register_btn":"ساخت حساب","auth.have_account":"قبلاً ثبت‌نام کرده‌اید؟ وارد شوید",
         "header.logout":"خروج","header.level_prefix":"Lvl",
         "menu.title":"یک حالت را انتخاب کنید","menu.free_play":"🎵 بداهه‌نوازی (رایگان)","menu.trial":"🌧️ مرحله تستی (ورود: ۱۰","menu.wallet":"💰 کیف پول","menu.profile":"👤 پروفایل","menu.settings":"⚙️ تنظیمات","menu.hint":"💡 دقت بالای ۷۵٪ = ۲۰ XP + جایزه مرحله",
+        "menu.training":"📚 تمرین کن و یاد بگیر","training.title":"📚 تمرین کن و یاد بگیر","training.my_songs":"🎵 آهنگ‌های من","menu.editor": "🎼 آهنگساز",
+        "tutorial.level_1":"📖 مرحله ۱ (به‌زودی)","tutorial.level_2":"📖 مرحله ۲ (به‌زودی)","tutorial.level_3":"📖 مرحله ۳ (به‌زودی)","tutorial.level_4":"📖 مرحله ۴ (به‌زودی)","tutorial.level_5":"📖 مرحله ۵ (به‌زودی)","tutorial.soon":"📖 مرحله {n} به‌زودی فعال می‌شود!",
         "game.ready":"آماده باش...","game.end":"پایان تمرین","game.back":"← بازگشت",
-        "result.title":"🎉 نتیجه تمرین","result.score":"امتیاز:","result.hits":"ضربه درست:","result.misses":"خطا:","result.accuracy":"دقت:","result.xp":"XP کسب‌شده:","result.back":"بازگشت به منو","result.reward_full":"عالی! پاداش کامل + ۲۰ XP (بالای ۷۵٪)","result.reward_ok":"خوب! ۱۰ سکه پاداش (بین ۵۰ تا ۷۵٪)","result.reward_none":"بدون پاداش (بین ۲۵ تا ۵۰٪)","result.reward_penalty":"جریمه ۵ سکه (زیر ۲۵٪)","result.reward_prefix":"جایزه دریافتی :",
+        "result.title":"🎉 نتیجه تمرین","result.score":"امتیاز:","result.hits":"ضربه درست:","result.misses":"خطا:","result.accuracy":"دقت:","result.xp":"XP کسب‌شده:","result.back":"بازگشت به منو","result.reward_full":"عالی! پاداش کامل + ۲۰ XP (بالای ۷۵٪)","result.reward_ok":"خوب! ۱۰ سکه پاداش (بین ۵۰ تا ۷۵٪)","result.reward_none":"بدون پاداش (بین ۲۵ تا ۵۰٪)","result.reward_penalty":"جریمه ۵ سکه (زیر ۲۵٪)","result.reward_prefix":"جایزه دریافتی :","result.reward_song_full": "عالی! پاداش ویژه آهنگ + ۲۵ سکه (بالای ۸۰٪)",
         "wallet.title":"💰 موجودی کیف پول","wallet.hint":"سکه‌های شما برای ورود به بازی‌ها و خرید استفاده می‌شوند","wallet.buy":"🛒 خرید سکه","wallet.pkg_starter":"بسته شروع","wallet.pkg_standard":"بسته استاندارد","wallet.pkg_premium":"بسته پریمیوم","wallet.pkg_ultimate":"بسته نهایی",
         "wallet.vip_title": "👑 اشتراک VIP", "wallet.buy_vip_btn": "خرید VIP (۱۰۰۰ سکه)", "wallet.renew_vip_btn": "تمدید VIP (۱۰۰۰ سکه)", "wallet.vip_active": "✅ شما VIP هستید (تا {date})", "wallet.vip_inactive": "شما کاربر عادی هستید.",
-        "profile.coins":"سکه","profile.total_xp":"مجموع XP","profile.extra_notes":"هنگ‌درام‌های اضافی","profile.skins":"اسکین‌های باز‌شده", "profile.history_title":"📊 تاریخچه تمرین (۱۰ مورد اخیر)", "profile.history_empty": "هنوز تمرینی ثبت نشده است",
-        "settings.title":"⚙️ تنظیمات","settings.account":"📝 اطلاعات حساب","settings.username":"نام کاربری","settings.email":"ایمیل","settings.save_profile":"ذخیره تغییرات","settings.password":"🔒 تغییر رمز عبور","settings.current_password":"رمز فعلی","settings.new_password":"رمز جدید (حداقل ۶ کاراکتر)","settings.change_password":"تغییر رمز","settings.avatar":"🖼️ عکس پروفایل","settings.choose_image":"انتخاب عکس","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.font":"فونت نوشتار","settings.fall_speed":"سرعت گام‌","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.font_vazir":"Vazirmatn (پیش‌فرض)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "حالت نمایش نت‌ها","settings.active_skin":"طرح هنگ‌درام (اسکین)",
+        "profile.coins":"سکه","profile.total_xp":"مجموع XP","profile.extra_notes":"هنگ‌درام‌های اضافی","profile.skins":"اسکین‌های باز‌شده", "profile.history_title":"📊 تاریخچه تمرین (۱۰ مورد اخیر)", "profile.history_empty": "هنوز تمرینی ثبت نشده است","profile.logout_btn": "خروج از حساب کاربری",
+        "settings.title":"⚙️ تنظیمات","settings.appearance":"🎨 ظاهر بازی","settings.language":"زبان","settings.fall_speed":"سرعت گام‌ها","settings.note_size":"اندازه نت‌ها","settings.sound_volume":"صدای بازی","settings.save_settings":"ذخیره تنظیمات","settings.note_display": "حالت نمایش نت‌ها","settings.active_skin":"طرح هنگ‌درام (اسکین)",
         "settings.avatar_gender": "جنسیت آواتار رندوم", "settings.avatar_random_btn": "🎲 ساخت آواتار رندوم (۲۰ سکه)", "settings.avatar_none_btn": "🚫 بدون آواتار (حروف)",
         "display.number": "عدد", "display.name": "حروف",
-        "msg.saved":"✓ تغییرات ذخیره شد","msg.saved_token":"✓ تغییرات ذخیره شد (توکن جدید صادر شد)","msg.pass_changed":"✓ رمز عبور تغییر کرد","msg.avatar_uploaded":"✓ آواتار آپلود شد","msg.uploading":"در حال آپلود...","msg.error_server":"خطا در ارتباط با سرور","msg.error_generic":"خطا","msg.pass_short":"رمز جدید حداقل ۶ کاراکتر باید باشد",
+        "msg.saved":"✓ تغییرات ذخیره شد","msg.error_server":"خطا در ارتباط با سرور","msg.error_generic":"خطا",
         "msg.confirm_buy_avatar": "آواتار {name} قفل است. آیا {price} سکه می‌پردازید؟", "msg.confirm_random_avatar_limit": "شما به محدودیت ۵ آواتار رندوم رسیده‌اید.\nقدیمی‌ترین آواتار هایلایت‌نشده حذف خواهد شد.\nآیا ادامه می‌دهید؟", "msg.confirm_random_avatar_cost": "ساخت آواتار رندوم جدید {cost} سکه هزینه دارد. ادامه می‌دهید؟", "msg.confirm_buy_skin": "آیا این اسکین را به قیمت {price} سکه می‌خرید؟", "msg.confirm_delete_avatar": "آیا از حذف این آواتار مطمئن هستید؟", "msg.confirm_delete_highlight": "⚠️ این آواتار هایلایت شده است. آیا از حذف آن مطمئن هستید؟", "msg.buy_success": "✅ خرید موفق! آواتار شما تغییر کرد.", "msg.skin_buy_success": "✅ خرید موفق! اسکین شما تغییر کرد.", "msg.avatar_deleted": "✓ آواتار با موفقیت حذف شد",
-        "reward.title":"🎉 تبریک!","reward.message_1":"شما به مرحله","reward.message_2":"رسیدید!","reward.ok":"عالی!","reward.level_prefix":"مرحله",
-        "calib.title": "🎯 کالیبراسیون هنگ‌درام", "calib.instruction": "برای هر نت ۳ ضربه بزنید: ۱. آرام | ۲. متوسط | ۳. محکم", "calib.beat_count": "ضربه‌های گرفته شده: {count} / 3", "calib.wait": "⏱️ {sec} ثانیه صبر کن...", "calib.ready": "✅ آماده ضربه بعدی", "calib.next": "✅ نت بعدی", "calib.done_list": "نت‌های کالیبره شده: {list}", "calib.skip": "رد کردن این نت", "calib.error_save": "خطا در ارتباط با سرور",
-        "ad.title": "📺 تبلیغات", "ad.hint": "برای دیدن نتایج تمرین، لطفاً ۵ ثانیه صبر کنید.", "ad.wait_btn": "لطفاً صبر کنید...", "ad.close_btn": "بستن تبلیغ و ادامه",
-        "misc.coin":"سکه","misc.not_enough_coins":"❌ سکه کافی ندارید! برای بازی به ۱۰ سکه نیاز است.","misc.coin_deduct_error":"خطا در کسر سکه.","misc.connection_error":"ارتباط با سرور برقرار نشد.",
-        "settings.avatar_title": "🖼️ انتخاب آواتار", "settings.avatar_toggle": "مشاهده / تغییر آواتار", "settings.gender_male": "👨 آقا", "settings.gender_female": "👩 خانم",
-        "calib.ready_first": "آماده ضربه اول", "msg.confirm_recalib": "🎯 کالیبراسیون ساز شما قدیمی است. آیا می‌خواهید دوباره کالیبره کنید؟", "msg.random_avatar_limit_error": "⚠️ همه ۵ آواتار رندوم شما هایلایت شده‌اند.\n\nبرای گرفتن آواتار جدید، ابتدا روی ستاره یکی از آنها بزنید.","menu.mic_mode": "🎤 حالت ساز واقعی (میکروفون)",
-        "menu.mic_test": "🔬 تست میکروفون (عیب‌یابی)","menu.calibration": "🎯 کالیبراسیون ساز واقعی","menu.mic_on": "⏹️ خاموش کردن میکروفون", "settings.skin_toggle": "مشاهده / تغییر اسکین",
-        "skin.default": "ساده", "skin.wood": "چوبی", "skin.silver": "نقره‌ای", "skin.gold": "طلایی", "skin.rainbow": "رنگین‌کمان", "skin.marble": "مرمری","skin.ice_blue": "کریستال آبی", "skin.bronze": "برنزی", "skin.turquoise": "فیروزه‌ای","skin.dark": "تاریکی", "skin.royal": "سلطنتی",
+        "auth.error.empty":"لطفاً تمام فیلدها را پر کنید.","auth.error.credentials":"نام کاربری یا رمز عبور اشتباه است.","auth.error.email":"فرمت ایمیل صحیح نیست.","auth.error.auto_login":"ثبت‌نام انجام شد اما ورود خودکار ناموفق بود. لطفاً دستی وارد شوید.","auth.error.register":"خطا در ثبت‌نام",
+        "mic.success":"🎤 میکروفون با موفقیت روشن شد!","mic.error":"خطا در فعال‌سازی میکروفون: {msg}",
+        "calib.wait_sec":"⏱️ {sec} ثانیه صبر کن...","calib.ready_next":"✅ آماده ضربه بعدی","calib.noise":"⚠️ صدای نویز شناسایی شد. دوباره بزنید.","calib.invalid_freq":"⚠️ فرکانس نامعتبر. دوباره بزنید.","calib.registered":"✅ ثبت شد: {val} Hz ({count}/۳)","calib.next_note":"✅ نت بعدی","calib.waiting_hit":"منتظر ضربه...","calib.avg":"میانگین: {val} Hz","calib.none":"هیچ نتی کالیبره نشد.","calib.saved":"✅ کالیبراسیون ذخیره شد!",
+        "mic.diag.title":"🔬 نتیجه عیب‌یابی میکروفون:","mic.diag.browser":"مرورگر:","mic.diag.secure":"Secure Context:","mic.diag.mics":"میکروفون‌های پیدا شده:","mic.diag.success":"✅ getUserMedia موفق! {n} ترک صوتی","mic.diag.instruction":"🎤 حالا ۳ ثانیه با صدای بلند صحبت کن یا سوت بزن...","mic.diag.done":"✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: {vol}%\n\n","mic.diag.ok":"🎉 میکروفون کار می‌کنه!","mic.diag.low":"⚠️ Vol خیلی کمه","mic.diag.error":"❌ getUserMedia خطا: {name}\n{msg}",
+        "avatar.saved":"✓ آواتار با موفقیت ذخیره شد","avatar.error":"خطا در ذخیره آواتار. لطفاً دوباره تلاش کنید.",
+        "vip.confirm":"آیا برای خرید VIP (۳۰ روزه) ۱۰۰۰ سکه می‌پردازید؟","vip.success":"👑 از حمایت شما صمیمانه سپاسگزاریم!\n\nاشتراک VIP شما با موفقیت به مدت ۳۰ روز فعال شد. از این پس می‌توانید بدون هیچ تبلیغی، تمرین‌های خود را با تمرکز کامل ادامه دهید.\n\nموفق و پیروز باشید! 🎶✨","vip.error":"خطا در خرید VIP","dev.vip_success":"✅ وضعیت VIP با موفقیت تغییر کرد (فقط برای تست)",
+        "menu.mic_mode": "🎤 حالت ساز واقعی (میکروفون)","menu.mic_on": "⏹️ خاموش کردن میکروفون","menu.mic_test": "🔬 تست میکروفون (عیب‌یابی)","menu.calibration": "🎯 کالیبراسیون ساز واقعی",
         "settings.theme": "تم بازی", "theme.dark": "🌙 شب (تیره)", "theme.light": "☀️ روز (روشن)",       
-        "settings.mic_title": "🎤 تنظیمات ساز و میکروفون","settings.mic_desc": "برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.","profile.logout_btn": "خروج از حساب کاربری",
-        "editor.title": "🎼 آهنگساز","editor.song_title": "عنوان آهنگ","editor.artist": "خواننده","editor.difficulty": "سختی","editor.select_notes": "نت‌ها را انتخاب کنید:","editor.notes_count": "تعداد نت‌ها:","editor.save_btn": "💾 ذخیره آهنگ","editor.clear_btn": "🗑 پاک کردن","editor.my_songs": "آهنگ‌های من",    
-        "menu.training":"📚 تمرین کن و یاد بگیر","training.title":"📚 تمرین کن و یاد بگیر","training.my_songs":"🎵 آهنگ‌های من",
-        "editor.fall_speed": "سرعت گام ها","editor.commit_step": "✅ ثبت این گام","editor.new_step": "➕ گام جدید","editor.current_step": "گام فعلی (نت‌های انتخاب شده):","editor.steps_list": "لیست گام‌ها:","editor.cost_note": "💰 هزینه ساخت آهنگ: ۱۵۰ سکه","editor.no_steps": "هنوز گامی ثبت نشده است","editor.no_notes": "هنوز نتی انتخاب نشده — از دکمه‌های بالا نت انتخاب کنید","editor.song_saved": "✅ آهنگ با موفقیت ذخیره شد!","difficulty.easy": "آسان","difficulty.medium": "متوسط","difficulty.hard": "سخت","result.reward_song_full": "عالی! پاداش ویژه آهنگ + ۲۵ سکه (بالای ۸۰٪)",
-        "menu.editor": "🎼 آهنگساز","editor.current_step": "گام فعلی (نت‌های انتخاب شده):","editor.no_notes": "هنوز نتی انتخاب نشده — از دکمه‌های بالا نت انتخاب کنید","editor.steps_list": "لیست گام‌ها:","editor.no_steps": "هنوز گامی ثبت نشده است","editor.cost_note": "💰 هزینه ساخت آهنگ: ۱۵۰ سکه","editor.loading": "در حال بارگذاری...","editor.no_songs": "هنوز آهنگی نساخته‌اید",
+        "settings.mic_title": "🎤 تنظیمات ساز و میکروفون","settings.mic_desc": "برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.","settings.avatar_title": "🖼️ انتخاب آواتار","settings.gender_male": "👨 آقا", "settings.gender_female": "👩 خانم",
+        "settings.dev_vip":"🛠️ خاموش / روشن کردن VIP (تست)",
+        "skin.default": "ساده", "skin.wood": "چوبی", "skin.silver": "نقره‌ای", "skin.gold": "طلایی", "skin.rainbow": "رنگین‌کمان", "skin.marble": "مرمری","skin.ice_blue": "کریستال آبی", "skin.bronze": "برنزی", "skin.turquoise": "فیروزه‌ای","skin.dark": "تاریکی", "skin.royal": "سلطنتی",
+        "editor.title": "🎼 آهنگساز","editor.song_title": "عنوان آهنگ","editor.artist": "خواننده","editor.difficulty": "سختی","editor.select_notes": "نت‌ها را انتخاب کنید:","editor.save_btn": "💾 ذخیره آهنگ","editor.clear_btn": "🗑 پاک کردن همه","editor.my_songs": "آهنگ‌های من",    
+        "editor.fall_speed": "سرعت گام ها","editor.commit_step": "✅ ثبت این گام","editor.new_step": "➕ گام جدید","editor.current_step": "گام فعلی (نت‌های انتخاب شده):","editor.steps_list": "لیست گام‌ها:","editor.cost_note": "💰 هزینه ساخت آهنگ: ۱۵۰ سکه","editor.no_steps": "هنوز گامی ثبت نشده است","editor.no_notes": "هنوز نتی انتخاب نشده — از دکمه‌های بالا نت انتخاب کنید","editor.song_saved": "✅ آهنگ با موفقیت ذخیره شد!","difficulty.easy": "آسان","difficulty.medium": "متوسط","difficulty.hard": "سخت",
+        "editor.loading": "در حال بارگذاری...","editor.no_songs": "هنوز آهنگی نساخته‌اید","editor.click_delete":"کلیک برای حذف","editor.error_no_notes":"لطفاً حداقل یک نت برای این گام انتخاب کنید.","editor.warn_duplicate":"این گام با گام قبلی یکسان است. بازهم ثبت شود؟","editor.confirm_new_step":"نت‌های انتخاب‌شده پاک شوند؟ (گام فعلی ثبت نشده است)","editor.play_step":"پخش این گام","editor.delete":"حذف","editor.confirm_delete_step":"گام {n} حذف شود؟","editor.error_no_title":"لطفاً عنوان آهنگ را وارد کنید.","editor.error_no_steps":"لطفاً حداقل یک گام ثبت کنید.","editor.error_login":"ابتدا وارد شوید.","editor.error_save":"خطا: {msg}","editor.error_save_default":"ذخیره نشد","editor.confirm_clear":"تمام گام‌ها و نت‌های انتخاب‌شده پاک شوند؟","editor.error_load":"خطا در بارگذاری","editor.steps_count":"{n} گام","editor.notes_count":"{n} نت","editor.speed":"سرعت {n}","editor.play_song":"▶ پخش","editor.play_game":"🎮 بازی","calib.captured_hits":"ضربه‌های گرفته شده:","calib.calibrated_notes":"نت‌های کالیبره شده:",
+        "tutorial.level_1": "📖 ضرب گیری","tutorial.level_2": "📖 مرحله ۲: نت‌های کناری","tutorial.level_3": "📖 مرحله ۳: ترکیب نت‌ها","tutorial.level_4": "📖 مرحله ۴: دو نت هم‌زمان","tutorial.level_5": "📖 مرحله ۵: ملودی نهایی",
+        "calib.error_save": "خطا در ارتباط با سرور","ad.title": "📺 تبلیغات", "ad.hint": "برای دیدن نتایج تمرین، لطفاً ۵ ثانیه صبر کنید.", "ad.wait_btn": "لطفاً صبر کنید...", "ad.close_btn": "بستن تبلیغ و ادامه",
+        "menu.leaderboard": "🏆 جدول امتیازات","leaderboard.title": "🏆 برترین بازیکنان","leaderboard.empty": "هنوز هیچ بازیکنی در جدول نیست.","leaderboard.you": "شما",
+        "leaderboard.your_league": "لیگ فعلی شما:","league.bronze": "برنز","league.silver": "نقره","league.gold": "طلا","league.platinum": "پلاتینیوم","league.diamond": "الماس","league.legend": "افسانه‌ای",
 
     },
 
@@ -50,31 +56,36 @@ const I18N = {
         "auth.identifier":"Email or Username","auth.password":"Password","auth.login_btn":"Login to Studio","auth.no_account":"No account? Register","auth.username":"Username","auth.email":"Email","auth.register_btn":"Create Account","auth.have_account":"Already registered? Login",
         "header.logout":"Logout","header.level_prefix":"Lvl",
         "menu.title":"Choose a mode","menu.free_play":"🎵 Free Play","menu.trial":"🌧️ Trial Mode (Entry: 10","menu.wallet":"💰 Wallet","menu.profile":"👤 Profile","menu.settings":"⚙️ Settings","menu.hint":"💡 Accuracy above 75% = 20 XP + level reward",
+        "menu.training":"📚 Practice & Learn","training.title":"📚 Practice & Learn","training.my_songs":"🎵 My Songs","menu.editor":"🎼 Song Editor",
+        "tutorial.level_1":"📖 Level 1 (Coming Soon)","tutorial.level_2":"📖 Level 2 (Coming Soon)","tutorial.level_3":"📖 Level 3 (Coming Soon)","tutorial.level_4":"📖 Level 4 (Coming Soon)","tutorial.level_5":"📖 Level 5 (Coming Soon)","tutorial.soon":"📖 Level {n} coming soon!",
         "game.ready":"Get ready...","game.end":"End Practice","game.back":"← Back",
-        "result.title":"🎉 Practice Result","result.score":"Score:","result.hits":"Correct Hits:","result.misses":"Misses:","result.accuracy":"Accuracy:","result.xp":"XP Earned:","result.back":"Back to Menu","result.reward_full":"Excellent! Full reward + 20 XP (Above 75%)","result.reward_ok":"Good! 10 coin reward (50-75%)","result.reward_none":"No reward (25-50%)","result.reward_penalty":"5 coin penalty (Below 25%)","result.reward_prefix":"Your reward:",
+        "result.title":"🎉 Practice Result","result.score":"Score:","result.hits":"Correct Hits:","result.misses":"Misses:","result.accuracy":"Accuracy:","result.xp":"XP Earned:","result.back":"Back to Menu","result.reward_full":"Excellent! Full reward + 20 XP (Above 75%)","result.reward_ok":"Good! 10 coin reward (50-75%)","result.reward_none":"No reward (25-50%)","result.reward_penalty":"5 coin penalty (Below 25%)","result.reward_prefix":"Your reward:","result.reward_song_full":"Excellent! Special Song Reward + 25 Coins (Above 80%)",
         "wallet.title":"💰 Wallet Balance","wallet.hint":"Your coins are used for game entries and purchases","wallet.buy":"🛒 Buy Coins","wallet.pkg_starter":"Starter Pack","wallet.pkg_standard":"Standard Pack","wallet.pkg_premium":"Premium Pack","wallet.pkg_ultimate":"Ultimate Pack",
         "wallet.vip_title": "👑 VIP Subscription", "wallet.buy_vip_btn": "Buy VIP (1000 Coins)", "wallet.renew_vip_btn": "Renew VIP (1000 Coins)", "wallet.vip_active": "✅ You are VIP (Until {date})", "wallet.vip_inactive": "You are a regular user.",
-        "profile.coins":"Coins","profile.total_xp":"Total XP","profile.extra_notes":"Extra Notes","profile.skins":"Unlocked Skins", "profile.history_title":"📊 Practice History (Last 10)", "profile.history_empty": "No practice history yet",
-        "settings.title":"⚙️ Settings","settings.account":"📝 Account Info","settings.username":"Username","settings.email":"Email","settings.save_profile":"Save Changes","settings.password":"🔒 Change Password","settings.current_password":"Current Password","settings.new_password":"New Password (min 6 chars)","settings.change_password":"Change Password","settings.avatar":"🖼️ Profile Avatar","settings.choose_image":"Choose Image","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.font":"Font","settings.fall_speed":"Step Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.font_vazir":"Vazirmatn (Default)","settings.font_arial":"Arial","settings.font_tahoma":"Tahoma","settings.font_system":"System UI","settings.note_display": "Note Display Mode","settings.active_skin":"Handpan Skin",
+        "profile.coins":"Coins","profile.total_xp":"Total XP","profile.extra_notes":"Extra Notes","profile.skins":"Unlocked Skins", "profile.history_title":"📊 Practice History (Last 10)", "profile.history_empty": "No practice history yet","profile.logout_btn": "Logout of Account",
+        "settings.title":"⚙️ Settings","settings.appearance":"🎨 Game Appearance","settings.language":"Language","settings.fall_speed":"Step Speed","settings.note_size":"Note Size","settings.sound_volume":"Game Volume","settings.save_settings":"Save Settings","settings.note_display": "Note Display Mode","settings.active_skin":"Handpan Skin",
         "settings.avatar_gender": "Random Avatar Gender", "settings.avatar_random_btn": "🎲 Generate Random Avatar (20 Coins)", "settings.avatar_none_btn": "🚫 No Avatar (Letters)",
         "display.number": "Number", "display.name": "Letters",
-        "msg.saved":"✓ Changes saved","msg.saved_token":"✓ Changes saved (New token issued)","msg.pass_changed":"✓ Password changed","msg.avatar_uploaded":"✓ Avatar uploaded","msg.uploading":"Uploading...","msg.error_server":"Server connection error","msg.error_generic":"Error","msg.pass_short":"New password must be at least 6 characters",
+        "msg.saved":"✓ Changes saved","msg.error_server":"Server connection error","msg.error_generic":"Error",
         "msg.confirm_buy_avatar": "Avatar {name} is locked. Pay {price} coins?", "msg.confirm_random_avatar_limit": "You reached the limit of 5 random avatars.\nThe oldest unhighlighted avatar will be deleted.\nContinue?", "msg.confirm_random_avatar_cost": "Generating a new random avatar costs {cost} coins. Continue?", "msg.confirm_buy_skin": "Buy this skin for {price} coins?", "msg.confirm_delete_avatar": "Are you sure you want to delete this avatar?", "msg.confirm_delete_highlight": "⚠️ This avatar is highlighted. Are you sure you want to delete it?", "msg.buy_success": "✅ Purchase successful! Avatar changed.", "msg.skin_buy_success": "✅ Purchase successful! Skin changed.", "msg.avatar_deleted": "✓ Avatar deleted successfully",
-        "reward.title":"🎉 Congratulations!","reward.message_1":"You reached level","reward.message_2":"!","reward.ok":"Awesome!","reward.level_prefix":"Level",
-        "calib.title": "🎯 Handpan Calibration", "calib.instruction": "Hit each note 3 times: 1. Soft | 2. Medium | 3. Hard", "calib.beat_count": "Hits captured: {count} / 3", "calib.wait": "⏱️ Wait {sec} seconds...", "calib.ready": "✅ Ready for next hit", "calib.next": "✅ Next note", "calib.done_list": "Calibrated notes: {list}", "calib.skip": "Skip this note", "calib.error_save": "Server connection error",
-        "ad.title": "📺 Advertisement", "ad.hint": "Please wait 5 seconds to see the practice results.", "ad.wait_btn": "Please wait...", "ad.close_btn": "Close Ad & Continue",
-        "misc.coin":"coins","misc.not_enough_coins":"❌ Not enough coins! You need 10 coins to play.","misc.coin_deduct_error":"Error deducting coins.","misc.connection_error":"Server connection error.",
-        "settings.avatar_title": "🖼️ Avatar Selection", "settings.avatar_toggle": "View / Change Avatar", "settings.gender_male": "👨 Male", "settings.gender_female": "👩 Female",
-        "calib.ready_first": "Ready for first hit", "msg.confirm_recalib": "🎯 Your instrument calibration is old. Do you want to recalibrate?", "msg.random_avatar_limit_error": "⚠️ All 5 of your random avatars are highlighted.\n\nTo get a new one, un-highlight an existing one by clicking its star.",
-        "menu.mic_mode": "🎤 Real Instrument Mode (Mic)",
-        "menu.mic_test": "🔬 Mic Test (Diagnostics)","menu.calibration": "🎯 Real Instrument Calibration","menu.mic_on": "⏹️ Turn Off Mic","settings.skin_toggle": "View / Change Skin",
-        "skin.default": "Simple", "skin.wood": "Wood", "skin.silver": "Silver","skin.gold": "Gold", "skin.rainbow": "Rainbow", "skin.marble": "Marble","skin.ice_blue": "Ice Blue", "skin.bronze": "Bronze", "skin.turquoise": "Turquoise","skin.dark": "Dark", "skin.royal": "Royal",
+        "auth.error.empty":"Please fill in all fields.","auth.error.credentials":"Invalid username or password.","auth.error.email":"Invalid email format.","auth.error.auto_login":"Registration successful but auto-login failed. Please login manually.","auth.error.register":"Registration error",
+        "mic.success":"🎤 Microphone turned on successfully!","mic.error":"Error activating microphone: {msg}",
+        "calib.wait_sec":"⏱️ {sec} seconds wait...","calib.ready_next":"✅ Ready for next hit","calib.noise":"⚠️ Noise detected. Please hit again.","calib.invalid_freq":"⚠️ Invalid frequency. Please hit again.","calib.registered":"✅ Registered: {val} Hz ({count}/3)","calib.next_note":"✅ Next note","calib.waiting_hit":"Waiting for hit...","calib.avg":"Average: {val} Hz","calib.none":"No notes calibrated.","calib.saved":"✅ Calibration saved!",
+        "mic.diag.title":"🔬 Mic Diagnostic Result:","mic.diag.browser":"Browser:","mic.diag.secure":"Secure Context:","mic.diag.mics":"Microphones found:","mic.diag.success":"✅ getUserMedia successful! {n} audio tracks","mic.diag.instruction":"🎤 Now speak or whistle loudly for 3 seconds...","mic.diag.done":"✅ Test finished!\n\nMax Vol observed: {vol}%\n\n","mic.diag.ok":"🎉 Microphone is working!","mic.diag.low":"⚠️ Volume is too low","mic.diag.error":"❌ getUserMedia error: {name}\n{msg}",
+        "avatar.saved":"✓ Avatar saved successfully","avatar.error":"Error saving avatar. Please try again.",
+        "vip.confirm":"Do you want to pay 1000 coins for 30-day VIP?","vip.success":"👑 Thank you for your support!\n\nYour VIP subscription is active for 30 days. You can now practice without ads.\n\nBest of luck! 🎶✨","vip.error":"Error buying VIP","dev.vip_success":"✅ VIP status toggled successfully (Dev only)",
+        "menu.mic_mode": "🎤 Real Instrument Mode (Mic)","menu.mic_on": "⏹️ Turn Off Mic","menu.mic_test": "🔬 Mic Test (Diagnostics)","menu.calibration": "🎯 Real Instrument Calibration",
         "settings.theme": "App Theme", "theme.dark": "🌙 Night (Dark)", "theme.light": "☀️ Day (Light)",
-        "settings.mic_title": "🎤 Instrument & Mic Settings","settings.mic_desc": "For best real-instrument performance, test the mic and then calibrate the instrument.","profile.logout_btn": "Logout of Account",
-        "editor.title": "🎼 Song Editor","editor.song_title": "Song Title","editor.artist": "Artist","editor.difficulty": "Difficulty","editor.select_notes": "Select notes:","editor.notes_count": "Notes count:","editor.save_btn": "💾 Save Song","editor.clear_btn": "🗑 Clear","editor.my_songs": "My Songs",   
-        "menu.training":"📚 Practice & Learn","training.title":"📚 Practice & Learn","training.my_songs":"🎵 My Songs",
-        "editor.fall_speed": "Note Step Speed","editor.commit_step": "✅ Commit Step","editor.new_step": "➕ New Step","editor.current_step": "Current Step (Selected Notes):","editor.steps_list": "Steps List:","editor.cost_note": "💰 Song Creation Cost: 150 Coins","editor.no_steps": "No steps committed yet","editor.no_notes": "No notes selected yet — choose notes from above","editor.song_saved": "✅ Song saved successfully!","difficulty.easy": "Easy","difficulty.medium": "Medium","difficulty.hard": "Hard","result.reward_song_full": "Excellent! Special Song Reward + 25 Coins (Above 80%)",
-        "menu.editor": "🎼 Song Editor","editor.current_step": "Current Step (Selected Notes):","editor.no_notes": "No notes selected yet — choose from the buttons above","editor.steps_list": "Steps List:","editor.no_steps": "No steps committed yet","editor.cost_note": "💰 Song Creation Cost: 150 Coins","editor.loading": "Loading...","editor.no_songs": "You haven't created any songs yet",
+        "settings.mic_title": "🎤 Instrument & Mic Settings","settings.mic_desc": "For best real-instrument performance, test the mic and then calibrate the instrument.","settings.avatar_title": "🖼️ Avatar Selection","settings.gender_male": "👨 Male", "settings.gender_female": "👩 Female",
+        "settings.dev_vip":"🛠️ Toggle VIP (Dev)",
+        "skin.default": "Simple", "skin.wood": "Wood", "skin.silver": "Silver","skin.gold": "Gold", "skin.rainbow": "Rainbow", "skin.marble": "Marble","skin.ice_blue": "Ice Blue", "skin.bronze": "Bronze", "skin.turquoise": "Turquoise","skin.dark": "Dark", "skin.royal": "Royal",
+        "editor.title": "🎼 Song Editor","editor.song_title": "Song Title","editor.artist": "Artist","editor.difficulty": "Difficulty","editor.select_notes": "Select notes:","editor.save_btn": "💾 Save Song","editor.clear_btn": "🗑 Clear All","editor.my_songs": "My Songs",   
+        "editor.fall_speed": "Note Step Speed","editor.commit_step": "✅ Commit Step","editor.new_step": "➕ New Step","editor.current_step": "Current Step (Selected Notes):","editor.steps_list": "Steps List:","editor.cost_note": "💰 Song Creation Cost: 150 Coins","editor.no_steps": "No steps committed yet","editor.no_notes": "No notes selected yet — choose from the buttons above","editor.song_saved": "✅ Song saved successfully!","difficulty.easy": "Easy","difficulty.medium": "Medium","difficulty.hard": "Hard",
+        "editor.loading": "Loading...","editor.no_songs": "You haven't created any songs yet","editor.click_delete":"Click to delete","editor.error_no_notes":"Please select at least one note for this step.","editor.warn_duplicate":"This step is identical to the previous one. Commit anyway?","editor.confirm_new_step":"Clear selected notes? (Current step not committed)","editor.play_step":"Play this step","editor.delete":"Delete","editor.confirm_delete_step":"Delete step {n}?","editor.error_no_title":"Please enter song title.","editor.error_no_steps":"Please commit at least one step.","editor.error_login":"Please login first.","editor.error_save":"Error: {msg}","editor.error_save_default":"Not saved","editor.confirm_clear":"Clear all steps and selected notes?","editor.error_load":"Loading error","editor.steps_count":"{n} steps","editor.notes_count":"{n} notes","editor.speed":"Speed {n}","editor.play_song":"▶ Play","editor.play_game":"🎮 Play Game","calib.captured_hits":"Captured hits:","calib.calibrated_notes":"Calibrated notes:",
+        "tutorial.level_1": "📖 Level 1: D Note Basics","tutorial.level_2": "📖 Level 2: Side Notes","tutorial.level_3": "📖 Level 3: Note Combos","tutorial.level_4": "📖 Level 4: Chords","tutorial.level_5": "📖 Level 5: Final Melody",
+        "calib.error_save": "Server connection error","ad.title": "📺 Advertisement", "ad.hint": "Please wait 5 seconds to see the practice results.", "ad.wait_btn": "Please wait...", "ad.close_btn": "Close Ad & Continue",
+        "menu.leaderboard": "🏆 Leaderboard","leaderboard.title": "🏆 Top Players","leaderboard.empty": "No players in the leaderboard yet.","leaderboard.you": "You",
+        "leaderboard.your_league": "Your Current League:","league.bronze": "Bronze","league.silver": "Silver","league.gold": "Gold","league.platinum": "Platinum","league.diamond": "Diamond","league.legend": "Legend",
 
     }
 };
@@ -103,7 +114,6 @@ const HANDPAN_LAYOUT_9 = {
     "8": [354, 110, 38],
     "D": [412, 246, 58],
 };
-// 👇 اسکین‌ها (دایره ساده + اسکین‌های عکس‌دار)
 const SKINS = {
     default: { name: "ساده", id: "default" },
     wood: { name: "چوبی", id: "wood" }, 
@@ -118,20 +128,16 @@ const SKINS = {
     royal: { name: "سلطنتی", id: "royal" }
 };
 
-// کش برای نگهداری عکس‌های لود شده اسکین‌ها
 const SKIN_IMAGES = {};
-
 const KEY_TO_NAME = {
     "D": "D", "1": "A1", "2": "D2", "3": "C3", "4": "E4", 
     "5": "F5", "6": "Bb6", "7": "G7", "8": "A8",
     "9": "B1", "10": "C#2", "11": "I1", "12": "I2", "13": "I3", "14": "I4", "15": "I5", "16": "I6", "17": "I7", "18": "I8"
 };
-
 const NOTE_COLORS = {
     "1": "#f472b6", "2": "#34d399", "3": "#38bdf8", "4": "#2dd4bf", 
     "5": "#818cf8", "6": "#fbbf24", "7": "#a78bfa", "8": "#fb7185", "D": "#60a5fa"
 };
-
 const FREQS = { 
     '1': 110, '2': 146.83, '3': 130.81, '4': 329.63, '5': 698.46, 
     '6': 1864.66, '7': 3135.96, '8': 3520, 'D': 293.66,
@@ -202,17 +208,14 @@ async function loadAudioSamples() {
     console.log(`🎵 ${loadedCount} فایل صوتی WAV لود شد.`);
 }
 
-// لود عکس اسکین‌ها
 async function loadSkinImages() {
     const skinIds = Object.keys(SKINS).filter(id => id !== 'default');
     
     for (const id of skinIds) {
         const img = new Image();
         img.src = `/assets/skins/${id}.png`;
-        // منتظر لود شدن عکس نمی‌مونیم تا بقیه چیزها سریع‌تر لود بشن
         img.onload = () => {
             SKIN_IMAGES[id] = img;
-            // اگر در حال حاضر اسکین فعلی اینه، یه بار رفرش کن تا نمایش داده بشه
             if (currentUser?.active_skin === id) {
                 const c = document.getElementById('handpanCanvasFree');
                 if (c) drawHandpan(c.getContext('2d'));
@@ -268,7 +271,7 @@ function toggleAuth(type){
 async function login(){
     const username=document.getElementById('loginUser').value.trim();
     const password=document.getElementById('loginPass').value;
-    if(!username || !password) { document.getElementById('authError').innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
+    if(!username || !password) { document.getElementById('authError').innerText = t('auth.error.empty'); return; }
     const fd=new URLSearchParams(); fd.append('username',username); fd.append('password',password);
     try{
         const res=await fetch('/api/users/login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:fd});
@@ -278,7 +281,7 @@ async function login(){
             document.getElementById('authError').innerText = ''; 
             showGame(); 
         }
-        else document.getElementById('authError').innerText = 'نام کاربری یا رمز عبور اشتباه است.';
+        else document.getElementById('authError').innerText = t('auth.error.credentials');
     }catch(e){ document.getElementById('authError').innerText = t('msg.error_server'); }
 }
 
@@ -288,16 +291,15 @@ async function register(){
     const password=document.getElementById('regPass').value;
     const errorEl = document.getElementById('authError');
     
-    errorEl.innerText = ''; // پاک کردن خطاهای قبلی
+    errorEl.innerText = ''; 
 
-    if(!username || !email || !password) { errorEl.innerText = 'لطفاً تمام فیلدها را پر کنید.'; return; }
-    if(!email.includes('@') || !email.includes('.')) { errorEl.innerText = 'فرمت ایمیل صحیح نیست.'; return; }
+    if(!username || !email || !password) { errorEl.innerText = t('auth.error.empty'); return; }
+    if(!email.includes('@') || !email.includes('.')) { errorEl.innerText = t('auth.error.email'); return; }
     
     try{
         const res=await fetch('/api/users/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
         
         if(res.ok){ 
-            // 👇 ورود خودکار بعد از ثبت‌نام موفق (بدون استفاده از alert)
             const loginFd = new URLSearchParams();
             loginFd.append('username', username);
             loginFd.append('password', password);
@@ -311,15 +313,15 @@ async function register(){
             if (loginRes.ok) {
                 const loginData = await loginRes.json();
                 localStorage.setItem('pm_token', loginData.access_token);
-                showGame(); // مستقیم میره به بازی
+                showGame();
             } else {
-                errorEl.innerText = 'ثبت‌نام انجام شد اما ورود خودکار ناموفق بود. لطفاً دستی وارد شوید.';
+                errorEl.innerText = t('auth.error.auto_login');
                 toggleAuth('login');
             }
         }
         else { 
             const err=await res.json(); 
-            errorEl.innerText = err.detail || 'خطا در ثبت‌نام'; 
+            errorEl.innerText = err.detail || t('auth.error.register'); 
         }
     }catch(e){ 
         errorEl.innerText = t('msg.error_server'); 
@@ -349,7 +351,6 @@ function updateUIFromUser(d){
 
     document.getElementById('tokenDisplay').innerText = d.coins;
     
-    // 👇 نمایش نشان VIP در هدر (اصلاح شد)
     const nameDisplay = document.getElementById('usernameDisplay');
     if (d.is_vip) {
         nameDisplay.innerHTML = `${d.username} <span class="vip-badge">VIP</span>`;
@@ -360,7 +361,6 @@ function updateUIFromUser(d){
     document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
     document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
 
-    // 👇 آپدیت آواتار هدر
     const av = document.getElementById('headerAvatar');
     if (d.selected_avatar && d.selected_avatar !== 'default') {
         const avSrc = d.selected_avatar.startsWith('http') ? d.selected_avatar : `/assets/avatars/${d.selected_avatar}.png`;
@@ -406,11 +406,10 @@ function applyLanguage(){
     setLang(lang);
     document.querySelectorAll('[data-i18n]').forEach(el=>{
         const tr = t(el.getAttribute('data-i18n')); 
-        if(tr) el.innerHTML = tr; // 👈 تغییر به innerHTML
+        if(tr) el.innerHTML = tr; 
     });
     document.title = lang==='fa' ? 'PanMaster - استودیو' : 'PanMaster - Studio';
     
-    // 👇 آپدیت کردن بخش‌های داینامیک
     if (document.getElementById('result-view').classList.contains('active') && window._lastResult) renderResultToken(window._lastResult);
     if (document.getElementById('reward-modal').classList.contains('show') && window._lastRewards) showRewardModal(window._lastRewards);
     loadPracticeHistory();
@@ -455,18 +454,22 @@ async function goToFallingGame(song = null) {
 
     let entryCost = 0;
     if (currentSongData) {
-        const isVip = currentUser?.is_vip;
-        const createdDate = currentSongData.created_at ? new Date(currentSongData.created_at) : new Date();
-        const daysOld = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
-        
-        if (daysOld > 14 && !isVip) {
-            entryCost = 20; // آهنگ قدیمی‌تر از ۱۴ روز
+        if (currentSongData.isTutorial) {
+            entryCost = 10; // مراحل آموزشی ۱۰ سکه
+        } else {
+            const isVip = currentUser?.is_vip;
+            const createdDate = currentSongData.created_at ? new Date(currentSongData.created_at) : new Date();
+            const daysOld = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+            
+            if (daysOld > 14 && !isVip) {
+                entryCost = 20; // آهنگ قدیمی‌تر از ۱۴ روز
+            }
         }
     } else {
         entryCost = 10; // حالت تستی
     }
 
-    if (!currentSongData && needsRecalibration()) {
+    if ((!currentSongData || currentSongData.isTutorial) && needsRecalibration()) {
         const go = confirm(t('msg.confirm_recalib'));
         if (go) { startCalibration(); return; }
     }
@@ -497,7 +500,7 @@ async function goToFallingGame(song = null) {
     
     isMicMode = false;
     const micBtn = document.getElementById('micBtn');
-    if (micBtn) { micBtn.innerText = "🎤 حالت ساز واقعی (میکروفون)"; micBtn.style.borderColor = "var(--danger-color)"; micBtn.style.color = "var(--danger-color)"; }
+    if (micBtn) { micBtn.innerText = t('menu.mic_mode'); micBtn.style.borderColor = "var(--danger-color)"; micBtn.style.color = "var(--danger-color)"; }
     const fv = document.getElementById('falling-view');
     if (fv) fv.classList.remove('mic-active');
     HIT_Y = 220;
@@ -510,8 +513,6 @@ async function goToFallingGame(song = null) {
 
 async function goToWallet(){ 
     showView('wallet-view'); 
-    
-    // 👇 حالا منتظر می‌مونیم تا پروفایل کامل لود بشه، بعد صفحه رو آپدیت می‌کنیم
     await fetchUserProfile(); 
     loadCoinPackages(); 
     
@@ -530,14 +531,101 @@ async function goToWallet(){
     }
 }   
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
+
+function getLeagueInfo(leagueId) {
+    switch(leagueId) {
+        case 'bronze': return { name: t('league.bronze'), icon: '🥉' };
+        case 'silver': return { name: t('league.silver'), icon: '🥈' };
+        case 'gold': return { name: t('league.gold'), icon: '🥇' };
+        case 'platinum': return { name: t('league.platinum'), icon: '💠' };
+        case 'diamond': return { name: t('league.diamond'), icon: '💎' };
+        case 'legend': return { name: t('league.legend'), icon: '👑' };
+        default: return { name: 'Unknown', icon: '❓' };
+    }
+}
+
+async function goToLeaderboard() {
+    showView('leaderboard-view');
+    const listEl = document.getElementById('leaderboard-list');
+    listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">${t('editor.loading')}</div>`;
+
+    // آپدیت باکس لیگ خود کاربر
+    if (currentUser) {
+        let myLeagueId = 'bronze';
+        if (currentUser.level > 25) myLeagueId = 'legend';
+        else if (currentUser.level > 20) myLeagueId = 'diamond';
+        else if (currentUser.level > 15) myLeagueId = 'platinum';
+        else if (currentUser.level > 10) myLeagueId = 'gold';
+        else if (currentUser.level > 5) myLeagueId = 'silver';
+        
+        const myLeague = getLeagueInfo(myLeagueId);
+        document.getElementById('my-league-icon').innerText = myLeague.icon;
+        document.getElementById('my-league-name').innerText = myLeague.name;
+    }
+
+    try {
+        const res = await fetch('/api/users/leaderboard');
+        if (!res.ok) throw new Error('Network error');
+        
+        const players = await res.json();
+        
+        if (!players || players.length === 0) {
+            listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">${t('leaderboard.empty')}</div>`;
+            return;
+        }
+
+        listEl.innerHTML = '';
+        const currentUsername = currentUser?.username;
+
+        players.forEach(p => {
+            const isMe = p.username === currentUsername;
+            const row = document.createElement('div');
+            const leagueInfo = getLeagueInfo(p.league);
+            
+            row.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:10px 15px; background:${isMe ? 'var(--btn-shadow)' : 'var(--bg-main)'}; border:1px solid ${isMe ? 'var(--primary)' : 'var(--border)'}; border-radius:10px; font-size:14px;`;
+            
+            let rankIcon = p.rank;
+            if (p.rank === 1) rankIcon = '🥇';
+            else if (p.rank === 2) rankIcon = '🥈';
+            else if (p.rank === 3) rankIcon = '🥉';
+
+            let avatarHtml = '';
+            if (p.selected_avatar && p.selected_avatar !== 'default') {
+                const avSrc = p.selected_avatar.startsWith('http') ? p.selected_avatar : `/assets/avatars/${p.selected_avatar}.png`;
+                avatarHtml = `<img src="${avSrc}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid var(--border);">`;
+            } else {
+                avatarHtml = `<div style="width:32px; height:32px; border-radius:50%; background:var(--bg-card); display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid var(--border);">${p.username.charAt(0).toUpperCase()}</div>`;
+            }
+
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:18px; width:24px; text-align:center; font-weight:bold; color:${p.rank <= 3 ? '#fbbf24' : 'var(--text-muted)'};">${rankIcon}</span>
+                    ${avatarHtml}
+                    <div>
+                        <div style="font-weight:bold; color:${isMe ? 'var(--primary)' : 'var(--text-main)'};">
+                            ${escapeHtml(p.username)} 
+                            ${isMe ? `<span style="font-size:10px; color:var(--text-muted);">(${t('leaderboard.you')})</span>` : ''}
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted);">Lvl ${p.level} · <span style="color:var(--primary);">${leagueInfo.icon} ${leagueInfo.name}</span></div>
+                    </div>
+                </div>
+                <div style="font-weight:bold; color:var(--coin-text); font-size:15px;">${p.xp} XP</div>
+            `;
+            listEl.appendChild(row);
+        });
+    } catch (e) {
+        listEl.innerHTML = `<div style="text-align:center; color:var(--danger-color); padding:20px;">${t('msg.error_server')}</div>`;
+    }
+}
+
 function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); renderSkinGallery(); }
 
 async function goToSongEditor() {
     showView('editor-view');
     if (typeof initSongEditor === 'function') {
-        initSongEditor(); // 👈 فراخوانی تابع راه‌اندازی
+        initSongEditor(); 
     }
-    applyLanguage(); // برای اعمال ترجمه‌ها روی صفحه جدید
+    applyLanguage(); 
 }
 
 function goToTrainingMenu() {
@@ -545,7 +633,10 @@ function goToTrainingMenu() {
 }
 
 function goToTutorialLevel(n) {
-    alert('📖 مرحله ' + n + ' به‌زودی فعال می‌شود!');
+    const levelData = TUTORIAL_LEVELS[n];
+    if (levelData) {
+        goToFallingGame(levelData);
+    }
 }
 
 function goToMySongs() {
@@ -556,14 +647,14 @@ function goToMySongs() {
 }
 
 function onLanguageChange(l) {
-    if (currentUser) currentUser.language = l; // 👈 ست کردن زبان روی آبجکت کاربر
+    if (currentUser) currentUser.language = l; 
     setLang(l); 
     document.querySelectorAll('[data-i18n]').forEach(el => { 
         const tr = t(el.getAttribute('data-i18n')); 
         if(tr) el.innerText = tr; 
     });
-
-}function previewFont(f){ applyFont(f); }
+}
+function previewFont(f){ applyFont(f); }
 
 // ==========================================================
 // DRAWING
@@ -574,10 +665,8 @@ function drawHandpan(ctx, highlight = null) {
     const currentSkinId = currentUser?.active_skin || 'default';
     const mode = currentUser?.note_display_mode || 'number';
     
-    // 👇 اگر اسکین عکس‌دار انتخاب شده و عکسش لود شده
     if (currentSkinId !== 'default' && SKIN_IMAGES[currentSkinId]) {
         const skinImg = SKIN_IMAGES[currentSkinId];
-        
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -588,7 +677,6 @@ function drawHandpan(ctx, highlight = null) {
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.strokeStyle = getCSSVar('--border', '#475569'); ctx.lineWidth = 3; ctx.stroke();
     } 
-    // 👇 اگر اسکین پیش‌فرض بود
     else {
         ctx.shadowColor = '#000'; ctx.shadowBlur = 25;
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = getCSSVar('--bg-card', '#1e293b'); ctx.fill();
@@ -597,18 +685,15 @@ function drawHandpan(ctx, highlight = null) {
         ctx.strokeStyle = getCSSVar('--border', '#334155'); ctx.lineWidth = 2; ctx.stroke();
     }
 
-        // 👇 رسم نت‌ها (در هر دو حالت)
     for (const [key, [x, y, bR]] of Object.entries(ACTIVE_LAYOUT)) {
         const r2 = getNoteRadius(bR), col = NOTE_COLORS[key] || "#60a5fa", hl = highlight === key;
         
-        // سایه مشکی دور نت (حالا شفاف شده)
         ctx.beginPath(); ctx.arc(x, y, r2 + 2, 0, Math.PI * 2); 
         ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; 
         ctx.fill();
         
         ctx.beginPath(); ctx.arc(x, y, r2, 0, Math.PI * 2); 
         
-        // 👇 رنگ نت‌ها با شفافیت ۷۰ درصد (آلفا 0.3)
         if (currentSkinId !== 'default' && SKIN_IMAGES[currentSkinId]) {
             ctx.fillStyle = hl ? 'rgba(30, 58, 138, 0.3)' : 'rgba(15, 23, 42, 0.3)';
         } else {
@@ -639,6 +724,13 @@ let currentStepIdx = 0;
 let isGameRunning=false, noteSpawnTimer=0, countdownInterval=null;
 const ctxFall=document.getElementById('fallingCanvas').getContext('2d');
 const TEST_SEQUENCE=["D","1","2","3","4","5","6","7","8"];
+const TUTORIAL_LEVELS = {
+    1: { title: "ضرب گیری", isTutorial: true, fall_speed: 1, notes_data: [{notes:["1"]}, {notes:["4"]}, {notes:["8"]}, {notes:["5"]}, {notes:["1"]}, {notes:["4"]}, {notes:["8"]}, {notes:["5"]}, {notes:["1"]}, {notes:["4"]}, {notes:["8"]}, {notes:["5"]}, {notes:["2"]}, {notes:["3"]}, {notes:["7"]}, {notes:["6"]}, {notes:["2"]}, {notes:["3"]}, {notes:["7"]}, {notes:["6"]}, {notes:["2"]}, {notes:["3"]}, {notes:["7"]}, {notes:["6"]}] },    
+    2: { title: "Tutorial 2", isTutorial: true, fall_speed: 0.6, notes_data: [{notes:["1"]}, {notes:["2"]}, {notes:["1"]}, {notes:["2"]}, {notes:["3"]}, {notes:["3"]}] },
+    3: { title: "Tutorial 3", isTutorial: true, fall_speed: 0.8, notes_data: [{notes:["D"]}, {notes:["1"]}, {notes:["2"]}, {notes:["D"]}, {notes:["1"]}, {notes:["2"]}] },
+    4: { title: "Tutorial 4", isTutorial: true, fall_speed: 0.7, notes_data: [{notes:["D","1"]}, {notes:["D","1"]}, {notes:["2","3"]}, {notes:["2","3"]}, {notes:["D","1"]}, {notes:["2","3"]}] },
+    5: { title: "Tutorial 5", isTutorial: true, fall_speed: 1.0, notes_data: [{notes:["1"]}, {notes:["2"]}, {notes:["3"]}, {notes:["D","1"]}, {notes:["4"]}, {notes:["5"]}, {notes:["D","1"]}] }
+};
 
 function startCountdown(){
     let count=4;
@@ -664,7 +756,6 @@ function startFallingLoop() {
 function spawnNote() {
     if (!isGameRunning) return;
 
-    // حالت آهنگ: گام‌ها به ترتیب
     if (currentSongData) {
         if (currentStepIdx >= currentSongData.notes_data.length) return;
         const step = currentSongData.notes_data[currentStepIdx];
@@ -686,7 +777,6 @@ function spawnNote() {
         return;
     }
 
-    // حالت تستی (قبلی)
     if (totalSpawned >= MAX_NOTES) return;
     totalSpawned++;
     const avail = TEST_SEQUENCE.filter(n => ACTIVE_LAYOUT[n]);
@@ -750,7 +840,6 @@ function checkHit(note, fromMic = false) {
     for (let i = 0; i < fallingNotes.length; i++) {
         const fn = fallingNotes[i];
         if (fn.note === note && !fn.hit) {
-            // In mic mode, accept notes within a wider y-window to compensate for latency
             if (fromMic && isMicMode) {
                 if (fn.y > HIT_Y + 300 || fn.y < HIT_Y - 100) continue;
             }
@@ -789,7 +878,10 @@ async function endFallingGame(){
     const att=hits+misses; 
     const acc=att>0?Math.round((hits/att)*100):0;
     
-    const practiceMode = currentSongData ? 'song' : 'falling';
+    let practiceMode = 'falling';
+    if (currentSongData) {
+        practiceMode = currentSongData.isTutorial ? 'tutorial' : 'song';
+    }
 
     let earned = 0; let key = ''; let xpStr = '0';
 
@@ -845,7 +937,7 @@ async function endFallingGame(){
 function renderResultToken(r){
     const isPenalty = r.earned < 0;
     const color = isPenalty ? getCSSVar('--danger-color', '#ef4444') : (r.earned > 0 ? getCSSVar('--primary', '#38bdf8') : getCSSVar('--text-muted', '#94a3b8'));
-    const prefix = isPenalty ? 'جریمه شما: ' : t('result.reward_prefix');
+    const prefix = isPenalty ? t('result.reward_prefix') : t('result.reward_prefix');
     const sign = r.earned > 0 ? '+' : '';
     document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:var(--text-muted);margin-top:5px;display:block;">${t(r.key)}</span>`;
 }
@@ -909,7 +1001,6 @@ async function saveSettings(){
     const msg = document.getElementById('settingsMsg'); 
     if (msg) msg.innerText = '';
     
-    // 👇 استفاده از ?. برای جلوگیری از کرش کردن اگر setFont وجود نداشت
     const payload = { 
         language: document.getElementById('setLanguage')?.value || 'fa',
         font_family: document.getElementById('setFont')?.value || 'Vazirmatn',
@@ -931,16 +1022,9 @@ async function saveSettings(){
         
         if(res.ok){ 
             if (msg) { msg.style.color='var(--success-color)'; msg.innerText=t('msg.saved'); }
-            
-            // آپدیت آبجکت کاربر در حافظه
             if (currentUser) Object.assign(currentUser, payload);
-                // 👈 اعمال مجدد زبان برای اطمینان کامل
-                applyLanguage();
-            
-            // گرفتن اطلاعات تازه از سرور
+            applyLanguage();
             await fetchUserProfile(); 
-            
-            // 👈 اعمال مجدد زبان برای اطمینان کامل
             applyLanguage();
         }
         else { 
@@ -952,7 +1036,6 @@ async function saveSettings(){
         console.error("Save settings error:", e);
     }
 }
-
 
 // ==========================================================
 // INTERACTION
@@ -1004,7 +1087,9 @@ function renderHistoryList(entries) {
         const dateStr = date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
         const timeStr = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
         const accuracyColor = e.accuracy >= 80 ? getCSSVar('--success-color', '#10b981') : (e.accuracy >= 50 ? getCSSVar('--warning-color', '#fbbf24') : getCSSVar('--danger-color', '#ef4444'));
-        const modeIcon = e.mode === 'falling' ? '🌧️' : '🎵';
+        let modeIcon = '🌧️';
+        if (e.mode === 'song') modeIcon = '🎵';
+        else if (e.mode === 'tutorial') modeIcon = '📚';
         const item = document.createElement('div');
         item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-main); border-radius:8px; border:1px solid var(--border); font-size:13px;';
         item.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span>${modeIcon}</span><span style="color:var(--text-muted); font-size:11px;">${dateStr} · ${timeStr}</span></div><div style="display:flex; gap:12px;"><span style="color:var(--text-main);">${e.score}</span><span style="color:${accuracyColor}; font-weight:bold;">${e.accuracy.toFixed(0)}%</span></div>`;
@@ -1088,9 +1173,9 @@ async function toggleMicMode() {
             if (fv) fv.classList.add('mic-active'); 
             if (hc) hc.style.display = 'none'; 
             if (fc) { fc.width = 820; fc.height = 500; fc.style.aspectRatio = "820 / 500"; HIT_Y = 420; }
-            alert("🎤 میکروفون با موفقیت روشن شد!");
+            alert(t('mic.success'));
         } catch (e) { 
-            alert("خطا در فعال‌سازی میکروفون: " + e.message); 
+            alert(t('mic.error').replace('{msg}', e.message)); 
         }
     } else {
         window.pitchDetector.stop(); 
@@ -1122,7 +1207,7 @@ async function startCalibration() {
             fftSize: 2048
         });
     }
-    try { await window.pitchDetector.start(() => {}, (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)); } catch(e) { alert('خطای میکروفون: ' + e.message); cancelCalibration(); }
+    try { await window.pitchDetector.start(() => {}, (rawPitch, rms) => onCalibrationPitch(rawPitch, rms)); } catch(e) { alert(t('mic.error').replace('{msg}', e.message)); cancelCalibration(); }
 }
 
 function onCalibrationPitch(rawPitch, rms) {
@@ -1132,9 +1217,9 @@ function onCalibrationPitch(rawPitch, rms) {
     if (calibrationState.movingNext) return;
     if (now < calibCooldownUntil) {
         const remaining = Math.ceil((calibCooldownUntil - now) / 1000);
-        if (cooldownEl) cooldownEl.innerHTML = `⏱️ <strong style="color:var(--coin-text);">${remaining}</strong> ثانیه صبر کن...`;
+        if (cooldownEl) cooldownEl.innerHTML = t('calib.wait_sec').replace('{sec}', remaining);
         return;
-    } else { if (cooldownEl && cooldownEl.innerText.includes('صبر')) cooldownEl.innerHTML = `<strong style="color:var(--success-color);">✅ آماده ضربه بعدی</strong>`; }
+    } else { if (cooldownEl && cooldownEl.innerText.includes('صبر')) cooldownEl.innerHTML = `<strong style="color:var(--success-color);">${t('calib.ready_next')}</strong>`; }
 
     const currentNote = calibrationState.allNotes[calibrationState.currentIdx]; if (!currentNote) return;
     const arr = calibrationState.samples[currentNote];
@@ -1149,16 +1234,16 @@ function onCalibrationPitch(rawPitch, rms) {
             const median = sorted[Math.floor(sorted.length / 2)];
             const consistent = sorted.filter(p => Math.abs(p - median) / median < 0.05);
             if ((consistent.length / sorted.length) < 0.6) {
-                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ صدای نویز شناسایی شد. دوباره بزنید.`; cooldownEl.style.color = 'var(--danger-color)'; }
+                if (cooldownEl) { cooldownEl.innerHTML = t('calib.noise'); cooldownEl.style.color = 'var(--danger-color)'; }
                 calibCollecting = false; calibCollectBuffer = []; return;
             }
             if (median < 50 || median > 4000) {
-                if (cooldownEl) { cooldownEl.innerHTML = `⚠️ فرکانس نامعتبر. دوباره بزنید.`; cooldownEl.style.color = 'var(--danger-color)'; }
+                if (cooldownEl) { cooldownEl.innerHTML = t('calib.invalid_freq'); cooldownEl.style.color = 'var(--danger-color)'; }
                 calibCollecting = false; calibCollectBuffer = []; return;
             }
             arr.push(median); updateCalibrationUI();
             calibCooldownUntil = now + CALIB_COOLDOWN_MS;
-            if (cooldownEl) { cooldownEl.innerHTML = `✅ ثبت شد: <strong style="color:var(--success-color);">${median.toFixed(1)} Hz</strong> (${arr.length}/۳)`; cooldownEl.style.color = 'var(--primary)'; }
+            if (cooldownEl) { cooldownEl.innerHTML = t('calib.registered').replace('{val}', median.toFixed(1)).replace('{count}', arr.length); cooldownEl.style.color = 'var(--primary)'; }
             calibCollecting = false; calibCollectBuffer = [];
             if (arr.length >= calibrationState.MIN_SAMPLES) {
                 calibrationState.movingNext = true;
@@ -1167,7 +1252,7 @@ function onCalibrationPitch(rawPitch, rms) {
                     calibrationState.movingNext = false;
                     if (calibrationState.currentIdx < calibrationState.allNotes.length - 1) {
                         calibrationState.currentIdx++; calibCooldownUntil = 0; updateCalibrationUI();
-                        if (cooldownEl) { cooldownEl.innerHTML = `<strong style="color:var(--success-color);">✅ نت بعدی</strong>`; cooldownEl.style.color = 'var(--success-color)'; }
+                        if (cooldownEl) { cooldownEl.innerHTML = `<strong style="color:var(--success-color);">${t('calib.next_note')}</strong>`; cooldownEl.style.color = 'var(--success-color)'; }
                     } else { finishCalibration(); }
                 }, CALIB_COOLDOWN_MS + 200);
             }
@@ -1183,8 +1268,8 @@ function updateCalibrationUI() {
     const countEl = document.getElementById('calibCount'); if (countEl) countEl.innerText = count;
     const freqEl = document.getElementById('calibFreqInfo');
     if (freqEl) {
-        if (count > 0) { const arr = calibrationState.samples[currentNote]; const avg = arr.reduce((a,b)=>a+b, 0) / arr.length; freqEl.innerText = `میانگین: ${avg.toFixed(1)} Hz`; }
-        else freqEl.innerText = 'منتظر ضربه...';
+        if (count > 0) { const arr = calibrationState.samples[currentNote]; const avg = arr.reduce((a,b)=>a+b, 0) / arr.length; freqEl.innerText = t('calib.avg').replace('{val}', avg.toFixed(1)); }
+        else freqEl.innerText = t('calib.waiting_hit');
     }
     const doneEl = document.getElementById('calibDoneList');
     if (doneEl) {
@@ -1210,43 +1295,42 @@ async function finishCalibration() {
         const padding = avg * 0.03;
         result[note] = { min: parseFloat((min - padding).toFixed(2)), max: parseFloat((max + padding).toFixed(2)), avg: parseFloat(avg.toFixed(2)) };
     }
-    if (Object.keys(result).length === 0) { alert('هیچ نتی کالیبره نشد.'); calibrationState = null; backToMenu(); return; }
+    if (Object.keys(result).length === 0) { alert(t('calib.none')); calibrationState = null; backToMenu(); return; }
     const token = localStorage.getItem('pm_token');
     try {
         const res = await fetch('/api/users/calibration', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ notes: result }) });
         if (res.ok) {
-            // 👇 به‌روزرسانی فوری calibrationData تا پیام قدیمی نیاید
             calibrationData = { notes: result, calibrated_at: new Date().toISOString() };
             window.pitchDetector.setCalibration(result);
-            alert('✅ کالیبراسیون ذخیره شد!');
+            alert(t('calib.saved'));
             calibrationState = null;
             backToMenu();
         }
-    } catch (e) { alert('خطا در ارتباط با سرور'); }
+    } catch (e) { alert(t('msg.error_server')); }
 }
 
 function cancelCalibration() { window.pitchDetector.stop(); calibrationState = null; backToMenu(); }
 
 async function diagnoseMic() {
     const result = [];
-    result.push(`مرورگر: ${navigator.userAgent.substring(0, 60)}...`);
-    result.push(`Secure Context: ${window.isSecureContext ? '✅ HTTPS/localhost' : '❌ HTTP (مشکل!)'}`);
+    result.push(`${t('mic.diag.browser')} ${navigator.userAgent.substring(0, 60)}...`);
+    result.push(`${t('mic.diag.secure')} ${window.isSecureContext ? '✅ HTTPS/localhost' : '❌ HTTP (Problem!)'}`);
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const mics = devices.filter(d => d.kind === 'audioinput');
-        result.push(`میکروفون‌های پیدا شده: ${mics.length}`);
-    } catch(e) { result.push(`enumerateDevices خطا: ${e.message}`); }
+        result.push(`${t('mic.diag.mics')} ${mics.length}`);
+    } catch(e) { result.push(`enumerateDevices error: ${e.message}`); }
 
     try {
         if (window.pitchDetector) window.pitchDetector.stop();
         await new Promise(r => setTimeout(r, 1000));
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        result.push(`\n✅ getUserMedia موفق! ${stream.getAudioTracks().length} ترک صوتی`);
+        result.push(`\n${t('mic.diag.success').replace('{n}', stream.getAudioTracks().length)}`);
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') await ctx.resume();
         const analyser = ctx.createAnalyser(); analyser.fftSize = 2048;
         const source = ctx.createMediaStreamSource(stream); source.connect(analyser);
-        result.push(`\n🎤 حالا ۳ ثانیه با صدای بلند صحبت کن یا سوت بزن...`);
+        result.push(`\n${t('mic.diag.instruction')}`);
         alert(result.join('\n'));
         let maxVol = 0; const startTime = Date.now();
         await new Promise(resolve => {
@@ -1260,8 +1344,8 @@ async function diagnoseMic() {
             }; check();
         });
         stream.getTracks().forEach(t => t.stop()); ctx.close();
-        alert(`✅ تست تمام شد!\n\nحداکثر Vol مشاهده شده: ${maxVol.toFixed(2)}%\n\n${maxVol > 0.5 ? '🎉 میکروفون کار می‌کنه!' : '⚠️ Vol خیلی کمه'}`);
-    } catch(e) { alert(`\n❌ getUserMedia خطا: ${e.name}\n${e.message}`); }
+        alert(`${t('mic.diag.done').replace('{vol}', maxVol.toFixed(2))}${maxVol > 0.5 ? t('mic.diag.ok') : t('mic.diag.low')}`);
+    } catch(e) { alert(t('mic.diag.error').replace('{name}', e.name).replace('{msg}', e.message)); }
 }
 
 // ==========================================================
@@ -1396,12 +1480,12 @@ async function selectAvatar(avName) {
         
         if (res.ok) {
             const msg = document.getElementById('avatarMsg');
-            if(msg) { msg.style.color='var(--success-color)'; msg.innerText = '✓ آواتار با موفقیت ذخیره شد'; setTimeout(()=>msg.innerText='', 2000); }
+            if(msg) { msg.style.color='var(--success-color)'; msg.innerText = t('avatar.saved'); setTimeout(()=>msg.innerText='', 2000); }
         } else {
             currentUser.selected_avatar = oldAvatar;
             renderAvatarGallery();
             updateUIFromUser(currentUser);
-            alert('خطا در ذخیره آواتار. لطفاً دوباره تلاش کنید.');
+            alert(t('avatar.error'));
         }
     } catch (e) { 
         currentUser.selected_avatar = oldAvatar;
@@ -1467,7 +1551,6 @@ function toggleAccordion(contentId, chevronId) {
         content.style.display = 'block';
         if (chevron) chevron.innerText = '▲';
         
-        // برای اینکه وقتی کشو باز میشه، گالری‌ها آپدیت بشن
         if (contentId === 'avatarGalleryWrap') renderAvatarGallery();
         if (contentId === 'skinGalleryWrap') renderSkinGallery();
     } else {
@@ -1542,7 +1625,7 @@ async function deleteRandomAvatar(avatarUrl) {
 let adInterval = null;
 
 async function buyVip() {
-    if (!confirm('آیا برای خرید VIP (۳۰ روزه) ۱۰۰۰ سکه می‌پردازید؟')) return;
+    if (!confirm(t('vip.confirm'))) return;
     
     const token = localStorage.getItem('pm_token');
     try {
@@ -1559,12 +1642,12 @@ async function buyVip() {
             await fetchUserProfile(); 
             goToWallet(); 
             
-            alert('👑 از حمایت شما صمیمانه سپاسگزاریم!\n\nاشتراک VIP شما با موفقیت به مدت ۳۰ روز فعال شد. از این پس می‌توانید بدون هیچ تبلیغی، تمرین‌های خود را با تمرکز کامل ادامه دهید.\n\nموفق و پیروز باشید! 🎶✨');
+            alert(t('vip.success'));
         } else {
             const err = await res.json();
-            alert(err.detail || 'خطا در خرید VIP');
+            alert(err.detail || t('vip.error'));
         }
-    } catch (e) { alert('خطا در ارتباط با سرور'); }
+    } catch (e) { alert(t('msg.error_server')); }
 }
 
 function showAd(onComplete) {
@@ -1704,7 +1787,7 @@ async function promptBuySkin(skinId) {
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('pm_theme', theme); // برای اینکه موقع لود شدن صفحه، تم فوراً اعمال بشه
+    localStorage.setItem('pm_theme', theme); 
 }
 
 function previewTheme(theme) {
@@ -1730,11 +1813,11 @@ async function devToggleVip() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
-            await fetchUserProfile(); // آپدیت اطلاعات از سرور
+            await fetchUserProfile(); 
             if (document.getElementById('wallet-view').classList.contains('active')) {
-                goToWallet(); // رفرش کردن صفحه کیف پول اگر توش هستیم
+                goToWallet(); 
             }
-            alert('✅ وضعیت VIP با موفقیت تغییر کرد (فقط برای تست)');
+            alert(t('dev.vip_success'));
         }
     } catch (e) { console.error(e); }
 }
