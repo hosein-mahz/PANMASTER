@@ -25,11 +25,22 @@ class User(Base):
     note_size = Column(Float, default=1.0, nullable=False)           # 0.7-1.5
     font_family = Column(String, default="Vazirmatn", nullable=False)
     sound_volume = Column(Float, default=0.5, nullable=False)        # 0-1
-    note_display_mode = Column(String, default="number", nullable=False) # عدد، اسم
+    note_display_mode = Column(String, default="number", nullable=False) # عدد، name
     active_skin = Column(String, default="default", nullable=False)
     calibration_data = Column(String, default="{}", nullable=False)
     selected_avatar = Column(String, default="default", nullable=False)
     theme = Column(String, default="dark", nullable=False)
+
+    # ===== امنیت (Security Stages) =====
+    security_stage = Column(Integer, default=1, nullable=False)       # 1, 2, 3
+    failed_attempts_in_stage = Column(Integer, default=0, nullable=False)
+    lockout_until = Column(DateTime, nullable=True)
+
+    # ===== فراموشی رمز (Password Reset) =====
+    phone = Column(String, nullable=True)
+    reset_code = Column(String, nullable=True)
+    reset_code_expire = Column(DateTime, nullable=True)
+    reset_method = Column(String, nullable=True)  # 'email' or 'phone'
 
 class Song(Base):
     __tablename__ = "songs"

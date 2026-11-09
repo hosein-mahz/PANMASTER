@@ -3,25 +3,29 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 import os
 from dotenv import load_dotenv
 
 from . import models, schemas, database
-from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS
+from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
 load_dotenv()
 
-from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
-
 # ===== تنظیمات =====
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-insecure-key-change-in-prod")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY must be set in environment variables")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
+# Rate Limiter
+limiter = Limiter(key_func=get_remote_address)
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
@@ -125,12 +129,21 @@ def _build_user_out(user: models.User) -> dict:
         "is_vip": bool(user.is_vip and user.vip_expire_date and user.vip_expire_date > datetime.utcnow()),
         "vip_expire_date": user.vip_expire_date.isoformat() if user.vip_expire_date else None,
         "theme": user.theme or "dark",
+        "security_stage": user.security_stage or 1,
+        "failed_attempts_in_stage": user.failed_attempts_in_stage or 0,
+        "lockout_until": user.lockout_until.isoformat() if user.lockout_until else None,
+        "phone": user.phone,
     }
 
 
 # ===== Auth =====
 @router.post("/register", response_model=schemas.UserOut)
-def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+@limiter.limit("5/minute")
+def register(
+    request: Request,
+    user: schemas.UserCreate, 
+    db: Session = Depends(database.get_db)
+):
     if db.query(models.User).filter(models.User.email == user.email).first():
         raise HTTPException(status_code=400, detail="این ایمیل قبلاً ثبت شده است")
     if db.query(models.User).filter(models.User.username == user.username).first():
@@ -139,6 +152,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     new_user = models.User(
         username=user.username,
         email=user.email,
+        phone=user.phone,
         password_hash=get_password_hash(user.password),
         coins=50, xp=0, owned_skins="[]", extra_notes=0,
     )
@@ -147,16 +161,105 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
 
 
 @router.post("/login", response_model=schemas.Token)
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(database.get_db),
 ):
     user = db.query(models.User).filter(
         (models.User.username == form_data.username) | (models.User.email == form_data.username)
     ).first()
-    if not user or not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="نام کاربری یا رمز عبور اشتباه است",
-                            headers={"WWW-Authenticate": "Bearer"})
+
+    # If user not found, still verify password to prevent timing attacks
+    if not user or not verify_password(form_data.password, user.password_hash if user else ""):
+        # If user exists but password wrong, apply security logic
+        if user:
+            now = datetime.utcnow()
+            # Check if currently locked out
+            if user.lockout_until and user.lockout_until > now:
+                raise HTTPException(
+                    status_code=403,
+                    detail="lockout",
+                    headers={"lockout_until": user.lockout_until.isoformat()}
+                )
+
+            # Increment failed attempts
+            user.failed_attempts_in_stage = (user.failed_attempts_in_stage or 0) + 1
+
+            if user.security_stage == 1:
+                if user.failed_attempts_in_stage < 3:
+                    db.commit()
+                    raise HTTPException(
+                        status_code=401,
+                        detail="wrong_attempt",
+                        headers={"attempts_left": str(3 - user.failed_attempts_in_stage)}
+                    )
+                elif user.failed_attempts_in_stage == 3:
+                    user.lockout_until = now + timedelta(minutes=1)
+                    user.security_stage = 2
+                    user.failed_attempts_in_stage = 0
+                    db.commit()
+                    raise HTTPException(
+                        status_code=403,
+                        detail="lockout_started",
+                        headers={"lockout_until": user.lockout_until.isoformat()}
+                    )
+
+            elif user.security_stage == 2:
+                if user.failed_attempts_in_stage < 1:
+                    db.commit()
+                    raise HTTPException(
+                        status_code=401,
+                        detail="wrong_attempt",
+                        headers={"attempts_left": "1"}
+                    )
+                elif user.failed_attempts_in_stage == 1:
+                    user.lockout_until = now + timedelta(minutes=5)
+                    user.security_stage = 3
+                    user.failed_attempts_in_stage = 0
+                    db.commit()
+                    raise HTTPException(
+                        status_code=403,
+                        detail="lockout_started",
+                        headers={"lockout_until": user.lockout_until.isoformat()}
+                    )
+
+            elif user.security_stage == 3:
+                if user.failed_attempts_in_stage == 1:
+                    user.failed_attempts_in_stage = 0
+                    user.lockout_until = None
+                    db.commit()
+                    raise HTTPException(
+                        status_code=403,
+                        detail="force_reset",
+                        headers={"message": "Account locked. You must reset your password."}
+                    )
+
+            db.commit()
+
+        # Generic error for non-existent users or unhandled cases
+        raise HTTPException(
+            status_code=401,
+            detail="نام کاربری یا رمز عبور اشتباه است",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    # Password is correct - check if force reset is required
+    now = datetime.utcnow()
+    if user.security_stage == 3 and (user.failed_attempts_in_stage or 0) == 0:
+        raise HTTPException(
+            status_code=403,
+            detail="force_reset",
+            headers={"message": "Account locked. You must reset your password."}
+        )
+
+    # Reset security fields on successful login
+    user.security_stage = 1
+    user.failed_attempts_in_stage = 0
+    user.lockout_until = None
+    db.commit()
+
     access_token = create_access_token(data={"sub": user.email})
     return schemas.Token(access_token=access_token, token_type="bearer")
 
@@ -288,7 +391,9 @@ def buy_coins(
 
 # ===== Game Reward =====
 @router.post("/game-reward", response_model=schemas.GameRewardResponse)
+@limiter.limit("5/minute")
 def game_reward(
+    request: Request,
     reward: schemas.GameRewardInput,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
@@ -617,6 +722,65 @@ def list_songs(
     db: Session = Depends(database.get_db),
 ):
     return db.query(models.Song).filter(models.Song.created_by == current_user.id).all()
+
+# ===== Password Reset =====
+@router.post("/forgot-password")
+def forgot_password(
+    data: schemas.ForgotPasswordRequest,
+    db: Session = Depends(database.get_db),
+):
+    user = db.query(models.User).filter(
+        (models.User.username == data.identifier) | 
+        (models.User.email == data.identifier) |
+        (models.User.phone == data.identifier)
+    ).first()
+    
+    if not user:
+        # Don't reveal if user exists
+        return {"message": "If the user exists, a reset code has been sent."}
+    
+    import random
+    code = str(random.randint(100000, 999999))
+    user.reset_code = code
+    user.reset_code_expire = datetime.utcnow() + timedelta(minutes=15)
+    user.reset_method = "email"
+    db.commit()
+    
+    # In production, send code via email/SMS
+    return {"message": "Reset code generated", "code": code}  # DEBUG: remove in production
+
+
+@router.post("/reset-password", response_model=schemas.ResetPasswordResponse)
+def reset_password(
+    data: schemas.ResetPasswordRequest,
+    db: Session = Depends(database.get_db),
+):
+    user = db.query(models.User).filter(
+        (models.User.username == data.identifier) | 
+        (models.User.email == data.identifier) |
+        (models.User.phone == data.identifier)
+    ).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="کاربر یافت نشد")
+    
+    if not user.reset_code or user.reset_code != data.code:
+        raise HTTPException(status_code=400, detail="کد بازیابی نامعتبر است")
+    
+    if user.reset_code_expire and user.reset_code_expire < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="کد بازیابی منقضی شده است")
+    
+    # Update password and reset security
+    user.password_hash = get_password_hash(data.new_password)
+    user.security_stage = 1
+    user.failed_attempts_in_stage = 0
+    user.lockout_until = None
+    user.reset_code = None
+    user.reset_code_expire = None
+    user.reset_method = None
+    db.commit()
+    
+    return schemas.ResetPasswordResponse(message="رمز عبور با موفقیت تغییر کرد")
 # ==========================================
 # ===== Leaderboard =====
 @router.get("/leaderboard")

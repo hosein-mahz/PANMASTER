@@ -8,6 +8,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    phone: Optional[str] = None
 
 class UserOut(BaseModel):
     id: int
@@ -35,6 +36,10 @@ class UserOut(BaseModel):
     is_vip: bool = False                
     vip_expire_date: Optional[datetime] = None
     theme: str = "dark"
+    security_stage: int = 1
+    failed_attempts_in_stage: int = 0
+    lockout_until: Optional[datetime] = None
+    phone: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -161,3 +166,15 @@ class SongOut(BaseModel):
     created_at: Optional[datetime] = None
     class Config:
         from_attributes = True
+
+# ===== Password Reset =====
+class ForgotPasswordRequest(BaseModel):
+    identifier: str  # email or phone
+
+class ResetPasswordRequest(BaseModel):
+    identifier: str
+    code: str
+    new_password: str
+
+class ResetPasswordResponse(BaseModel):
+    message: str
