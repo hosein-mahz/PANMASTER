@@ -8,7 +8,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    phone: Optional[str] = None
+    phone: str
 
 class UserOut(BaseModel):
     id: int

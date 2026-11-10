@@ -161,7 +161,7 @@ def register(
 
 
 @router.post("/login", response_model=schemas.Token)
-@limiter.limit("5/minute")
+# 👈 @limiter.limit("5/minute")  --> این خط رو کلاً پاک کن تا با سیستم امنیتی تداخل نکنه
 def login(
     request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -171,90 +171,54 @@ def login(
         (models.User.username == form_data.username) | (models.User.email == form_data.username)
     ).first()
 
-    # If user not found, still verify password to prevent timing attacks
-    if not user or not verify_password(form_data.password, user.password_hash if user else ""):
-        # If user exists but password wrong, apply security logic
-        if user:
-            now = datetime.utcnow()
-            # Check if currently locked out
-            if user.lockout_until and user.lockout_until > now:
-                raise HTTPException(
-                    status_code=403,
-                    detail="lockout",
-                    headers={"lockout_until": user.lockout_until.isoformat()}
-                )
+    now = datetime.now() # 👈 تغییر به وقت محلی برای هماهنگی با دیتابیس
 
-            # Increment failed attempts
+    if user:
+        # ۱. چک کردن بن فعال
+        if user.lockout_until and user.lockout_until > now:
+            rem = int((user.lockout_until - now).total_seconds())
+            raise HTTPException(status_code=403, detail={"code": "lockout", "remaining_seconds": rem})
+
+        # ۲. چک کردن قفل نهایی
+        if user.security_stage == 3 and (user.failed_attempts_in_stage or 0) == 0:
+            raise HTTPException(status_code=403, detail={"code": "force_reset", "message": "Account locked. You must reset your password."})
+
+    if not user or not verify_password(form_data.password, user.password_hash if user else ""):
+        if user:
             user.failed_attempts_in_stage = (user.failed_attempts_in_stage or 0) + 1
 
             if user.security_stage == 1:
                 if user.failed_attempts_in_stage < 3:
                     db.commit()
-                    raise HTTPException(
-                        status_code=401,
-                        detail="wrong_attempt",
-                        headers={"attempts_left": str(3 - user.failed_attempts_in_stage)}
-                    )
+                    raise HTTPException(status_code=401, detail={"code": "wrong_attempt", "attempts_left": 3 - user.failed_attempts_in_stage})
                 elif user.failed_attempts_in_stage == 3:
                     user.lockout_until = now + timedelta(minutes=1)
                     user.security_stage = 2
                     user.failed_attempts_in_stage = 0
                     db.commit()
-                    raise HTTPException(
-                        status_code=403,
-                        detail="lockout_started",
-                        headers={"lockout_until": user.lockout_until.isoformat()}
-                    )
+                    raise HTTPException(status_code=403, detail={"code": "lockout_started", "remaining_seconds": 60})
 
             elif user.security_stage == 2:
                 if user.failed_attempts_in_stage < 1:
                     db.commit()
-                    raise HTTPException(
-                        status_code=401,
-                        detail="wrong_attempt",
-                        headers={"attempts_left": "1"}
-                    )
+                    raise HTTPException(status_code=401, detail={"code": "wrong_attempt", "attempts_left": 1})
                 elif user.failed_attempts_in_stage == 1:
                     user.lockout_until = now + timedelta(minutes=5)
                     user.security_stage = 3
                     user.failed_attempts_in_stage = 0
                     db.commit()
-                    raise HTTPException(
-                        status_code=403,
-                        detail="lockout_started",
-                        headers={"lockout_until": user.lockout_until.isoformat()}
-                    )
+                    raise HTTPException(status_code=403, detail={"code": "lockout_started", "remaining_seconds": 300})
 
             elif user.security_stage == 3:
                 if user.failed_attempts_in_stage == 1:
                     user.failed_attempts_in_stage = 0
                     user.lockout_until = None
                     db.commit()
-                    raise HTTPException(
-                        status_code=403,
-                        detail="force_reset",
-                        headers={"message": "Account locked. You must reset your password."}
-                    )
+                    raise HTTPException(status_code=403, detail={"code": "force_reset", "message": "Account locked. You must reset your password."})
 
-            db.commit()
+        raise HTTPException(status_code=401, detail={"code": "generic", "message": "نام کاربری یا رمز عبور اشتباه است"})
 
-        # Generic error for non-existent users or unhandled cases
-        raise HTTPException(
-            status_code=401,
-            detail="نام کاربری یا رمز عبور اشتباه است",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
-
-    # Password is correct - check if force reset is required
-    now = datetime.utcnow()
-    if user.security_stage == 3 and (user.failed_attempts_in_stage or 0) == 0:
-        raise HTTPException(
-            status_code=403,
-            detail="force_reset",
-            headers={"message": "Account locked. You must reset your password."}
-        )
-
-    # Reset security fields on successful login
+    # رمز صحیح
     user.security_stage = 1
     user.failed_attempts_in_stage = 0
     user.lockout_until = None
@@ -262,7 +226,6 @@ def login(
 
     access_token = create_access_token(data={"sub": user.email})
     return schemas.Token(access_token=access_token, token_type="bearer")
-
 
 @router.get("/me", response_model=schemas.UserOut)
 def get_me(current_user: models.User = Depends(get_current_user)):
