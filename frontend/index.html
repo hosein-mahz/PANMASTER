@@ -8,9 +8,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        #auth-section { display: flex; }
-        #game-section { display: none; width: 100%; height: 100vh; flex-direction: column; padding: 10px; overflow: hidden; position: relative; }
-
+        #auth-section { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background-color: var(--bg-main); 
+            z-index: 99999; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #game-section { 
+            display: none; 
+            width: 100%; 
+            height: 100vh; 
+            flex-direction: column; 
+            padding: 10px; 
+            overflow: hidden; 
+            position: relative; 
+        }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--bg-card); border-radius: 15px; margin-bottom: 10px; flex-shrink: 0; border: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
         .header h1 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
         .user-info { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: bold; flex-wrap: wrap; }
@@ -26,6 +44,14 @@
         .view { display: none; flex-direction: column; flex: 1; width: 100%; align-items: center; justify-content: flex-start; background: var(--bg-main); border-radius: 20px; position: relative; overflow-y: auto; padding: 60px 15px 20px; }
         .view.active { display: flex; }
         
+        /* استایل‌های جدید منوی شبکه‌ای */
+        .menu-grid {display: grid;grid-template-columns: 1fr 1fr;gap: 15px;width: 85%;max-width: 420px;margin: 0 auto 20px auto;}
+        .menu-card {display: flex;flex-direction: column;align-items: center;justify-content: center;aspect-ratio: 1 / 1; padding: 15px;background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-main) 100%);border: 1px solid var(--border);border-bottom: 5px solid var(--btn-shadow);border-radius: 20px;cursor: pointer;transition: all 0.1s ease;box-shadow: 0 4px 6px rgba(0,0,0,0.05);text-align: center;}
+        .menu-card:hover { background: var(--bg-card); transform: translateY(-2px); }
+        .menu-card:active { border-bottom-width: 2px; transform: translateY(3px); background: var(--btn-shadow); }
+        .menu-card .icon { font-size: 38px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .menu-card .title { font-size: 15px; font-weight: bold; }
+
         .menu-btn { width: 80%; max-width: 400px; padding: 16px; margin-bottom: 15px; background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-main) 100%); color: var(--primary); border: 1px solid var(--border); border-bottom: 5px solid var(--btn-shadow); border-radius: 15px; font-size: 17px; font-weight: bold; cursor: pointer; transition: all 0.1s ease; display: block; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .menu-btn:hover { background: var(--bg-card); border-color: var(--primary); }
         .menu-btn:active { border-bottom-width: 2px; transform: translateY(3px); background: var(--btn-shadow); }
@@ -121,6 +147,7 @@
 </head>
 <body>
 
+    <!-- ================= بخش احراز هویت (لاگین / ثبت‌نام / فراموشی رمز) ================= -->
     <div id="auth-section">
         <div class="form-box">
             <h1>PanMaster</h1>
@@ -129,48 +156,77 @@
                 <div class="input-group"><label data-i18n="auth.password">رمز عبور</label><input type="password" id="loginPass"></div>
                 <button class="btn" onclick="login()" data-i18n="auth.login_btn">ورود به استودیو</button>
                 <span class="toggle-link" onclick="toggleAuth('register')" data-i18n="auth.no_account">حساب ندارید؟ ثبت‌نام کنید</span>
+                <span class="toggle-link" onclick="goToForgotPassword()" data-i18n="auth.forgot_password" style="color: var(--danger-color); font-size: 13px; margin-top: 8px; display: block; cursor: pointer;">رمز عبور را فراموش کرده‌اید؟</span>
             </div>
             <div id="register-form" style="display:none;">
                 <div class="input-group"><label data-i18n="auth.username">نام کاربری</label><input type="text" id="regUser"></div>
                 <div class="input-group"><label data-i18n="auth.email">ایمیل</label><input type="email" id="regEmail"></div>
                 <div class="input-group"><label data-i18n="auth.password">رمز عبور</label><input type="password" id="regPass"></div>
+                <div class="input-group"><label data-i18n="auth.phone">شماره تلفن</label><input type="text" id="regPhone" required></div>
                 <button class="btn" onclick="register()" data-i18n="auth.register_btn">ساخت حساب</button>
                 <span class="toggle-link" onclick="toggleAuth('login')" data-i18n="auth.have_account">قبلاً ثبت‌نام کرده‌اید؟ وارد شوید</span>
             </div>
             <div class="error" id="authError"></div>
         </div>
-    </div>
 
+        <div id="forgot-password-view" style="display:none; width:100%; max-width:400px;">
+            <button class="back-btn" onclick="toggleAuth('login')" style="position:relative; top:0; right:0; margin-bottom: 20px;">← بازگشت</button>
+            <div class="card-section" style="margin: 0 auto;">
+                <h2 data-i18n="auth.forgot_title">🔐 فراموشی رمز عبور</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;" data-i18n="auth.forgot_desc">شماره تلفن یا ایمیل خود را وارد کنید تا کد بازیابی ارسال شود.</p>
+                <div class="input-group"><label data-i18n="auth.identifier">ایمیل یا شماره تلفن</label><input type="text" id="forgotIdentifier"></div>
+                <button class="btn" onclick="sendResetCode()" data-i18n="auth.send_code_btn">ارسال کد بازیابی</button>
+                <div class="msg-success" id="forgotMsg"></div>
+            </div>
+        </div>
+    </div> <!-- پایان auth-section -->
+
+
+    <!-- ================= بخش اصلی بازی ================= -->
     <div id="game-section">
-        <div class="header">
-            <h1>PanMaster</h1>
-            <div class="user-info">
+        <!-- 👇 فقط این یک هدر باید وجود داشته باشه -->
+        <div class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-card); border-radius: 15px; margin-bottom: 10px; border: 1px solid var(--border); gap: 10px;">
+            <h1 style="color: var(--primary); font-size: 18px; white-space: nowrap; margin: 0;">PanMaster</h1>
+            
+            <div class="user-info" style="display: flex; align-items: center; gap: 12px; flex-wrap: nowrap;">
                 <div id="headerAvatar"></div>
-                <div class="user-level-block">
-                    <div class="user-level-row">
-                        <span id="usernameDisplay">User</span>
-                        <span id="levelBadge" class="level-badge">Lvl 1</span>
+                
+                <div class="user-level-block" onclick="goToLevels()" style="display: flex; flex-direction: column; justify-content: center; cursor: pointer; min-width: 130px;" title="مشاهده مراحل و جوایز">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+                        <span id="usernameDisplay" style="font-weight: bold; font-size: 14px; white-space: nowrap; color: var(--text-main);">User</span>
+                        <span id="levelBadge" class="level-badge" style="white-space: nowrap; font-size: 10px;">Lvl 1</span>
                     </div>
-                    <div class="xp-bar"><div class="xp-fill" id="xpProgressFill"></div></div>
-                    <div class="xp-text" id="xpText">0 / 20 XP</div>
+                    
+                    <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+                        <div class="xp-bar" style="flex: 1; height: 8px; background: var(--bg-main); border-radius: 4px; overflow: hidden; border: 1px solid var(--border);">
+                            <div class="xp-fill" id="xpProgressFill" style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.4s ease;"></div>
+                        </div>
+                        <span id="xpText" style="font-size: 10px; color: var(--text-muted); white-space: nowrap; direction: ltr;">0 / 20</span>
+                    </div>
                 </div>
-                <div class="token-badge">
-                    <img src="/assets/coin.svg" alt="coin">
+                
+                <div class="token-badge" style="white-space: nowrap; margin-left: 5px;">
+                    <img src="/assets/coin.svg" alt="coin" style="width: 18px; height: 18px;">
                     <span id="tokenDisplay">0</span>
                 </div>
             </div>
         </div>
+        <!-- 👆 پایان هدر -->
 
         <!-- منوی اصلی -->
         <div id="menu-view" class="view active">
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
-            <button class="menu-btn" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;" data-i18n="menu.training">📚 تمرین کن و یاد بگیر</button>
-            <button class="menu-btn" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;" data-i18n="menu.editor">🎼 آهنگساز</button>            
-            <button class="menu-btn" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
-            <button class="menu-btn" onclick="goToLeaderboard()" style="border-color: #fbbf24; color: #fbbf24;" data-i18n="menu.leaderboard">🏆 جدول امتیازات</button>
-            <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile">👤 پروفایل</button>
-            <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet">💰 کیف پول</button>
-            <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings">⚙️ تنظیمات</button>
+            
+            <div class="menu-grid">
+                <div class="menu-card" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;"><span class="icon">📚</span><span class="title" data-i18n="menu.training_short">تمرین و یادگیری</span></div>
+                <div class="menu-card" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;"><span class="icon">🎼</span><span class="title" data-i18n="menu.editor_short">آهنگساز</span></div>
+                <div class="menu-card" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;"><span class="icon">🎤</span><span class="title" data-i18n="menu.mic_short">ساز واقعی</span></div>
+                <div class="menu-card" onclick="goToLeaderboard()" style="border-color: #fbbf24; color: #fbbf24;"><span class="icon">🏆</span><span class="title" data-i18n="menu.leaderboard_short">جدول امتیازات</span></div>
+            </div>
+            <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">💰 کیف پول</button>
+            <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">👤 پروفایل</button>
+            <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">⚙️ تنظیمات</button>
+            
             <p style="color: var(--text-muted); margin-top: 10px; font-size: 13px;" data-i18n="menu.hint">💡 دقت بالای ۷۵٪ = ۲۰ XP + جایزه مرحله</p>
         </div>
 
@@ -182,7 +238,7 @@
             <button class="menu-btn" onclick="goToFallingGame()" style="border-color:#fbbf24;color:#fbbf24;">
                 <span data-i18n="menu.trial">🌧️ مرحله تستی (ورود: ۱۰</span> <img src="/assets/coin.svg" alt="coin" style="width:16px;height:16px;vertical-align:middle;">)
             </button>
-                        <button class="menu-btn" onclick="goToTutorialLevel(1)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_1">📖 مرحله ۱: شروع با نت D</button>
+            <button class="menu-btn" onclick="goToTutorialLevel(1)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_1">📖 مرحله ۱: شروع با نت D</button>
             <button class="menu-btn" onclick="goToTutorialLevel(2)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_2">📖 مرحله ۲: نت‌های کناری</button>
             <button class="menu-btn" onclick="goToTutorialLevel(3)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_3">📖 مرحله ۳: ترکیب نت‌ها</button>
             <button class="menu-btn" onclick="goToTutorialLevel(4)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_4">📖 مرحله ۴: دو نت هم‌زمان</button>
@@ -287,6 +343,8 @@
                 <div class="profile-level" id="profileLevel" style="font-size:14px; color:#fbbf24; margin-bottom:18px;"></div>
                 <div class="xp-bar" style="height:10px; margin-bottom:6px;"><div class="xp-fill" id="profileXpFill"></div></div>
                 <div class="xp-text" id="profileXpText" style="margin-bottom:20px; text-align:center;"></div>
+                <!-- 👇 دکمه جدید برای رفتن به صفحه لول‌ها -->
+                <button class="btn-sm" onclick="goToLevels()" data-i18n="profile.view_levels" style="width: 100%; padding: 12px; font-size: 14px; margin-bottom: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #0f172a; font-weight: 900; border-radius: 10px;">📈 مشاهده مراحل و جوایز</button>
                 <div class="profile-stats">
                     <div class="stat"><span data-i18n="profile.coins">سکه</span><span id="profileCoins">0</span></div>
                     <div class="stat"><span data-i18n="profile.total_xp">مجموع XP</span><span id="profileTotalXp">0</span></div>
@@ -301,13 +359,12 @@
             </div>
         </div>
 
-            <!-- جدول امتیازات -->
+        <!-- جدول امتیازات -->
         <div id="leaderboard-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section" style="max-width: 500px; width: 90%; margin-top: 40px;">
                 <h2 style="color: var(--coin-text);" data-i18n="leaderboard.title">🏆 برترین بازیکنان</h2>
                 
-                <!-- 👇 باکس نمایش لیگ خود کاربر -->
                 <div id="my-league-box" style="background:var(--bg-main); padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:10px;">
                     <span id="my-league-icon" style="font-size:30px;">🥉</span>
                     <div style="text-align:right;">
@@ -315,7 +372,6 @@
                         <div id="my-league-name" style="font-size:18px; font-weight:bold; color:var(--primary);">برنز</div>
                     </div>
                 </div>
-                <!-- 👆 پایان باکس لیگ -->
 
                 <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
                     <div style="text-align:center; color:var(--text-muted); padding:20px;" data-i18n="editor.loading">در حال بارگذاری...</div>
@@ -329,7 +385,6 @@
             <div class="card-section">
                 <h2 data-i18n="settings.title">⚙️ تنظیمات</h2>
 
-                <!-- ۴. میکروفون و کالیبراسیون -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('micSettingsWrap', 'micSettingsChevron')">
                         <span data-i18n="settings.mic_title">🎤 تنظیمات ساز و میکروفون</span>
@@ -344,7 +399,6 @@
                     </div>
                 </div>
 
-                <!-- ۱. ظاهر بازی -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('appearanceWrap', 'appearanceChevron')">
                         <span data-i18n="settings.appearance">🎨 ظاهر بازی</span>
@@ -376,7 +430,6 @@
                     </div>
                 </div>
 
-                <!-- ۲. حالت نمایش نت‌ها -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('noteDisplayWrap', 'noteDisplayChevron')">
                         <span data-i18n="settings.note_display">🔢 حالت نمایش نت‌ها</span>
@@ -392,7 +445,6 @@
                     </div>
                 </div>
 
-                <!-- ۳. اسکین‌ها -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('skinGalleryWrap', 'skinChevron')">
                         <span data-i18n="settings.active_skin">🎵 طرح هنگ‌درام (اسکین)</span>
@@ -403,7 +455,6 @@
                     </div>
                 </div>
 
-                <!-- ۵. انتخاب آواتار (منتقل شد به آخر) -->
                 <div class="settings-block">
                     <button class="acc-btn" onclick="toggleAccordion('avatarGalleryWrap', 'avatarChevron')">
                         <span data-i18n="settings.avatar_title">🖼️ انتخاب آواتار</span>
@@ -424,13 +475,12 @@
                     </div>
                 </div>
                 
-                <!-- ذخیره -->
                 <button class="btn-sm" onclick="saveSettings()" data-i18n="settings.save_settings" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">ذخیره تنظیمات</button>
                 <div class="msg-success" id="settingsMsg"></div>
             </div>
         </div>
 
-        <!-- 👇 آهنگساز -->
+        <!-- آهنگساز -->
         <div id="editor-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <div class="card-section">
@@ -483,8 +533,18 @@
                 </div>
             </div>
         </div>
+        <!-- صفحه مراحل و لول‌ها -->
+        <div id="levels-view" class="view">
+            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            <h2 style="color:var(--primary); margin-bottom: 10px; padding-top: 30px;" data-i18n="levels.title">📈 مراحل و جوایز</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; text-align: center;" data-i18n="levels.desc">با کسب XP، استوانه سطح خود را پر کنید و جایزه بگیرید!</p>
+            
+            <div id="levels-list" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; padding-bottom: 40px; gap: 10px;">
+                <!-- کارت‌ها توسط جاوااسکریپت ساخته می‌شوند -->
+            </div>
+        </div>
 
-    </div> <!-- بسته شدن game-section -->
+    </div> <!-- پایان game-section -->
 
     <!-- مودال جایزه -->
     <div id="reward-modal" class="reward-modal">
@@ -503,6 +563,17 @@
             <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="ad.hint">برای دیدن نتایج تمرین، لطفاً ۵ ثانیه صبر کنید.</p>
             <div style="font-size: 60px; font-weight: 900; color: #fbbf24; margin: 20px 0;" id="ad-timer">5</div>
             <button class="btn" id="ad-close-btn" disabled style="opacity: 0.5;" data-i18n="ad.wait_btn">لطفاً صبر کنید...</button>
+        </div>
+    </div>
+
+    <!-- مودال نمایش اسکین -->
+    <div id="skin-preview-modal" class="reward-modal" style="z-index: 10000;">
+        <div class="reward-content" style="border-color: #a78bfa; max-width: 300px;">
+            <h2 style="color: #a78bfa; margin-bottom: 10px;" id="skin-preview-title">نام اسکین</h2>
+            <div style="width: 150px; height: 150px; margin: 0 auto 20px auto; border-radius: 50%; border: 3px solid var(--border); background: var(--bg-main); overflow: hidden;">
+                <img id="skin-preview-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <button class="btn" onclick="document.getElementById('skin-preview-modal').classList.remove('show')" style="margin-top:10px;">بستن</button>
         </div>
     </div>
 

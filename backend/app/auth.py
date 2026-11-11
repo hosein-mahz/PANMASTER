@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 
 from . import models, schemas, database
 from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
+from .levels import LEVEL_NAMES, XP_THRESHOLDS, LEVEL_REWARDS
+
 load_dotenv()
 
 # ===== تنظیمات =====
@@ -753,12 +755,22 @@ def get_leaderboard(db: Session = Depends(database.get_db)):
     
     result = []
     for rank, u in enumerate(top_users, start=1):
+        current_lvl = get_level_from_xp(u.xp or 0) # 👈 این خط جا افتاده بود
         result.append({
             "rank": rank,
             "username": u.username,
             "xp": u.xp or 0,
-            "level": get_level_from_xp(u.xp or 0),
-            "league": get_league_from_level(lvl),
+            "level": current_lvl,
+            "league": get_league_from_level(current_lvl),
             "selected_avatar": u.selected_avatar or "default"
         })
     return result
+# ===== Levels Data =====
+
+@router.get("/levels-data")
+def get_levels_data():
+    return {
+        "names_fa": LEVEL_NAMES,
+        "thresholds": XP_THRESHOLDS,
+        "rewards": LEVEL_REWARDS
+    }

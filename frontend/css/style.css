@@ -45,11 +45,10 @@
     font-family: var(--app-font);
 }
 
-body { background: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
-
+body { background: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; overflow: hidden; }
 /* استایل لاگین */
-#auth-section { width: 100%; max-width: 400px; padding: 20px; }
-.form-box { background: var(--bg-card); padding: 40px 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+#auth-section { width: 100%; padding: 20px; }
+.form-box { background: var(--bg-card); padding: 40px 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
 .form-box h1 { color: var(--primary); margin-bottom: 25px; font-size: 32px; display: flex; justify-content: center; align-items: center; gap: 10px; }
 .input-group { margin-bottom: 15px; text-align: right; }
 .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
