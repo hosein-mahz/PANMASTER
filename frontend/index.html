@@ -172,13 +172,33 @@
             <div class="error" id="authError"></div>
         </div>
 
+                <!-- نمای فراموشی رمز عبور -->
         <div id="forgot-password-view" style="display:none; width:100%; max-width:400px;">
             <button class="back-btn" onclick="toggleAuth('login')" style="position:relative; top:0; right:0; margin-bottom: 20px;">← بازگشت</button>
             <div class="card-section" style="margin: 0 auto;">
                 <h2 data-i18n="auth.forgot_title">🔐 فراموشی رمز عبور</h2>
                 <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;" data-i18n="auth.forgot_desc">شماره تلفن یا ایمیل خود را وارد کنید تا کد بازیابی ارسال شود.</p>
-                <div class="input-group"><label data-i18n="auth.identifier">ایمیل یا شماره تلفن</label><input type="text" id="forgotIdentifier"></div>
-                <button class="btn" onclick="sendResetCode()" data-i18n="auth.send_code_btn">ارسال کد بازیابی</button>
+                
+                <div class="input-group">
+                    <label data-i18n="auth.identifier">ایمیل یا شماره تلفن</label>
+                    <input type="text" id="forgotIdentifier">
+                </div>
+                
+                <button class="btn" id="btn-send-code" onclick="sendResetCode()" data-i18n="auth.send_code_btn">ارسال کد بازیابی</button>
+                
+                <!-- 👇 مرحله دوم: وارد کردن کد و رمز جدید (در ابتدا مخفی) -->
+                <div id="reset-step-2" style="display:none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <div class="input-group">
+                        <label data-i18n="auth.reset_code">کد ۶ رقمی</label>
+                        <input type="text" id="resetCode" placeholder="123456" style="direction: ltr; text-align: center; letter-spacing: 5px; font-weight: bold;">
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="auth.new_password">رمز عبور جدید</label>
+                        <input type="password" id="newPassword">
+                    </div>
+                    <button class="btn" onclick="submitNewPassword()" data-i18n="auth.submit_new_password" style="background: var(--success-color);">تغییر رمز عبور</button>
+                </div>
+                
                 <div class="msg-success" id="forgotMsg"></div>
             </div>
         </div>

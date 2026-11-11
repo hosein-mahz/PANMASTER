@@ -50,6 +50,8 @@ const I18N = {
         "msg.saved":"✓ تغییرات ذخیره شد","msg.error_server":"خطا در ارتباط با سرور","msg.error_generic":"خطا","msg.confirm_buy_avatar": "آواتار {name} قفل است. آیا {price} سکه می‌پردازید؟", "msg.confirm_random_avatar_limit": "شما به محدودیت ۵ آواتار رندوم رسیده‌اید.\nقدیمی‌ترین آواتار هایلایت‌نشده حذف خواهد شد.\nآیا ادامه می‌دهید؟", "msg.confirm_random_avatar_cost": "ساخت آواتار رندوم جدید {cost} سکه هزینه دارد. ادامه می‌دهید؟", "msg.confirm_buy_skin": "آیا این اسکین را به قیمت {price} سکه می‌خرید؟", "msg.confirm_delete_avatar": "آیا از حذف این آواتار مطمئن هستید؟", "msg.confirm_delete_highlight": "⚠️ این آواتار هایلایت شده است. آیا از حذف آن مطمئن هستید؟", "msg.buy_success": "✅ خرید موفق! آواتار شما تغییر کرد.", "msg.skin_buy_success": "✅ خرید موفق! اسکین شما تغییر کرد.", "msg.avatar_deleted": "✓ آواتار با موفقیت حذف شد","auth.error.empty":"لطفاً تمام فیلدها را پر کنید.","auth.error.credentials":"نام کاربری یا رمز عبور اشتباه است.","auth.error.email":"فرمت ایمیل صحیح نیست.","auth.error.auto_login":"ثبت‌نام انجام شد اما ورود خودکار ناموفق بود. لطفاً دستی وارد شوید.","auth.error.register":"خطا در ثبت‌نام",
         
         "levels.title": "📈 مراحل و جوایز","levels.desc": "با کسب XP، باتری سطح خود را پر کنید و جایزه بگیرید!","profile.view_levels": "📈 مشاهده مراحل و جوایز",
+
+        "auth.reset_code": "کد ۶ رقمی","auth.new_password": "رمز عبور جدید","auth.submit_new_password": "تغییر رمز عبور","auth.reset_success": "✅ رمز عبور با موفقیت تغییر کرد. حالا می‌توانید وارد شوید.",
     },
     en: {
         // # Auth
@@ -86,6 +88,8 @@ const I18N = {
         "msg.saved":"✓ Changes saved","msg.error_server":"Server connection error","msg.error_generic":"Error","msg.confirm_buy_avatar": "Avatar {name} is locked. Pay {price} coins?", "msg.confirm_random_avatar_limit": "You reached the limit of 5 random avatars.\nThe oldest unhighlighted avatar will be deleted.\nContinue?", "msg.confirm_random_avatar_cost": "Generating a new random avatar costs {cost} coins. Continue?", "msg.confirm_buy_skin": "Buy this skin for {price} coins?", "msg.confirm_delete_avatar": "Are you sure you want to delete this avatar?", "msg.confirm_delete_highlight": "⚠️ This avatar is highlighted. Are you sure you want to delete it?", "msg.buy_success": "✅ Purchase successful! Avatar changed.", "msg.skin_buy_success": "✅ Purchase successful! Skin changed.", "msg.avatar_deleted": "✓ Avatar deleted successfully","auth.error.empty":"Please fill in all fields.","auth.error.credentials":"Invalid username or password.","auth.error.email":"Invalid email format.","auth.error.auto_login":"Registration successful but auto-login failed. Please login manually.","auth.error.register":"Registration error",
         
         "levels.title": "📈 Levels & Rewards","levels.desc": "Earn XP to fill your level battery and get rewards!","profile.view_levels": "📈 View Levels & Rewards",
+        
+        "auth.reset_code": "6-digit Code","auth.new_password": "New Password","auth.submit_new_password": "Reset Password","auth.reset_success": "✅ Password reset successfully. You can now log in.",
     }
 };
 
@@ -316,13 +320,14 @@ function goToForgotPassword() {
 async function sendResetCode() {
     const identifier = document.getElementById('forgotIdentifier').value.trim();
     const msgEl = document.getElementById('forgotMsg');
-    if (!identifier) { 
-        msgEl.style.color = 'var(--danger-color)'; 
-        msgEl.innerText = t('auth.error.empty'); 
-        return; 
-    }
+    const btn = document.getElementById('btn-send-code');
+    
+    if (!identifier) { msgEl.style.color = 'var(--danger-color)'; msgEl.innerText = t('auth.error.empty'); return; }
     
     msgEl.innerText = '';
+    btn.innerText = 'در حال ارسال...';
+    btn.disabled = true;
+    
     try {
         const res = await fetch('/api/users/forgot-password', {
             method: 'POST',
@@ -332,24 +337,37 @@ async function sendResetCode() {
         if (res.ok) {
             const data = await res.json();
             msgEl.style.color = 'var(--success-color)';
-            msgEl.innerText = data.code ? `کد بازیابی: ${data.code}` : t('auth.code_sent');
+            msgEl.innerText = data.code ? `کد بازیابی (برای تست): ${data.code}` : t('auth.code_sent');
+            
+            // 👈 نمایش مرحله ۲ و قفل کردن فیلد اول
+            document.getElementById('reset-step-2').style.display = 'block';
+            document.getElementById('forgotIdentifier').disabled = true;
+            btn.style.display = 'none'; // دکمه ارسال کد مخفی میشه
         } else {
             const err = await res.json();
             msgEl.style.color = 'var(--danger-color)';
             msgEl.innerText = err.detail || t('msg.error_server');
+            btn.innerText = t('auth.send_code_btn');
+            btn.disabled = false;
         }
     } catch(e) {
         msgEl.style.color = 'var(--danger-color)';
         msgEl.innerText = t('msg.error_server');
+        btn.innerText = t('auth.send_code_btn');
+        btn.disabled = false;
     }
 }
 
 async function sendResetCode() {
     const identifier = document.getElementById('forgotIdentifier').value.trim();
     const msgEl = document.getElementById('forgotMsg');
+    const btn = document.getElementById('btn-send-code');
+    
     if (!identifier) { msgEl.style.color = 'var(--danger-color)'; msgEl.innerText = t('auth.error.empty'); return; }
     
     msgEl.innerText = '';
+    if (btn) { btn.innerText = 'در حال ارسال...'; btn.disabled = true; }
+    
     try {
         const res = await fetch('/api/users/forgot-password', {
             method: 'POST',
@@ -359,15 +377,30 @@ async function sendResetCode() {
         if (res.ok) {
             const data = await res.json();
             msgEl.style.color = 'var(--success-color)';
-            msgEl.innerText = data.code ? `کد بازیابی: ${data.code}` : t('auth.code_sent');
+            msgEl.innerText = data.code ? `کد بازیابی (برای تست): ${data.code}` : t('auth.code_sent');
+            
+            // 👇 پیدا کردن و نمایش مرحله ۲
+            const step2 = document.getElementById('reset-step-2');
+            if (step2) {
+                step2.style.display = 'block';
+                console.log("✅ Step 2 is now visible.");
+            } else {
+                console.error("⚠️ BUG: Element 'reset-step-2' not found in HTML!");
+            }
+            
+            const idInput = document.getElementById('forgotIdentifier');
+            if (idInput) idInput.disabled = true;
+            if (btn) btn.style.display = 'none'; 
         } else {
             const err = await res.json();
             msgEl.style.color = 'var(--danger-color)';
             msgEl.innerText = err.detail || t('msg.error_server');
+            if (btn) { btn.innerText = t('auth.send_code_btn'); btn.disabled = false; }
         }
     } catch(e) {
         msgEl.style.color = 'var(--danger-color)';
         msgEl.innerText = t('msg.error_server');
+        if (btn) { btn.innerText = t('auth.send_code_btn'); btn.disabled = false; }
     }
 }
 
@@ -2126,6 +2159,53 @@ function applyViewBackground(viewId) {
     
     document.documentElement.style.setProperty('--app-bg', bgUrl);
     console.log("🖼️ Background Applied:", bgUrl, "for view:", viewId); // این خط رو ببین چی چاپ میکنه
+}
+
+async function submitNewPassword() {
+    const identifier = document.getElementById('forgotIdentifier').value.trim();
+    const code = document.getElementById('resetCode').value.trim();
+    const newPassword = document.getElementById('newPassword').value;
+    const msgEl = document.getElementById('forgotMsg');
+
+    if (!code || !newPassword) {
+        msgEl.style.color = 'var(--danger-color)';
+        msgEl.innerText = t('auth.error.empty');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/users/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, code, new_password: newPassword })
+        });
+        
+        if (res.ok) {
+            msgEl.style.color = 'var(--success-color)';
+            msgEl.innerText = t('auth.reset_success');
+            
+            // بعد از ۲ ثانیه، کاربر رو برگردون به صفحه لاگین و فرم‌ها رو ریست کن
+            setTimeout(() => {
+                toggleAuth('login');
+                document.getElementById('reset-step-2').style.display = 'none';
+                document.getElementById('forgotIdentifier').disabled = false;
+                document.getElementById('forgotIdentifier').value = '';
+                document.getElementById('btn-send-code').style.display = 'block';
+                document.getElementById('btn-send-code').innerText = t('auth.send_code_btn');
+                document.getElementById('btn-send-code').disabled = false;
+                document.getElementById('resetCode').value = '';
+                document.getElementById('newPassword').value = '';
+                msgEl.innerText = '';
+            }, 2500);
+        } else {
+            const err = await res.json();
+            msgEl.style.color = 'var(--danger-color)';
+            msgEl.innerText = err.detail || t('msg.error_server');
+        }
+    } catch(e) {
+        msgEl.style.color = 'var(--danger-color)';
+        msgEl.innerText = t('msg.error_server');
+    }
 }
 
 // شروع برنامه و بررسی توکن
