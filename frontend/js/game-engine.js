@@ -587,7 +587,11 @@ function applyFont(f){ document.documentElement.style.setProperty('--app-font', 
 // ==========================================================
 // NAVIGATION
 // ==========================================================
-function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active');
+     if (typeof applyViewBackground === 'function') {
+        applyViewBackground(id);
+    }
+ }
 function showGame(){
     document.getElementById('auth-section').style.display='none';
     document.getElementById('game-section').style.display='flex';
@@ -1955,6 +1959,12 @@ async function promptBuySkin(skinId) {
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('pm_theme', theme); 
+    
+    // 👈 وقتی تم عوض میشه، بک‌گراند صفحه فعلی رو دوباره ست کن
+    const activeView = document.querySelector('.view.active');
+    if (activeView && typeof applyViewBackground === 'function') {
+        applyViewBackground(activeView.id);
+    }
 }
 
 function previewTheme(theme) {
@@ -2088,6 +2098,34 @@ function renderLevels() {
 // 👈 اضافه کردن تابع بستن اسکین
 function hideSkinPreview() {
     document.getElementById('skin-preview-modal').classList.remove('show');
+}
+// ==========================================================
+// Dynamic Random Background per View & User
+// ==========================================================
+function applyViewBackground(viewId) {
+    const gameViews = ['free-view', 'falling-view', 'calibration-view', 'result-view'];
+    if (gameViews.includes(viewId)) {
+        document.documentElement.style.setProperty('--app-bg', 'none');
+        console.log("🎮 Background removed for game view:", viewId);
+        return;
+    }
+
+    const username = currentUser?.username || 'guest';
+    const storageKey = 'pm_bgs_' + username;
+    let bgMap = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+    if (!bgMap[viewId]) {
+        bgMap[viewId] = Math.floor(Math.random() * 4) + 1;
+        localStorage.setItem(storageKey, JSON.stringify(bgMap));
+    }
+
+    const bgNum = bgMap[viewId];
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const folder = isLight ? 'light' : 'dark';
+    const bgUrl = `url('/assets/backgrounds/${folder}/bg${bgNum}.png')`;
+    
+    document.documentElement.style.setProperty('--app-bg', bgUrl);
+    console.log("🖼️ Background Applied:", bgUrl, "for view:", viewId); // این خط رو ببین چی چاپ میکنه
 }
 
 // شروع برنامه و بررسی توکن
