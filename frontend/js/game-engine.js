@@ -649,12 +649,85 @@ function backToMenu(){
     document.getElementById('countdown-overlay').style.display='none';
     fetchUserProfile();
 }
+
+function updateLiveSetting(key, value) {
+    if (!currentUser) return;
+    
+    let parsedValue = value;
+    if (key === 'note_size' || key === 'sound_volume') parsedValue = parseFloat(value);
+    if (key === 'fall_speed') parsedValue = parseInt(value);
+
+    currentUser[key] = parsedValue;
+
+    // اعمال فوری روی کانواس‌ها
+    if (key === 'note_size') {
+        const c1 = document.getElementById('handpanCanvasFree');
+        if (c1) drawHandpan(c1.getContext('2d'));
+        const c2 = document.getElementById('handpanCanvasFalling');
+        if (c2) drawHandpan(c2.getContext('2d'));
+    }
+
+    // همگام‌سازی با صفحه تنظیمات اصلی
+    if (key === 'note_size' && document.getElementById('setNoteSize')) {
+        document.getElementById('setNoteSize').value = parsedValue;
+        document.getElementById('noteSizeVal').innerText = parsedValue.toFixed(2);
+    }
+    if (key === 'fall_speed' && document.getElementById('setFallSpeed')) {
+        document.getElementById('setFallSpeed').value = parsedValue;
+        document.getElementById('fallSpeedVal').innerText = parsedValue;
+    }
+    if (key === 'sound_volume' && document.getElementById('setSoundVolume')) {
+        document.getElementById('setSoundVolume').value = parsedValue;
+        document.getElementById('soundVolVal').innerText = parsedValue.toFixed(2);
+    }
+    if (key === 'note_display_mode' && document.getElementById('setNoteDisplay')) {
+        document.getElementById('setNoteDisplay').value = parsedValue;
+    }
+
+    // ذخیره در دیتابیس
+    const token = localStorage.getItem('pm_token');
+    const payload = {};
+    payload[key] = parsedValue;
+    
+    fetch('/api/users/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(payload)
+    }).catch(e => console.error("Live save error:", e));
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    const btn = document.getElementById('btn-pause');
+    if (btn) btn.innerText = isPaused ? "▶️" : "⏸️";
+}
+
 async function goToFreePlay(){
     await fetchUserProfile();
     applyUserAssets();
     showView('free-view');
     const c=document.getElementById('handpanCanvasFree');
     if (c) { drawHandpan(c.getContext('2d')); setupInteraction(c,'free'); }
+}
+
+function openGameSettings() {
+    if (!isGameRunning) return; // فقط وقتی بازی در حال اجراست کار کنه
+    isPaused = true;
+    document.getElementById('game-settings-modal').style.display = 'flex';
+    
+    // همگام سازی مقادیر اسلایدرها با تنظیمات فعلی کاربر
+    if (document.getElementById('liveNoteSize')) document.getElementById('liveNoteSize').value = currentUser.note_size || 1.0;
+    if (document.getElementById('liveFallSpeed')) document.getElementById('liveFallSpeed').value = currentUser.fall_speed || 200;
+    if (document.getElementById('liveSoundVol')) document.getElementById('liveSoundVol').value = currentUser.sound_volume || 0.5;
+    if (document.getElementById('liveNoteDisplay')) document.getElementById('liveNoteDisplay').value = currentUser.note_display_mode || 'number';
+}
+
+function closeGameSettings() {
+    // اول پنجره تنظیمات رو ببند
+    document.getElementById('game-settings-modal').style.display = 'none';
+    
+    // 👈 بعدش شمارش معکوس رو شروع کن (بازی همچنان در حالت isPaused = true هست)
+    startResumeCountdown();
 }
 
 async function goToFallingGame(song = null) {
@@ -706,6 +779,12 @@ async function goToFallingGame(song = null) {
     }
 
     showView('falling-view');
+    if (document.getElementById('liveFallSpeed')) document.getElementById('liveFallSpeed').value = currentUser.fall_speed || 200;
+    if (document.getElementById('liveSoundVol')) document.getElementById('liveSoundVol').value = currentUser.sound_volume || 0.5;
+    if (document.getElementById('liveNoteDisplay')) document.getElementById('liveNoteDisplay').value = currentUser.note_display_mode || 'number';
+    
+    isPaused = false;
+    if (document.getElementById('btn-pause')) document.getElementById('btn-pause').innerText = "⏸️";
     const c = document.getElementById('handpanCanvasFalling');
     if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c, 'falling'); }
     
@@ -936,6 +1015,9 @@ function drawHandpan(ctx, highlight = null) {
 let fallingNotes=[];
 let animationId=null, lastTime=0;
 let score=0,hits=0,misses=0,totalSpawned=0;
+let isPaused = false;
+let gameTimerInterval = null;
+let gameSeconds = 0;
 let MAX_NOTES=20, HIT_Y=220;
 let currentSongData = null;
 let currentStepIdx = 0;
@@ -1045,6 +1127,11 @@ function createParticles(x, y, color) {
 
 function animateFalling(time){
     if(!isGameRunning) return;
+    if (isPaused) {
+        lastTime = time; 
+        animationId = requestAnimationFrame(animateFalling);
+        return;
+    }
     const dt=(time-lastTime)/1000; lastTime=time; noteSpawnTimer+=dt;
     
     if(noteSpawnTimer > currentSpawnInterval){ spawnNote(); noteSpawnTimer = 0; }
@@ -1079,7 +1166,7 @@ function animateFalling(time){
         if (mode === 'name') displayTxt = KEY_TO_NAME[fn.note] || fn.note;
 
         ctxFall.fillStyle='#000'; 
-        ctxFall.font=`bold ${Math.round(14*sm)}px Arial`; 
+        ctxFall.font=`bold ${Math.round(nr * 0.6)}px Arial`;        
         ctxFall.textAlign='center'; ctxFall.textBaseline='middle';
         ctxFall.fillText(displayTxt, fn.x, fn.y);
         
@@ -2396,6 +2483,36 @@ async function submitNewPassword() {
         msgEl.style.color = 'var(--danger-color)';
         msgEl.innerText = t('msg.error_server');
     }
+}
+
+function startResumeCountdown() {
+    let count = 3; // شمارش معکوس ۳ ثانیه‌ای (می‌تونی ۴ کنی)
+    const ov = document.getElementById('countdown-overlay');
+    const tx = document.getElementById('countdown-text');
+    
+    if (!ov || !tx) return;
+    
+    ov.style.display = 'flex';
+    tx.innerText = count;
+    
+    if (countdownInterval) clearInterval(countdownInterval);
+    
+    countdownInterval = setInterval(() => {
+        count--;
+        if (count === 0) {
+            tx.innerText = "GO!";
+        } else if (count < 0) {
+            clearInterval(countdownInterval);
+            ov.style.display = 'none';
+            
+            // 👈 حالا که شمارش تموم شد، بازی رو آنپاز می‌کنیم
+            isPaused = false; 
+            lastTime = performance.now(); // جلوگیری از پرش نت‌ها
+            
+        } else {
+            tx.innerText = count;
+        }
+    }, 1000);
 }
 
 // شروع برنامه و بررسی توکن

@@ -146,6 +146,14 @@
         .note-btn { padding: 10px 15px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .note-btn:hover { border-color: var(--primary); }
         .current-note-tag { background: var(--bg-card); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; display: inline-block; }
+    
+                /* استایل پنجره شناور تنظیمات درون بازی */
+        #game-settings-modal {  display: none; position: absolute;top: 0; left: 0; width: 100%; height: 100%;background: rgba(15, 23, 42, 0.6);  backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; border-radius: 20px; }
+        .settings-modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px;  width: 90%; max-width: 350px; border: 1px solid var(--primary);  box-shadow: 0 10px 30px rgba(0,0,0,0.5);  text-align: right; }
+        .game-setting-row { margin-bottom: 15px;  display: flex; flex-direction: column;  gap: 5px; }
+        .game-setting-row label { font-size: 13px; color: var(--text-muted);}
+        .game-setting-row input[type="range"] {width: 100%;accent-color: var(--primary);}    
+    
     </style>
 </head>
 <body>
@@ -286,16 +294,55 @@
             <canvas id="handpanCanvasFree" width="820" height="500"></canvas>
         </div>
 
-        <!-- فلاینگ -->
+                <!-- فلاینگ -->
         <div id="falling-view" class="view">
             <div id="countdown-overlay">
                 <div id="countdown-text">۴</div>
                 <div style="font-size: 24px; color: var(--text-muted); margin-top: 20px;" data-i18n="game.ready">آماده باش...</div>
             </div>
-            <div class="top-controls"><button class="end-btn" onclick="endFallingGame()" data-i18n="game.end">پایان تمرین</button></div>
-            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
-            <canvas id="fallingCanvas" width="820" height="280"></canvas>
+            
+            <!-- کنترل‌های بالای صفحه -->
+            <div class="top-controls" style="display:flex; gap:10px;">
+                <button class="end-btn" onclick="endFallingGame()" data-i18n="game.end">پایان تمرین</button>
+                <button class="back-btn" onclick="backToMenu()" data-i18n="game.back" style="position:relative; top:0; right:0;">← بازگشت</button>
+                <button class="back-btn" onclick="openGameSettings()" title="تنظیمات بازی" style="position:relative; top:0; right:0; font-size:18px; padding:6px 12px;">⚙️</button>
+            </div>
+
+            <canvas id="fallingCanvas" width="820" height="280" style="margin-top: 40px;"></canvas>
             <canvas id="handpanCanvasFalling" width="820" height="500"></canvas>
+
+            <!-- 👇 پنجره شناور تنظیمات درون‌بازی 👇 -->
+            <div id="game-settings-modal">
+                <div class="settings-modal-content">
+                    <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 15px;">⚙️ تنظیمات درون‌بازی</h3>
+                    
+                    <div class="game-setting-row">
+                        <label>🎯 اندازه نت‌ها</label>
+                        <input type="range" id="liveNoteSize" min="0.7" max="1.5" step="0.05" oninput="updateLiveSetting('note_size', this.value)">
+                    </div>
+                    
+                    <div class="game-setting-row">
+                        <label>⚡ سرعت گام‌ها</label>
+                        <input type="range" id="liveFallSpeed" min="100" max="500" step="10" oninput="updateLiveSetting('fall_speed', this.value)">
+                    </div>
+                    
+                    <div class="game-setting-row">
+                        <label>🔊 صدای بازی</label>
+                        <input type="range" id="liveSoundVol" min="0" max="1" step="0.05" oninput="updateLiveSetting('sound_volume', this.value)">
+                    </div>
+
+                    <div class="game-setting-row">
+                        <label>🔢 نمایش نت‌ها</label>
+                        <select id="liveNoteDisplay" onchange="updateLiveSetting('note_display_mode', this.value)" style="background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 8px; width: 100%;">
+                            <option value="number">عدد</option>
+                            <option value="name">حرف</option>
+                        </select>
+                    </div>
+
+                    <button class="btn" onclick="closeGameSettings()" style="margin-top: 15px; background: var(--success-color); color: #fff;">▶️ ادامه بازی</button>
+                </div>
+            </div>
+                    
         </div>
 
         <!-- کالیبراسیون -->
