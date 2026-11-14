@@ -403,8 +403,18 @@ def game_reward(
         earned += 5
         
     if reward.max_combo > 0 and reward.max_combo == reward.total_notes:
-        current_user.song_discount_until = datetime.utcnow() + timedelta(hours=24)
-
+        now = datetime.now()
+        
+        # اگر روز عوض شده، شمارنده رو صفر کن
+        if not current_user.last_discount_reset or current_user.last_discount_reset.date() < now.date():
+            current_user.daily_discounts = 0
+            current_user.last_discount_reset = now
+            
+        # اگر کمتر از ۳ بار در امروز تخفیف گرفته
+        if current_user.daily_discounts < 3:
+            current_user.daily_discounts += 1
+            current_user.song_discount_until = now + timedelta(hours=24)
+    
     # ۳. اعمال سکه
     current_user.coins = (current_user.coins or 0) + earned
     if current_user.coins < 0:
@@ -680,9 +690,12 @@ def create_song(
     db: Session = Depends(database.get_db),
 ):
     cost = 150
-    if current_user.song_discount_until and current_user.song_discount_until > datetime.utcnow():
+    now = datetime.now() # 👈 تغییر به ساعت محلی
+    
+    # چک کردن تخفیف
+    if current_user.song_discount_until and current_user.song_discount_until > now:
         cost = int(150 * 0.75) # ۲۵٪ تخفیف -> ۱۱۲ سکه
-        current_user.song_discount_until = None # تخفیف مصرف میشه
+        current_user.song_discount_until = None # 👈 تخفیف بلافاصله مصرف میشه
 
     if current_user.coins < cost:
         raise HTTPException(status_code=400, detail=f"سکه کافی نیست (نیاز به {cost} سکه)")
@@ -702,7 +715,6 @@ def create_song(
     db.commit()
     db.refresh(song)
     return song
-
 @router.get("/songs", response_model=List[schemas.SongOut])
 def list_songs(
     current_user: models.User = Depends(get_current_user),

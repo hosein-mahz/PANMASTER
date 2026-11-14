@@ -56,6 +56,8 @@ const I18N = {
         "reward.title": "🎉 تبریک!","reward.message_1": "شما به مرحله","reward.message_2": "رسیدید!","reward.level_prefix": "مرحله","reward.ok": "عالی!",
     
         "result.combo": "حداکثر کمبو:","result.combo_bonus": "پاداش کمبو","result.discount_unlocked": "تخفیف ۲۵٪ ساخت آهنگ فعال شد!",
+   
+        "result.too_short": "❌ تعداد نت‌های این آهنگ کمتر از ۱۵ بود. پاداشی محاسبه نشد.",
     },
     en: {
         // # Auth
@@ -98,6 +100,8 @@ const I18N = {
         "reward.title": "🎉 Congratulations!","reward.message_1": "You reached level","reward.message_2": "!","reward.level_prefix": "Level","reward.ok": "Awesome!",
     
         "result.combo": "Max Combo:","result.combo_bonus": "Combo Bonus","result.discount_unlocked": "25% Song Discount Unlocked!",
+    
+        "result.too_short": "❌ Song has less than 15 notes. No rewards calculated.",
     }
 };
 
@@ -798,7 +802,8 @@ async function goToFallingGame(song = null) {
     if (fc) { fc.width = 820; fc.height = 280; }
 
     score = 0; hits = 0; misses = 0; totalSpawned = 0; fallingNotes = [];
-    maxCombo = 0; 
+    maxCombo = 0;
+    isPaused = false; 
     startCountdown();
 }
 
@@ -917,12 +922,31 @@ async function goToLeaderboard() {
 
 function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); renderSkinGallery(); }
 
+function updateEditorCostText() {
+    const costEl = document.getElementById('editor-cost-text');
+    if (!costEl || !currentUser) return;
+
+    let cost = 150;
+    const now = new Date();
+    const discountUntil = currentUser.song_discount_until ? new Date(currentUser.song_discount_until) : null;
+
+    // اگر زمان تخفیف معتبر بود
+    if (discountUntil && discountUntil > now) {
+        cost = Math.floor(150 * 0.75); // ۱۱۲ سکه
+        costEl.innerHTML = `💰 هزینه ساخت آهنگ: <del style="color:var(--danger-color); opacity:0.7;">۱۵۰</del> <span style="color:var(--success-color); font-size:18px;">${cost}</span> سکه (تخفیف ۲۵٪ فعال!)`;
+    } else {
+        costEl.innerHTML = `💰 هزینه ساخت آهنگ: ۱۵۰ سکه`;
+    }
+}
+
 async function goToSongEditor() {
+    await fetchUserProfile(); // 👈 گرفتن آخرین وضعیت کاربر از دیتابیس
     showView('editor-view');
     if (typeof initSongEditor === 'function') {
         initSongEditor(); 
     }
     applyLanguage(); 
+    updateEditorCostText(); // 👈 آپدیت کردن متن هزینه
 }
 
 function goToTrainingMenu() {
@@ -1077,24 +1101,24 @@ function spawnNote() {
         if (currentStepIdx >= currentSongData.notes_data.length) return;
         const step = currentSongData.notes_data[currentStepIdx];
         
-        // 👇 تنظیم فاصله تا گام بعدی
         currentSpawnInterval = step.gap || 1.0; 
-        
         currentStepIdx++;
         totalSpawned++;
 
         const baseSpeed = currentUser?.fall_speed || 200; 
         const songMultiplier = currentSongData.fall_speed || 1.0;
         const stepNotes = Array.isArray(step.notes) ? step.notes : (step.note ? [step.note] : []);
-        const speed = 200 * (currentSongData.fall_speed || 1.0);
+        const speed = baseSpeed * songMultiplier; // 👈 سرعت کاربر ضربدر ضریب آهنگ
         
-        // 👇 اینجا از index استفاده می‌کنیم تا نوت‌های هم‌زمان روی هم نیفتن
+        // 👇 محاسبه فاصله افقی
+        const totalInStep = stepNotes.length;
         stepNotes.forEach((note, index) => {
             if (ACTIVE_LAYOUT[note]) {
+                const xOffset = totalInStep > 1 ? (index - (totalInStep - 1) / 2) * 35 : 0; 
                 fallingNotes.push({
                     note: note,
-                    x: ACTIVE_LAYOUT[note][0],
-                    y: -50 - (index * 40), // فاصله عمودی برای جلوگیری از روی هم افتادن
+                    x: ACTIVE_LAYOUT[note][0] + xOffset, // موقعیت افقی برای جدا شدن بصری
+                    y: -50, // همه از یک ارتفاع سقوط میکنن تا هم‌زمان برسن
                     speed: speed,
                     hit: false
                 });
@@ -1296,25 +1320,39 @@ async function endFallingGame(){
         practiceMode = currentSongData.isTutorial ? 'tutorial' : 'song';
     }
 
+    const totalNotes = hits + misses;
     let earned = 0; let key = ''; let xpStr = '0';
-
-    if (practiceMode === 'song') {
-        if (acc >= 80) { earned = 25; key = 'result.reward_song_full'; xpStr = '+20'; }
-        else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; xpStr = '+10'; }
-        else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
-        else { earned = -5; key = 'result.reward_penalty'; }
-    } else {
-        if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
-        else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
-        else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
-        else { earned = -5; key = 'result.reward_penalty'; }
-    }
-    
     let comboBonus = 0;
-    if (maxCombo >= 5) comboBonus = 5;
-    
     let gotDiscount = false;
-    if (maxCombo > 0 && maxCombo === (hits + misses)) gotDiscount = true;
+
+    // 👇 قانون: اگر کمتر از ۱۵ نت باشد، هیچ پاداشی تعلق نمی‌گیرد
+    if (totalNotes < 15) {
+        earned = 0;
+        xpStr = '0';
+        key = 'result.too_short'; 
+    } else {
+        if (practiceMode === 'song') {
+            if (acc >= 80) { earned = 25; key = 'result.reward_song_full'; xpStr = '+20'; }
+            else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; xpStr = '+10'; }
+            else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
+            else { earned = -5; key = 'result.reward_penalty'; }
+        } else {
+            if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
+            else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
+            else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
+            else { earned = -5; key = 'result.reward_penalty'; }
+        }
+
+        // پاداش کمبو (فقط برای آهنگ‌های بالای ۱۵ نت)
+        if (maxCombo >= 5) {
+            comboBonus = 5;
+        }
+        
+        // تخفیف فول کمبو (فقط برای آهنگ‌های بالای ۱۵ نت)
+        if (maxCombo > 0 && maxCombo === totalNotes) {
+            gotDiscount = true;
+        }
+    }
 
     const totalEarnedDisplay = earned + comboBonus;
 

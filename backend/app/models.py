@@ -19,6 +19,8 @@ class User(Base):
     owned_avatars = Column(String, default='["1", "2", "3", "4"]', nullable=False)
     highlighted_avatars = Column(String, default="[]", nullable=False)
     song_discount_until = Column(DateTime, nullable=True)
+    daily_discounts = Column(Integer, default=0, nullable=False)
+    last_discount_reset = Column(DateTime, nullable=True)
 
     # ===== تنظیمات =====
     language = Column(String, default="fa", nullable=False)
