@@ -62,7 +62,21 @@ function commitStep() {
         alert(t('editor.error_no_notes'));
         return;
     }
-    songSteps.push({ notes: currentStepNotes.slice() });
+    if (songSteps.length > 0) {
+        const last = songSteps[songSteps.length - 1].notes.slice().sort();
+        const cur = currentStepNotes.slice().sort();
+        if (last.length === cur.length && last.every((v, i) => v === cur[i])) {
+            if (!confirm(t('editor.warn_duplicate'))) return;
+        }
+    }
+    
+    // 👇 خوندن مقدار فاصله
+    const gapInput = document.getElementById('song-step-gap');
+    const gapValue = gapInput ? parseFloat(gapInput.value) : 1.0;
+
+    // 👇 ذخیره فاصله به همراه نت‌ها
+    songSteps.push({ notes: [...currentStepNotes], gap: gapValue });
+    
     currentStepNotes = [];
     renderCurrentStep();
     renderStepsList();
@@ -74,50 +88,51 @@ function newStep() {
 }
 
 function renderStepsList() {
-    var container = document.getElementById('song-steps-list');
+    const container = document.getElementById('song-steps-list');
     if (!container) return;
     container.innerHTML = '';
 
     if (songSteps.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:10px;">' + t('editor.no_steps') + '</div>';
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:10px;">${t('editor.no_steps')}</div>`;
         return;
     }
 
-    for (var idx = 0; idx < songSteps.length; idx++) {
-        var step = songSteps[idx];
-        var row = document.createElement('div');
+    songSteps.forEach((step, idx) => {
+        const row = document.createElement('div');
         row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:8px 12px; margin-bottom:6px; font-size:13px; gap:8px;';
 
-        var notesHtml = '';
-        for (var j = 0; j < step.notes.length; j++) {
-            var n = step.notes[j];
-            var col = (typeof NOTE_COLORS !== 'undefined' && NOTE_COLORS[n]) ? NOTE_COLORS[n] : '#60a5fa';
-            notesHtml += '<span style="display:inline-block; background:' + col + '; color:#0f172a; padding:2px 8px; border-radius:10px; margin:0 2px; font-weight:bold;">' + n + '</span>';
-        }
+        const notesHtml = step.notes.map(n => {
+            const col = (typeof NOTE_COLORS !== 'undefined' && NOTE_COLORS[n]) ? NOTE_COLORS[n] : '#60a5fa';
+            return `<span style="display:inline-block; background:${col}; color:#0f172a; padding:2px 8px; border-radius:10px; margin:0 2px; font-weight:bold;">${n}</span>`;
+        }).join('');
 
-        row.innerHTML = '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-            '<span style="color:var(--text-muted); font-size:11px; min-width:28px;">#' + (idx + 1) + '</span>' +
-            '<div>' + notesHtml + '</div>' +
-            '</div>' +
-            '<div style="display:flex; gap:6px;">' +
-            '<button class="pm-btn-play" style="background:var(--primary); color:#0f172a; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">▶</button>' +
-            '<button class="pm-btn-del" style="background:var(--danger-color,#ef4444); color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">✕</button>' +
-            '</div>';
+        // 👇 نمایش فاصله گام
+        const gapText = step.gap ? `⏱️ ${step.gap}s` : '⏱️ 1.0s';
 
-        (function(s, i, r) {
-            r.querySelector('.pm-btn-play').onclick = function() {
-                for (var k = 0; k < s.notes.length; k++) playSound(s.notes[k]);
-            };
-            r.querySelector('.pm-btn-del').onclick = function() {
-                if (confirm(t('editor.confirm_delete_step').replace('{n}', i + 1))) {
-                    songSteps.splice(i, 1);
-                    renderStepsList();
-                }
-            };
-        })(step, idx, row);
+        row.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-size:11px; min-width:28px;">#${idx + 1}</span>
+                <div>${notesHtml}</div>
+                <span style="font-size:10px; color:var(--coin-text); background:var(--bg-main); padding:2px 6px; border-radius:6px;">${gapText}</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+                <button title="${t('editor.play_step')}" style="background:var(--primary); color:#0f172a; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">▶</button>
+                <button title="${t('editor.delete')}" style="background:var(--danger-color,#ef4444); color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">✕</button>
+            </div>
+        `;
+
+        row.querySelector('button[title="'+t('editor.play_step')+'"]').onclick = () => {
+            step.notes.forEach(n => playSound(n));
+        };
+        row.querySelector('button[title="'+t('editor.delete')+'"]').onclick = () => {
+            if (confirm(t('editor.confirm_delete_step').replace('{n}', idx + 1))) {
+                songSteps.splice(idx, 1);
+                renderStepsList();
+            }
+        };
 
         container.appendChild(row);
-    }
+    });
 }
 
 function renderNoteButtons() {

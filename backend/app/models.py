@@ -18,6 +18,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     owned_avatars = Column(String, default='["1", "2", "3", "4"]', nullable=False)
     highlighted_avatars = Column(String, default="[]", nullable=False)
+    song_discount_until = Column(DateTime, nullable=True)
 
     # ===== تنظیمات =====
     language = Column(String, default="fa", nullable=False)
@@ -86,6 +87,8 @@ class PracticeHistory(Base):
     accuracy = Column(Float, default=0.0)
     played_at = Column(DateTime(timezone=True), server_default=func.now())
     mode = Column(String, default="falling", nullable=False)
+    max_combo = Column(Integer, default=0)    
+    total_notes = Column(Integer, default=0)  
 
 
 class CoinTransaction(Base):

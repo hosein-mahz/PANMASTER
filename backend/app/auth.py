@@ -128,15 +128,15 @@ def _build_user_out(user: models.User) -> dict:
         "sound_volume": user.sound_volume or 0.5,
         "note_display_mode": user.note_display_mode or "number",
         "active_skin": user.active_skin or "default",
-        "is_vip": bool(user.is_vip and user.vip_expire_date and user.vip_expire_date > datetime.utcnow()),
-        "vip_expire_date": user.vip_expire_date.isoformat() if user.vip_expire_date else None,
+        "is_vip": bool(user.is_vip and user.vip_expire_date and user.vip_expire_date > datetime.now()),
+        "vip_expire_date": user.vip_expire_date,
         "theme": user.theme or "dark",
         "security_stage": user.security_stage or 1,
         "failed_attempts_in_stage": user.failed_attempts_in_stage or 0,
-        "lockout_until": user.lockout_until.isoformat() if user.lockout_until else None,
+        "lockout_until": user.lockout_until,
         "phone": user.phone,
+        "song_discount_until": user.song_discount_until # 👈 این خط باید اینجا باشه
     }
-
 
 # ===== Auth =====
 @router.post("/register", response_model=schemas.UserOut)
@@ -150,6 +150,8 @@ def register(
         raise HTTPException(status_code=400, detail="این ایمیل قبلاً ثبت شده است")
     if db.query(models.User).filter(models.User.username == user.username).first():
         raise HTTPException(status_code=400, detail="این نام کاربری قبلاً گرفته شده است")
+    if db.query(models.User).filter(models.User.phone == user.phone).first():
+        raise HTTPException(status_code=400, detail="این شماره تلفن قبلاً ثبت شده است") # 👈 جدید
 
     new_user = models.User(
         username=user.username,
@@ -160,7 +162,6 @@ def register(
     )
     db.add(new_user); db.commit(); db.refresh(new_user)
     return _build_user_out(new_user)
-
 
 @router.post("/login", response_model=schemas.Token)
 # 👈 @limiter.limit("5/minute")  --> این خط رو کلاً پاک کن تا با سیستم امنیتی تداخل نکنه
@@ -363,35 +364,46 @@ def game_reward(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    # 👇 ۱. اعتبارسنجی دقت (بین ۰ تا ۱۰۰)
     acc = max(0, min(100, reward.accuracy))
     
-    if reward.mode == "song":
-        if acc >= 80:
-            earned = 25
-            xp_gained = 20
-        elif acc >= 50:
-            earned = 10
-            xp_gained = 10
-        elif acc >= 25:
-            earned = 0
-            xp_gained = 0
+    # 👇 ۱. شرط آهنگ‌های بیشتر از ۱۵ نت
+    if reward.total_notes < 15:
+        earned = 0
+        xp_gained = 0
+    else:
+        if reward.mode == "song":
+            if acc >= 80:
+                earned = 25
+                xp_gained = 20
+            elif acc >= 50:
+                earned = 10
+                xp_gained = 10
+            elif acc >= 25:
+                earned = 0
+                xp_gained = 0
+            else:
+                earned = -5
+                xp_gained = 0
         else:
-            earned = -5
-            xp_gained = 0
-    else: # حالت‌های falling (تستی) و tutorial (آموزشی)
-        if acc >= 75:
-            earned = 15
-            xp_gained = 20
-        elif acc >= 50:
-            earned = 10
-            xp_gained = 0
-        elif acc >= 25:
-            earned = 0
-            xp_gained = 0
-        else:
-            earned = -5
-            xp_gained = 0
+            if acc >= 75:
+                earned = 15
+                xp_gained = 20
+            elif acc >= 50:
+                earned = 10
+                xp_gained = 0
+            elif acc >= 25:
+                earned = 0
+                xp_gained = 0
+            else:
+                earned = -5
+                xp_gained = 0
+
+    # 👇 ۲. پاداش کمبو (فقط یک بار!)
+    if reward.max_combo >= 5:
+        earned += 5
+        
+    if reward.max_combo > 0 and reward.max_combo == reward.total_notes:
+        current_user.song_discount_until = datetime.utcnow() + timedelta(hours=24)
 
     # ۳. اعمال سکه
     current_user.coins = (current_user.coins or 0) + earned
@@ -443,7 +455,6 @@ def game_reward(
         xp_needed=xp_needed,
         progress_percent=round(progress_percent, 1),
     )
-
 # ===== Legacy =====
 @router.post("/add-tokens", response_model=schemas.TokenBalance)
 def add_tokens(amount: schemas.TokenAmount, current_user: models.User = Depends(get_current_user),
@@ -465,7 +476,14 @@ def spend_tokens(amount: schemas.TokenAmount, current_user: models.User = Depend
 
 @router.post("/practice-history", response_model=schemas.PracticeHistoryOut)
 def save_practice_history(data: schemas.PracticeHistoryCreate, current_user: models.User = Depends(get_current_user), db: Session = Depends(database.get_db)):
-    entry = models.PracticeHistory(user_id=current_user.id, mode=data.mode, score=data.score, accuracy=data.accuracy)
+    entry = models.PracticeHistory(
+        user_id=current_user.id, 
+        mode=data.mode, 
+        score=data.score, 
+        accuracy=data.accuracy,
+        max_combo=data.max_combo,      # 👈 اضافه شد
+        total_notes=data.total_notes   # 👈 اضافه شد
+    )
     db.add(entry); db.commit(); db.refresh(entry)
     return entry
 
@@ -662,8 +680,13 @@ def create_song(
     db: Session = Depends(database.get_db),
 ):
     cost = 150
+    if current_user.song_discount_until and current_user.song_discount_until > datetime.utcnow():
+        cost = int(150 * 0.75) # ۲۵٪ تخفیف -> ۱۱۲ سکه
+        current_user.song_discount_until = None # تخفیف مصرف میشه
+
     if current_user.coins < cost:
-        raise HTTPException(status_code=400, detail="سکه کافی نیست (نیاز به ۱۵۰ سکه)")
+        raise HTTPException(status_code=400, detail=f"سکه کافی نیست (نیاز به {cost} سکه)")
+
     current_user.coins -= cost
 
     song = models.Song(
@@ -679,7 +702,6 @@ def create_song(
     db.commit()
     db.refresh(song)
     return song
-
 
 @router.get("/songs", response_model=List[schemas.SongOut])
 def list_songs(
@@ -750,19 +772,26 @@ def reset_password(
 # ===== Leaderboard =====
 @router.get("/leaderboard")
 def get_leaderboard(db: Session = Depends(database.get_db)):
-    # گرفتن ۲۰ کاربر برتر بر اساس XP
     top_users = db.query(models.User).order_by(models.User.xp.desc()).limit(20).all()
     
     result = []
     for rank, u in enumerate(top_users, start=1):
-        current_lvl = get_level_from_xp(u.xp or 0) # 👈 این خط جا افتاده بود
+        # 👇 محاسبه میانگین ۱۰ بازی اخیر
+        recent_games = db.query(models.PracticeHistory).filter(models.PracticeHistory.user_id == u.id).order_by(models.PracticeHistory.played_at.desc()).limit(10).all()
+        
+        avg_acc = 0
+        if recent_games:
+            avg_acc = sum(g.accuracy for g in recent_games) / len(recent_games)
+            
+        current_lvl = get_level_from_xp(u.xp or 0)
         result.append({
             "rank": rank,
             "username": u.username,
             "xp": u.xp or 0,
             "level": current_lvl,
             "league": get_league_from_level(current_lvl),
-            "selected_avatar": u.selected_avatar or "default"
+            "selected_avatar": u.selected_avatar or "default",
+            "avg_accuracy": round(avg_acc, 1) # 👈 اضافه شد
         })
     return result
 # ===== Levels Data =====

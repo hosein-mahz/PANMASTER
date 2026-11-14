@@ -52,6 +52,10 @@ const I18N = {
         "levels.title": "📈 مراحل و جوایز","levels.desc": "با کسب XP، باتری سطح خود را پر کنید و جایزه بگیرید!","profile.view_levels": "📈 مشاهده مراحل و جوایز",
 
         "auth.reset_code": "کد ۶ رقمی","auth.new_password": "رمز عبور جدید","auth.submit_new_password": "تغییر رمز عبور","auth.reset_success": "✅ رمز عبور با موفقیت تغییر کرد. حالا می‌توانید وارد شوید.",
+   
+        "reward.title": "🎉 تبریک!","reward.message_1": "شما به مرحله","reward.message_2": "رسیدید!","reward.level_prefix": "مرحله","reward.ok": "عالی!",
+    
+        "result.combo": "حداکثر کمبو:","result.combo_bonus": "پاداش کمبو","result.discount_unlocked": "تخفیف ۲۵٪ ساخت آهنگ فعال شد!",
     },
     en: {
         // # Auth
@@ -90,6 +94,10 @@ const I18N = {
         "levels.title": "📈 Levels & Rewards","levels.desc": "Earn XP to fill your level battery and get rewards!","profile.view_levels": "📈 View Levels & Rewards",
         
         "auth.reset_code": "6-digit Code","auth.new_password": "New Password","auth.submit_new_password": "Reset Password","auth.reset_success": "✅ Password reset successfully. You can now log in.",
+        
+        "reward.title": "🎉 Congratulations!","reward.message_1": "You reached level","reward.message_2": "!","reward.level_prefix": "Level","reward.ok": "Awesome!",
+    
+        "result.combo": "Max Combo:","result.combo_bonus": "Combo Bonus","result.discount_unlocked": "25% Song Discount Unlocked!",
     }
 };
 
@@ -711,6 +719,7 @@ async function goToFallingGame(song = null) {
     if (fc) { fc.width = 820; fc.height = 280; }
 
     score = 0; hits = 0; misses = 0; totalSpawned = 0; fallingNotes = [];
+    maxCombo = 0; 
     startCountdown();
 }
 
@@ -762,8 +771,10 @@ async function goToLeaderboard() {
         else if (currentUser.level > 5) myLeagueId = 'silver';
         
         const myLeague = getLeagueInfo(myLeagueId);
-        document.getElementById('my-league-icon').innerText = myLeague.icon;
-        document.getElementById('my-league-name').innerText = myLeague.name;
+        const iconEl = document.getElementById('my-league-icon');
+        const nameEl = document.getElementById('my-league-name');
+        if (iconEl) iconEl.innerText = myLeague.icon;
+        if (nameEl) nameEl.innerText = myLeague.name;
     }
 
     try {
@@ -783,7 +794,7 @@ async function goToLeaderboard() {
         players.forEach(p => {
             const isMe = p.username === currentUsername;
             const row = document.createElement('div');
-            const leagueInfo = getLeagueInfo(p.league);
+            const leagueInfo = getLeagueInfo(p.league || 'bronze');
             
             row.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:10px 15px; background:${isMe ? 'var(--btn-shadow)' : 'var(--bg-main)'}; border:1px solid ${isMe ? 'var(--primary)' : 'var(--border)'}; border-radius:10px; font-size:14px;`;
             
@@ -800,6 +811,7 @@ async function goToLeaderboard() {
                 avatarHtml = `<div style="width:32px; height:32px; border-radius:50%; background:var(--bg-card); display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid var(--border);">${p.username.charAt(0).toUpperCase()}</div>`;
             }
 
+            // 👇 نمایش میانگین دقت زیر XP
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:18px; width:24px; text-align:center; font-weight:bold; color:${p.rank <= 3 ? '#fbbf24' : 'var(--text-muted)'};">${rankIcon}</span>
@@ -812,14 +824,17 @@ async function goToLeaderboard() {
                         <div style="font-size:11px; color:var(--text-muted);">Lvl ${p.level} · <span style="color:var(--primary);">${leagueInfo.icon} ${leagueInfo.name}</span></div>
                     </div>
                 </div>
-                <div style="font-weight:bold; color:var(--coin-text); font-size:15px;">${p.xp} XP</div>
+                <div style="text-align:left;">
+                    <div style="font-weight:bold; color:var(--coin-text); font-size:15px;">${p.xp} XP</div>
+                    <div style="font-size:10px; color:var(--success-color); margin-top:2px;">🎯 ${p.avg_accuracy}%</div>
+                </div>
             `;
             listEl.appendChild(row);
         });
     } catch (e) {
         listEl.innerHTML = `<div style="text-align:center; color:var(--danger-color); padding:20px;">${t('msg.error_server')}</div>`;
     }
-}   
+}  
 
 function goToSettings(){ showView('settings-view'); fetchUserProfile(); renderAvatarGallery(); renderSkinGallery(); }
 
@@ -924,7 +939,13 @@ let score=0,hits=0,misses=0,totalSpawned=0;
 let MAX_NOTES=20, HIT_Y=220;
 let currentSongData = null;
 let currentStepIdx = 0;
+let currentSpawnInterval = 1.0;
 let isGameRunning=false, noteSpawnTimer=0, countdownInterval=null;
+let currentCombo = 0;       // 👈 کمبو فعلی
+let maxCombo = 0;           // 👈 بیشترین کمبو
+let particles = [];         // 👈 آرایه برای ذرات
+let shakeTime = 0;          // 👈 زمان باقی‌مانده لرزش
+let shakeIntensity = 0;     // 👈 شدت لرزش
 const ctxFall=document.getElementById('fallingCanvas').getContext('2d');
 const TEST_SEQUENCE=["D","1","2","3","4","5","6","7","8"];
 const TUTORIAL_LEVELS = {
@@ -951,7 +972,17 @@ function startFallingLoop() {
     isGameRunning = true;
     lastTime = performance.now();
     spawnNote();
-    noteSpawnTimer = currentSongData ? (1.35 / (currentSongData.fall_speed || 1.0)) : 1.5;
+    
+    // 👇 فاصله اولیه اسپاون
+    if (currentSongData) {
+        const baseSpeed = currentUser?.fall_speed || 200;
+        const songMultiplier = currentSongData.fall_speed || 1.0;
+        // فاصله بین گام‌ها را طوری تنظیم میکنیم که با سرعت آهنگ هماهنگ باشد
+        currentSpawnInterval = (1.35 / (baseSpeed * songMultiplier / 200)) || 1.0;
+    } else {
+        currentSpawnInterval = 1.5;
+    }
+
     if (animationId) cancelAnimationFrame(animationId);
     requestAnimationFrame(animateFalling);
 }
@@ -959,20 +990,30 @@ function startFallingLoop() {
 function spawnNote() {
     if (!isGameRunning) return;
 
+    // حالت آهنگ
     if (currentSongData) {
         if (currentStepIdx >= currentSongData.notes_data.length) return;
         const step = currentSongData.notes_data[currentStepIdx];
+        
+        // 👇 تنظیم فاصله تا گام بعدی
+        currentSpawnInterval = step.gap || 1.0; 
+        
         currentStepIdx++;
         totalSpawned++;
+
+        const baseSpeed = currentUser?.fall_speed || 200; 
+        const songMultiplier = currentSongData.fall_speed || 1.0;
         const stepNotes = Array.isArray(step.notes) ? step.notes : (step.note ? [step.note] : []);
         const speed = 200 * (currentSongData.fall_speed || 1.0);
-        stepNotes.forEach(note => {
+        
+        // 👇 اینجا از index استفاده می‌کنیم تا نوت‌های هم‌زمان روی هم نیفتن
+        stepNotes.forEach((note, index) => {
             if (ACTIVE_LAYOUT[note]) {
                 fallingNotes.push({
-                    note,
+                    note: note,
                     x: ACTIVE_LAYOUT[note][0],
-                    y: -50,
-                    speed,
+                    y: -50 - (index * 40), // فاصله عمودی برای جلوگیری از روی هم افتادن
+                    speed: speed,
                     hit: false
                 });
             }
@@ -980,6 +1021,7 @@ function spawnNote() {
         return;
     }
 
+    // حالت تستی (بدون تغییر)
     if (totalSpawned >= MAX_NOTES) return;
     totalSpawned++;
     const avail = TEST_SEQUENCE.filter(n => ACTIVE_LAYOUT[n]);
@@ -988,11 +1030,35 @@ function spawnNote() {
     fallingNotes.push({ note, x: ACTIVE_LAYOUT[note][0], y: -50, speed: currentUser?.fall_speed || 200, hit: false });
 }
 
+function createParticles(x, y, color) {
+    for (let i = 0; i < 8; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 10, // سرعت افقی رندوم
+            vy: (Math.random() - 0.5) * 10, // سرعت عمودی رندوم
+            life: 1.0, // عمر ذره
+            color: color
+        });
+    }
+}
+
 function animateFalling(time){
     if(!isGameRunning) return;
     const dt=(time-lastTime)/1000; lastTime=time; noteSpawnTimer+=dt;
-    const _spawnInterval = currentSongData ? (1.35 / (currentSongData.fall_speed || 1.0)) : 1.5;
-    if(noteSpawnTimer > _spawnInterval){ spawnNote(); noteSpawnTimer = 0; }
+    
+    if(noteSpawnTimer > currentSpawnInterval){ spawnNote(); noteSpawnTimer = 0; }
+
+    // 👇 اعمال لرزش صفحه (Screen Shake)
+    ctxFall.save();
+    if (shakeTime > 0) {
+        const dx = (Math.random() - 0.5) * shakeIntensity;
+        const dy = (Math.random() - 0.5) * shakeIntensity;
+        ctxFall.translate(dx, dy);
+        shakeTime -= dt;
+    } else {
+        shakeIntensity = 0;
+    }
 
     ctxFall.clearRect(0, 0, 820, isMicMode ? 500 : 280);
     ctxFall.beginPath(); ctxFall.moveTo(0,HIT_Y); ctxFall.lineTo(820,HIT_Y);
@@ -1001,6 +1067,7 @@ function animateFalling(time){
     const sm=currentUser?.note_size||1.0; const nr=25*sm;
     const mode = currentUser?.note_display_mode || 'number';
 
+    // 👇 رسم نت‌ها
     for(let i=fallingNotes.length-1;i>=0;i--){
         const fn=fallingNotes[i]; if(fn.hit) continue;
         fn.y+=fn.speed*dt;
@@ -1016,10 +1083,48 @@ function animateFalling(time){
         ctxFall.textAlign='center'; ctxFall.textBaseline='middle';
         ctxFall.fillText(displayTxt, fn.x, fn.y);
         
-        if(fn.y>HIT_Y+100){ misses++; fallingNotes.splice(i,1); checkEndGame(); }
+        if(fn.y>HIT_Y+100){ 
+            misses++; 
+            currentCombo = 0; // 👈 ریست شدن کمبو
+            shakeTime = 0.15; shakeIntensity = 5; // 👈 لرزش صفحه هنگام خطا
+            fallingNotes.splice(i,1); 
+            checkEndGame(); 
+        }
     }
+
+    // 👇 رسم ذرات (Particles)
+    for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= dt * 2.5; // کاهش عمر ذره
+        
+        if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+        }
+        
+        ctxFall.globalAlpha = p.life;
+        ctxFall.fillStyle = p.color;
+        ctxFall.beginPath();
+        ctxFall.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctxFall.fill();
+        ctxFall.globalAlpha = 1.0; // برگردوندن شفافیت به حالت عادی
+    }
+
+    // 👇 نمایش متن کمبو (Combo)
+    if (currentCombo > 2) {
+        ctxFall.fillStyle = '#fbbf24';
+        ctxFall.font = 'bold 30px Arial';
+        ctxFall.textAlign = 'right';
+        ctxFall.textBaseline = 'top';
+        ctxFall.fillText(`Combo x${currentCombo}`, 800, 20);
+    }
+
+    ctxFall.restore(); // پایان لرزش
     animationId=requestAnimationFrame(animateFalling);
 }
+
 function executeHit(note, mode, fromMic = false) {
     if (!fromMic && !isMicMode) {
         playSound(note); 
@@ -1052,9 +1157,21 @@ function checkHit(note, fromMic = false) {
     }
 
     if (idx !== -1) {
+        const fn = fallingNotes[idx];
+        
+        // 👇 افکت‌ها هنگام ضربه موفق
+        currentCombo++; // افزایش کمبو
+        if (currentCombo > maxCombo) maxCombo = currentCombo;
+        
+        score += 100 + (currentCombo * 10); // امتیاز بیشتر با کمبو بالاتر
+        
+        createParticles(fn.x, fn.y, NOTE_COLORS[fn.note] || '#60a5fa'); // ساخت ذرات
+        
+        shakeTime = 0.05; shakeIntensity = 2; // لرزش ملایم صفحه هنگام ضربه
+
         fallingNotes[idx].hit = true;
         fallingNotes.splice(idx, 1);
-        score += 100; hits++;
+        hits++;
         checkEndGame();
     }
 }
@@ -1078,6 +1195,12 @@ async function endFallingGame(){
     isGameRunning=false; 
     if(animationId) cancelAnimationFrame(animationId);
     
+    // 👇 ریست کردن افکت‌ها
+    currentCombo = 0;
+    particles = [];
+    shakeTime = 0;
+    shakeIntensity = 0;
+    
     const att=hits+misses; 
     const acc=att>0?Math.round((hits/att)*100):0;
     
@@ -1099,21 +1222,48 @@ async function endFallingGame(){
         else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
         else { earned = -5; key = 'result.reward_penalty'; }
     }
+    
+    let comboBonus = 0;
+    if (maxCombo >= 5) comboBonus = 5;
+    
+    let gotDiscount = false;
+    if (maxCombo > 0 && maxCombo === (hits + misses)) gotDiscount = true;
+
+    const totalEarnedDisplay = earned + comboBonus;
 
     const showResults = async () => {
         document.getElementById('resScore').innerText = score;
         document.getElementById('resHits').innerText = hits;
         document.getElementById('resMisses').innerText = misses;
         document.getElementById('resAcc').innerText = acc + '%';
+        document.getElementById('resCombo').innerText = maxCombo;
         document.getElementById('resXp').innerText = xpStr;
 
-        window._lastResult = {earned, key};
+        window._lastResult = {
+                    earned: totalEarnedDisplay, 
+                    key: key, 
+                    comboBonus: comboBonus, 
+                    gotDiscount: gotDiscount
+                };        
         renderResultToken(window._lastResult);
         showView('result-view');
 
         const token = localStorage.getItem('pm_token');
         try {
-            const res = await fetch('/api/users/game-reward', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({tokens_earned: earned, accuracy: acc, score: score, mode: practiceMode}) });
+            // 👇 ارسال پاداش همراه با max_combo و total_notes
+            const res = await fetch('/api/users/game-reward', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, 
+                body: JSON.stringify({
+                    tokens_earned: earned, 
+                    accuracy: acc, 
+                    score: score, 
+                    mode: practiceMode,
+                    max_combo: maxCombo, 
+                    total_notes: hits + misses 
+                }) 
+            });
+            
             if(res.ok) {
                 const d = await res.json();
                 userTokens = d.new_balance;
@@ -1121,9 +1271,24 @@ async function endFallingGame(){
                 document.getElementById('levelBadge').innerText = `${t('header.level_prefix')} ${d.level}`;
                 document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
                 document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
-                if(d.leveled_up && d.rewards_granted?.length) { window._lastRewards = d.rewards_granted; showRewardModal(d.rewards_granted); }
+                if(d.leveled_up && d.rewards_granted?.length) { 
+                    window._lastRewards = d.rewards_granted; 
+                    showRewardModal(d.rewards_granted); 
+                }
             }
-            await fetch('/api/users/practice-history', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ mode: practiceMode, score: score, accuracy: acc }) });
+            
+            // 👇 ذخیره تاریخچه همراه با max_combo و total_notes
+            await fetch('/api/users/practice-history', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                body: JSON.stringify({ 
+                    mode: practiceMode, 
+                    score: score, 
+                    accuracy: acc,
+                    max_combo: maxCombo, 
+                    total_notes: hits + misses 
+                }) 
+            });
         } catch(e) { console.error(e); }
     };
 
@@ -1142,17 +1307,42 @@ function renderResultToken(r){
     const color = isPenalty ? getCSSVar('--danger-color', '#ef4444') : (r.earned > 0 ? getCSSVar('--primary', '#38bdf8') : getCSSVar('--text-muted', '#94a3b8'));
     const prefix = isPenalty ? t('result.reward_prefix') : t('result.reward_prefix');
     const sign = r.earned > 0 ? '+' : '';
-    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span><br><span style="font-size:14px;color:var(--text-muted);margin-top:5px;display:block;">${t(r.key)}</span>`;
+    
+    let extraHtml = '';
+    if (r.comboBonus > 0) {
+        extraHtml += `<br><span style="font-size:12px; color:var(--success-color);">+${r.comboBonus} ${t('result.combo_bonus')}</span>`;
+    }
+    if (r.gotDiscount) {
+        extraHtml += `<br><span style="font-size:12px; color:#fbbf24;">🔥 ${t('result.discount_unlocked')}</span>`;
+    }
+
+    document.getElementById('resTokenText').innerHTML = `${coinIconSVG} ${prefix} <span style="color:${color};font-size:24px;">${sign}${r.earned}</span>${extraHtml}<br><span style="font-size:14px;color:var(--text-muted);margin-top:5px;display:block;">${t(r.key)}</span>`;
 }
 
 function showRewardModal(rewards){
-    const m=document.getElementById('reward-modal'); const msg=document.getElementById('rewardMessage'); const items=document.getElementById('rewardItems');
+    const m=document.getElementById('reward-modal'); 
+    const msg=document.getElementById('rewardMessage'); 
+    const items=document.getElementById('rewardItems');
     const last=rewards[rewards.length-1].level;
-    msg.innerHTML=`${t('reward.message_1')} <span style="color:var(--coin-text);font-weight:900;">${last}</span> ${t('reward.message_2')}`;
+    
+    msg.innerHTML=`${t('reward.message_1')} <span style="color:var(--coin-text);font-weight:900;font-size:20px;">${last}</span> ${t('reward.message_2')}`;
     items.innerHTML='';
-    rewards.forEach(r=>{ const d=document.createElement('div'); d.className='reward-item'; d.innerText=`${t('reward.level_prefix')} ${r.level}: ${r.name}`; items.appendChild(d); });
+    
+    rewards.forEach(r=>{ 
+        const d=document.createElement('div'); 
+        d.className='reward-item'; 
+        d.style.display = 'flex';
+        d.style.justifyContent = 'space-between';
+        d.style.padding = '10px 15px';
+        d.innerHTML = `
+            <span style="color:var(--text-main);">${t('reward.level_prefix')} ${r.level}</span> 
+            <span style="color:var(--coin-text); font-weight:bold;">${r.name}</span>
+        `; 
+        items.appendChild(d); 
+    });
     m.classList.add('show');
 }
+
 function closeRewardModal(){ document.getElementById('reward-modal').classList.remove('show'); fetchUserProfile(); }
 
 // ==========================================================

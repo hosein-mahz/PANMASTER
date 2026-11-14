@@ -327,6 +327,7 @@
                 <div class="result-stat"><span data-i18n="result.hits">ضربه درست:</span><span id="resHits">0</span></div>
                 <div class="result-stat"><span data-i18n="result.misses">خطا:</span><span id="resMisses">0</span></div>
                 <div class="result-stat"><span data-i18n="result.accuracy">دقت:</span><span id="resAcc">0%</span></div>
+                <div class="result-stat"><span data-i18n="result.combo">حداکثر کمبو:</span><span id="resCombo">0</span></div>
                 <div class="result-stat"><span data-i18n="result.xp">XP کسب‌شده:</span><span id="resXp">0</span></div>
                 <div class="result-token" id="resTokenText" style="font-size: 20px; color: #fbbf24; margin: 20px 0; font-weight: bold; text-align: center;"></div>
                 <button class="btn" onclick="backToMenu()" data-i18n="result.back">بازگشت به منو</button>
@@ -533,6 +534,19 @@
 
                 <div style="background: var(--bg-main); padding: 10px; border-radius: 10px; min-height: 50px; border: 1px dashed var(--border); margin-bottom: 15px;">
                     <div data-i18n="editor.current_step" style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">گام فعلی (نت‌های انتخاب شده):</div>                    <div id="editor-notes-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                </div>
+                                <!-- 👇 کنترل فاصله زمانی گام بعدی -->
+                <div class="setting-row" style="background: var(--bg-main); padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>⏱️ فاصله ظاهر شدن گام بعدی (ثانیه)</span>
+                        <span id="stepGapVal" style="color: var(--primary); font-weight: bold;">1.0</span>
+                    </label>
+                    <input type="range" id="song-step-gap" min="0.3" max="2.5" step="0.1" value="1.0" 
+                           oninput="document.getElementById('stepGapVal').innerText = this.value">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                        <span>تند (0.3s)</span>
+                        <span>کند (2.5s)</span>
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-bottom:10px;">

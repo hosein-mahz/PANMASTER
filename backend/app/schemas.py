@@ -40,7 +40,8 @@ class UserOut(BaseModel):
     failed_attempts_in_stage: int = 0
     lockout_until: Optional[datetime] = None
     phone: Optional[str] = None
-
+    song_discount_until: Optional[datetime] = None  # 👈 این خط باید اینجا باشه
+    
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -84,6 +85,8 @@ class PracticeHistoryCreate(BaseModel):
     mode: str = "falling"
     score: int = 0
     accuracy: float = 0.0
+    max_combo: int = 0     
+    total_notes: int = 0
 
 class PracticeHistoryOut(BaseModel):
     id: int
@@ -91,8 +94,11 @@ class PracticeHistoryOut(BaseModel):
     score: int
     accuracy: float
     played_at: datetime
+    max_combo: int = 0       
+    total_notes: int = 0     
     class Config:
         from_attributes = True
+
 
 class TokenAmount(BaseModel):
     amount: int
@@ -105,6 +111,8 @@ class GameRewardInput(BaseModel):
     accuracy: float
     score: int = 0
     mode: str = "falling"
+    max_combo: int = 0      
+    total_notes: int = 0
 
 class GameRewardResponse(BaseModel):
     new_balance: int
