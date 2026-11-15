@@ -87,6 +87,22 @@ function newStep() {
     renderCurrentStep();
 }
 
+function updateSongStats() {
+    let totalNotes = 0;
+    let totalTime = 0;
+
+    songSteps.forEach(step => {
+        totalNotes += step.notes.length;
+        totalTime += (step.gap || 1.0); // اگر گپ نداشت، ۱ ثانیه
+    });
+
+    const notesEl = document.getElementById('stat-total-notes');
+    const timeEl = document.getElementById('stat-duration');
+    
+    if (notesEl) notesEl.innerText = totalNotes;
+    if (timeEl) timeEl.innerText = Math.round(totalTime);
+}
+
 function renderStepsList() {
     const container = document.getElementById('song-steps-list');
     if (!container) return;
@@ -133,6 +149,7 @@ function renderStepsList() {
 
         container.appendChild(row);
     });
+    updateSongStats()
 }
 
 function renderNoteButtons() {
@@ -153,27 +170,51 @@ function renderNoteButtons() {
 }
 
 async function saveSong() {
-    var title = document.getElementById('song-title') ? document.getElementById('song-title').value.trim() : '';
-    var artist = document.getElementById('song-artist') ? document.getElementById('song-artist').value.trim() : '';
-    var difficulty = document.getElementById('song-difficulty') ? document.getElementById('song-difficulty').value : 'Easy';
-    var fallSpeed = parseFloat(document.getElementById('song-fall-speed') ? document.getElementById('song-fall-speed').value : 1.0);
+    const title = document.getElementById('song-title')?.value.trim();
+    const artist = document.getElementById('song-artist')?.value.trim() || '';
+    const difficulty = document.getElementById('song-difficulty')?.value || 'Easy';
+    const fallSpeed = parseFloat(document.getElementById('song-fall-speed')?.value || 1.0);
+    const isPublic = document.getElementById('song-is-public')?.checked || false;
 
     if (!title) { alert(t('editor.error_no_title')); return; }
     if (songSteps.length === 0) { alert(t('editor.error_no_steps')); return; }
 
-    var token = localStorage.getItem('pm_token');
+    // 👇 محاسبه آمار برای چک کردن شرایط عمومی
+    let totalNotes = 0;
+    let totalTime = 0;
+    songSteps.forEach(step => {
+        totalNotes += step.notes.length;
+        totalTime += (step.gap || 1.0);
+    });
+
+    // 👇 اعتبارسنجی قانون‌های عمومی (فقط اگر کاربر تیک عمومی رو زده باشه)
+    if (isPublic) {
+        if (totalNotes < 15) {
+            alert(CURRENT_LANG === 'fa' ? "آهنگ عمومی باید حداقل ۱۵ نت داشته باشد." : "Public song must have at least 15 notes.");
+            return;
+        }
+        if (totalTime < 90) {
+            alert(CURRENT_LANG === 'fa' ? `آهنگ عمومی باید حداقل ۱.۵ دقیقه باشد (زمان فعلی: ${Math.round(totalTime)} ثانیه).` : `Public song must be at least 1.5 minutes long.`);
+            return;
+        }
+    }
+
+    const token = localStorage.getItem('pm_token');
     if (!token) { alert(t('editor.error_login')); return; }
 
     try {
-        var res = await fetch('/api/users/songs', {
+        const res = await fetch('/api/users/songs', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({
                 title: title,
                 artist: artist || null,
                 difficulty: difficulty,
-                notes_data: songSteps.map(function(s) { return { notes: s.notes }; }),
-                is_public: true,
+                notes_data: songSteps.map(s => ({ notes: s.notes, gap: s.gap || 1.0 })), // 👈 گپ رو هم می‌فرستیم
+                is_public: isPublic, // 👈 وضعیت عمومی بودن
                 fall_speed: fallSpeed
             })
         });
@@ -185,11 +226,13 @@ async function saveSong() {
             currentStepNotes = [];
             renderCurrentStep();
             renderStepsList();
-            if (document.getElementById('song-title')) document.getElementById('song-title').value = '';
-            if (document.getElementById('song-artist')) document.getElementById('song-artist').value = '';
+            document.getElementById('song-title').value = '';
+            document.getElementById('song-artist').value = '';
+            document.getElementById('song-is-public').checked = true; // برگردوندن به حالت پیش‌فرض
+            updateSongStats(); // صفر کردن آمار
             loadMySongs();
         } else {
-            var err = await res.json();
+            const err = await res.json();
             alert(t('editor.error_save').replace('{msg}', err.detail || t('editor.error_save_default')));
         }
     } catch (e) {

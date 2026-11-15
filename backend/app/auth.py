@@ -689,6 +689,23 @@ def create_song(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
+     
+     
+        # 👇 چک کردن شرایط انتشار برای آهنگ‌های عمومی
+    if data.is_public:
+        total_notes = sum(len(step.get("notes", [])) for step in data.notes_data)
+        if total_notes < 15:
+            raise HTTPException(status_code=400, detail="آهنگ عمومی باید حداقل ۱۵ نت داشته باشد")
+        
+        # محاسبه زمان تقریبی (فرض: هر گام ۱ ثانیه)
+        # اگر gap هر گام ذخیره شده باشد، مجموع آن‌ها را حساب می‌کنیم، در غیر این صورت 1 ثانیه در نظر می‌گیریم
+        total_time = 0
+        for step in data.notes_data:
+            total_time += step.get("gap", 1.0)
+        
+        if total_time < 90:  # ۹۰ ثانیه = ۱.۵ دقیقه
+            raise HTTPException(status_code=400, detail="آهنگ عمومی باید حداقل ۱.۵ دقیقه زمان‌بندی داشته باشد")
+    
     cost = 150
     now = datetime.now() # 👈 تغییر به ساعت محلی
     
@@ -710,6 +727,7 @@ def create_song(
         fall_speed=data.fall_speed,
         is_public=data.is_public,
         created_by=current_user.id,
+        price_diamonds=data.price_diamonds,
     )
     db.add(song)
     db.commit()
@@ -721,6 +739,132 @@ def list_songs(
     db: Session = Depends(database.get_db),
 ):
     return db.query(models.Song).filter(models.Song.created_by == current_user.id).all()
+
+@router.get("/community-songs", response_model=List[schemas.CommunitySongOut])
+def list_community_songs(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    songs = db.query(models.Song, models.User.username).join(models.User, models.Song.created_by == models.User.id)\
+        .filter(models.Song.is_public == True, models.Song.created_by != current_user.id)\
+        .order_by(models.Song.created_at.desc()).limit(50).all()
+    
+    result = []
+    for song, author_name in songs:
+        # چک کردن اینکه کاربر این آهنگ رو خریده یا نه
+        purchased = db.query(models.PurchasedSong).filter(
+            models.PurchasedSong.user_id == current_user.id, 
+            models.PurchasedSong.song_id == song.id
+        ).first()
+        
+        ratings = db.query(models.SongRating).filter(models.SongRating.song_id == song.id).all()
+        avg_rating = sum(r.rating for r in ratings) / len(ratings) if ratings else 0.0
+        user_rating_obj = next((r for r in ratings if r.user_id == current_user.id), None)
+        
+        result.append({
+            "id": song.id, "title": song.title, "artist": song.artist,
+            "difficulty": song.difficulty, "notes_data": song.notes_data,
+            "is_premium": song.is_premium, "created_by": song.created_by,
+            "is_public": song.is_public, "fall_speed": song.fall_speed,
+            "created_at": song.created_at, "author_name": author_name,
+            "price_diamonds": song.price_diamonds, # 👈 قیمت الماس
+            "is_purchased": bool(purchased),       # 👈 آیا خریده؟
+            "avg_rating": round(avg_rating, 1), "user_rating": user_rating_obj.rating if user_rating_obj else None,
+        })
+    return result
+
+@router.post("/buy-song")
+def buy_song(
+    data: schemas.BuySongRequest,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    song = db.query(models.Song).filter(models.Song.id == data.song_id).first()
+    if not song: raise HTTPException(404, "آهنگ پیدا نشد")
+    
+    # چک کردن اینکه قبلا نخریده باشه
+    existing = db.query(models.PurchasedSong).filter(
+        models.PurchasedSong.user_id == current_user.id,
+        models.PurchasedSong.song_id == song.id
+    ).first()
+    if existing: raise HTTPException(400, "شما قبلاً این آهنگ را خریده‌اید")
+
+    cost = song.price_diamonds
+    if current_user.diamonds < cost:
+        raise HTTPException(400, "الماس کافی نیست")
+
+    # کم کردن الماس از خریدار
+    current_user.diamonds -= cost
+    
+    # اضافه کردن به لیست خریداری شده
+    new_purchase = models.PurchasedSong(user_id=current_user.id, song_id=song.id)
+    db.add(new_purchase)
+    
+    # 👇 (اختیاری) اضافه کردن الماس به حساب سازنده آهنگ
+    creator = db.query(models.User).filter(models.User.id == song.created_by).first()
+    if creator:
+        creator.diamonds += cost
+        
+    db.commit()
+    return {"message": "آهنگ با موفقیت خریداری شد", "new_diamond_balance": current_user.diamonds}
+
+@router.post("/songs/{song_id}/rate")
+def rate_song(
+    song_id: int,
+    data: schemas.SongRatingCreate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    song = db.query(models.Song).filter(models.Song.id == song_id).first()
+    if not song:
+        raise HTTPException(status_code=404, detail="آهنگ پیدا نشد")
+    if song.created_by == current_user.id:
+        raise HTTPException(status_code=400, detail="شما نمی‌توانید به آهنگ خودتان امتیاز دهید")
+    
+    # چک کردن اینکه قبلا امتیاز داده یا نه
+    existing = db.query(models.SongRating).filter(
+        models.SongRating.song_id == song_id, 
+        models.SongRating.user_id == current_user.id
+    ).first()
+    
+    if existing:
+        existing.rating = data.rating
+    else:
+        new_rating = models.SongRating(song_id=song_id, user_id=current_user.id, rating=data.rating)
+        db.add(new_rating)
+    
+    db.commit()
+    return {"message": "امتیاز با موفقیت ثبت شد", "rating": data.rating}
+
+@router.get("/community-songs", response_model=List[schemas.CommunitySongOut])
+def list_community_songs(
+    limit: int = 50,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    # گرفتن آهنگ‌های عمومی که توسط بقیه کاربران ساخته شدن
+    songs = db.query(models.Song, models.User.username).join(models.User, models.Song.created_by == models.User.id)\
+        .filter(models.Song.is_public == True, models.Song.created_by != current_user.id)\
+        .order_by(models.Song.created_at.desc()).limit(limit).all()
+    
+    result = []
+    for song, author_name in songs:
+        # تبدیل مدل به دیکشنری و اضافه کردن اسم سازنده
+        song_dict = {
+            "id": song.id,
+            "title": song.title,
+            "artist": song.artist,
+            "difficulty": song.difficulty,
+            "notes_data": song.notes_data,
+            "is_premium": song.is_premium,
+            "created_by": song.created_by,
+            "is_public": song.is_public,
+            "fall_speed": song.fall_speed,
+            "created_at": song.created_at,
+            "author_name": author_name,
+        }
+        result.append(song_dict)
+    return result
 
 # ===== Password Reset =====
 @router.post("/forgot-password")

@@ -234,6 +234,11 @@
                         </div>
                         <span id="xpText" style="font-size: 10px; color: var(--text-muted); white-space: nowrap; direction: ltr;">0 / 20</span>
                     </div>
+
+                    <div class="token-badge" style="border-color: #38bdf8; color: #38bdf8;">
+                        <img src="/assets/diamond.png" alt="diamond" style="width: 18px; height: 18px;">
+                        <span id="diamondDisplay">0</span>
+                    </div>
                 </div>
                 
                 <div class="token-badge" style="white-space: nowrap; margin-left: 5px;">
@@ -244,16 +249,33 @@
         </div>
         <!-- 👆 پایان هدر -->
 
-        <!-- منوی اصلی -->
+                <!-- منوی اصلی -->
         <div id="menu-view" class="view active">
             <h2 style="color:var(--primary); margin-bottom: 22px;" data-i18n="menu.title">یک حالت را انتخاب کنید</h2>
             
             <div class="menu-grid">
-                <div class="menu-card" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;"><span class="icon">📚</span><span class="title" data-i18n="menu.training_short">تمرین و یادگیری</span></div>
-                <div class="menu-card" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;"><span class="icon">🎼</span><span class="title" data-i18n="menu.editor_short">آهنگساز</span></div>
-                <div class="menu-card" onclick="toggleMicMode()" id="micBtn" style="border-color: #ef4444; color: #ef4444;"><span class="icon">🎤</span><span class="title" data-i18n="menu.mic_short">ساز واقعی</span></div>
-                <div class="menu-card" onclick="goToLeaderboard()" style="border-color: #fbbf24; color: #fbbf24;"><span class="icon">🏆</span><span class="title" data-i18n="menu.leaderboard_short">جدول امتیازات</span></div>
+                <div class="menu-card" onclick="goToTrainingMenu()" style="border-color: #10b981; color: #10b981;">
+                    <span class="icon">📚</span>
+                    <span class="title" data-i18n="menu.training_short">تمرین و یادگیری</span>
+                </div>
+                
+                <!-- 👇 اصلاح دکمه آهنگ‌های جامعه -->
+                <div class="menu-card" onclick="goToCommunitySongs()" style="border-color: #fbbf24; color: #fbbf24;">
+                    <span class="icon">🌍</span>
+                    <span class="title" data-i18n="menu.community_short">آهنگ‌های جامعه</span>
+                </div>
+                
+                <div class="menu-card" onclick="goToSongEditor()" style="border-color: #a78bfa; color: #a78bfa;">
+                    <span class="icon">🎼</span>
+                    <span class="title" data-i18n="menu.editor_short">آهنگساز</span>
+                </div>
+
+                <div class="menu-card" onclick="goToLeaderboard()" style="border-color: #fbbf24; color: #fbbf24;">
+                    <span class="icon">🏆</span>
+                    <span class="title" data-i18n="menu.leaderboard_short">جدول امتیازات</span>
+                </div>
             </div>
+            
             <button class="menu-btn" onclick="goToWallet()" data-i18n="menu.wallet" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">💰 کیف پول</button>
             <button class="menu-btn" onclick="goToProfile()" data-i18n="menu.profile" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">👤 پروفایل</button>
             <button class="menu-btn" onclick="goToSettings()" data-i18n="menu.settings" style="padding: 12px; margin-bottom: 10px; font-size: 15px;">⚙️ تنظیمات</button>
@@ -275,6 +297,7 @@
             <button class="menu-btn" onclick="goToTutorialLevel(4)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_4">📖 مرحله ۴: دو نت هم‌زمان</button>
             <button class="menu-btn" onclick="goToTutorialLevel(5)" style="border-color:#38bdf8;color:#38bdf8;" data-i18n="tutorial.level_5">📖 مرحله ۵: ملودی نهایی</button>
             <button class="menu-btn" onclick="goToMySongs()" style="border-color:#a78bfa;color:#a78bfa;" data-i18n="training.my_songs">🎵 آهنگ‌های من</button>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;" data-i18n="community.desc">آهنگ‌های ساخته‌شده توسط بازیکنان دیگر</p>
         </div>
 
         <!-- آهنگ‌های من (منوی تمرین) -->
@@ -292,6 +315,16 @@
         <div id="free-view" class="view">
             <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
             <canvas id="handpanCanvasFree" width="820" height="500"></canvas>
+        </div>
+
+        <div id="community-songs-view" class="view">
+            <button class="back-btn" onclick="backToMenu()" data-i18n="game.back">← بازگشت</button>
+            <div class="card-section" style="max-width: 500px; width: 90%; margin-top: 40px;">
+                <h2 style="color:var(--coin-text);" data-i18n="community.title">🌍 آهنگ‌های جامعه</h2>
+                <div id="community-songs-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 450px; overflow-y: auto; text-align: right;">
+                    <div style="text-align:center; color:var(--text-muted); padding:20px;">در حال بارگذاری...</div>
+                </div>
+            </div>
         </div>
 
                 <!-- فلاینگ -->
@@ -461,7 +494,12 @@
                         <span data-i18n="settings.mic_title">🎤 تنظیمات ساز و میکروفون</span>
                         <span id="micSettingsChevron">▼</span>
                     </button>
+                    
                     <div id="micSettingsWrap" class="acc-content" style="text-align: center;">
+                        
+                        <!-- 👇 دکمه میکروفون رفت داخل کشو 👇 -->
+                        <button class="btn-sm" onclick="toggleMicMode()" id="micBtn" style="margin-bottom: 15px; width: 100%; background: #ef4444; color: #fff;" data-i18n="menu.mic_mode">🎤 حالت ساز واقعی (میکروفون)</button>
+
                         <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;" data-i18n="settings.mic_desc">
                             برای بهترین عملکرد با ساز واقعی، ابتدا میکروفون را تست و سپس ساز را کالیبره کنید.
                         </p>
@@ -599,6 +637,22 @@
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <button class="btn" onclick="commitStep()" data-i18n="editor.commit_step" style="flex:1; background:var(--success-color); color:#fff;">✅ ثبت این گام</button>
                     <button class="btn btn-ghost" onclick="newStep()" data-i18n="editor.new_step" style="flex:1;">➕ گام جدید</button>
+                </div>
+
+                <!-- 👇 نمایشگر آمار آهنگ (تعداد نت و زمان) 👇 -->
+                <div style="background: var(--bg-main); padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--primary);">
+                    <div style="font-size: 13px; color: var(--text-main);">
+                        🎵 <span data-i18n="editor.total_notes">تعداد نت‌ها:</span> <b id="stat-total-notes" style="color: var(--primary);">0</b>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-main);">
+                        ⏱️ <span data-i18n="editor.duration">مدت زمان:</span> <b id="stat-duration" style="color: var(--success-color);">0</b> <span data-i18n="misc.seconds">ثانیه</span>
+                    </div>
+                </div>
+
+                <!-- 👇 سوئیچ عمومی یا خصوصی بودن آهنگ 👇 -->
+                <div class="setting-row" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
+                    <label for="song-is-public" style="font-size: 14px; font-weight: bold; color: var(--text-main); margin: 0;" data-i18n="editor.is_public">انتشار در آهنگ‌های جامعه (عمومی)</label>
+                    <input type="checkbox" id="song-is-public" checked style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;">
                 </div>
 
                 <div style="background: var(--bg-main); padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; max-height: 200px; overflow-y: auto;">

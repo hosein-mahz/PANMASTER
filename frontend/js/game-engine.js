@@ -58,6 +58,11 @@ const I18N = {
         "result.combo": "حداکثر کمبو:","result.combo_bonus": "پاداش کمبو","result.discount_unlocked": "تخفیف ۲۵٪ ساخت آهنگ فعال شد!",
    
         "result.too_short": "❌ تعداد نت‌های این آهنگ کمتر از ۱۵ بود. پاداشی محاسبه نشد.",
+    
+        "menu.community_short": "🌍 آهنگ‌های جامعه","community.title": "🌍 آهنگ‌های جامعه","community.empty": "هنوز هیچ آهنگ عمومی ساخته نشده است.",
+    
+        "editor.total_notes": "تعداد نت‌ها:","editor.duration": "مدت زمان:","editor.is_public": "انتشار در جامعه (عمومی)","misc.seconds": "ثانیه",
+    
     },
     en: {
         // # Auth
@@ -102,6 +107,11 @@ const I18N = {
         "result.combo": "Max Combo:","result.combo_bonus": "Combo Bonus","result.discount_unlocked": "25% Song Discount Unlocked!",
     
         "result.too_short": "❌ Song has less than 15 notes. No rewards calculated.",
+    
+        "menu.community_short": "🌍 Community Songs","community.title": "🌍 Community Songs","community.desc": "Songs created by other players","community.empty": "No public songs have been created yet.",
+    
+        "editor.total_notes": "Total Notes:","editor.duration": "Duration:","editor.is_public": "Publish to Community (Public)","misc.seconds": "sec",
+    
     }
 };
 
@@ -571,6 +581,7 @@ function updateUIFromUser(d){
     document.getElementById('levelBadge').innerText = `${t('header.level_prefix')} ${d.level}`;
     document.getElementById('xpProgressFill').style.width = `${d.progress_percent}%`;
     document.getElementById('xpText').innerText = `${d.xp_in_level} / ${d.xp_needed} XP`;
+    document.getElementById('diamondDisplay').innerText = d.diamonds;
 
     const av = document.getElementById('headerAvatar');
     if (d.selected_avatar && d.selected_avatar !== 'default') {
@@ -740,29 +751,42 @@ async function goToFallingGame(song = null) {
     currentSongData = (song && Array.isArray(song.notes_data) && song.notes_data.length > 0) ? song : null;
     currentStepIdx = 0;
 
+    // 👇 تشخیص نوع آهنگ
+    const isCommunity = song && song.isCommunity === true; // فلگ جدید برای آهنگ‌های خریداری‌شده از جامعه
+    const isTutorial = song && song.isTutorial === true;
+    
     let entryCost = 0;
-    if (currentSongData) {
-        if (currentSongData.isTutorial) {
-            entryCost = 10; // مراحل آموزشی ۱۰ سکه
-        } else {
-            const isVip = currentUser?.is_vip;
-            const createdDate = currentSongData.created_at ? new Date(currentSongData.created_at) : new Date();
-            const daysOld = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
-            
-            if (daysOld > 14 && !isVip) {
-                entryCost = 20; // آهنگ قدیمی‌تر از ۱۴ روز
-            }
+
+    // 👇 محاسبه هزینه ورود
+    if (isTutorial) {
+        entryCost = 10; // مراحل آموزشی ۱۰ سکه
+    } 
+    else if (isCommunity) {
+        entryCost = 20; // آهنگ‌های جامعه (بعد از خرید با الماس) ۲۰ سکه
+    } 
+    else if (currentSongData) {
+        // آهنگ‌های خود کاربر
+        const isVip = currentUser?.is_vip;
+        const createdDate = currentSongData.created_at ? new Date(currentSongData.created_at) : new Date();
+        const daysOld = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+        
+        if (daysOld > 14 && !isVip) {
+            entryCost = 20; // آهنگ قدیمی‌تر از ۱۴ روز
         }
-    } else {
+    } 
+    else {
         entryCost = 10; // حالت تستی
     }
 
-    if ((!currentSongData || currentSongData.isTutorial) && needsRecalibration()) {
+    // چک کردن کالیبراسیون (فقط برای مراحل تستی و آموزشی)
+    if ((!currentSongData || isTutorial) && needsRecalibration()) {
         const go = confirm(t('msg.confirm_recalib'));
         if (go) { startCalibration(); return; }
     }
+    
     applyUserAssets();
 
+    // 👇 کسر سکه از حساب کاربر
     if (entryCost > 0) {
         if (userTokens < entryCost) { alert(t('misc.not_enough_coins')); return; }
         const token = localStorage.getItem('pm_token');
@@ -782,13 +806,8 @@ async function goToFallingGame(song = null) {
         } catch (e) { alert(t('misc.connection_error')); return; }
     }
 
+    // 👇 آماده‌سازی صفحه بازی
     showView('falling-view');
-    if (document.getElementById('liveFallSpeed')) document.getElementById('liveFallSpeed').value = currentUser.fall_speed || 200;
-    if (document.getElementById('liveSoundVol')) document.getElementById('liveSoundVol').value = currentUser.sound_volume || 0.5;
-    if (document.getElementById('liveNoteDisplay')) document.getElementById('liveNoteDisplay').value = currentUser.note_display_mode || 'number';
-    
-    isPaused = false;
-    if (document.getElementById('btn-pause')) document.getElementById('btn-pause').innerText = "⏸️";
     const c = document.getElementById('handpanCanvasFalling');
     if (c) { c.style.display = 'block'; drawHandpan(c.getContext('2d')); setupInteraction(c, 'falling'); }
     
@@ -801,9 +820,17 @@ async function goToFallingGame(song = null) {
     const fc = document.getElementById('fallingCanvas');
     if (fc) { fc.width = 820; fc.height = 280; }
 
+    // 👇 ریست کامل تمام متغیرهای بازی برای شروع تازه
     score = 0; hits = 0; misses = 0; totalSpawned = 0; fallingNotes = [];
-    maxCombo = 0;
-    isPaused = false; 
+    maxCombo = 0; 
+    currentCombo = 0;
+    isPaused = false; // خروج از حالت پاز (بسیار مهم)
+    
+    // تنظیم دکمه پاز/پلی روی حالت پلی
+    const pauseBtn = document.getElementById('btn-play-pause');
+    if (pauseBtn) pauseBtn.innerText = "⏸️";
+
+    // شروع شمارش معکوس
     startCountdown();
 }
 
@@ -1663,8 +1690,6 @@ function handleMicNote(noteKey, freq) {
 }
 
 async function toggleMicMode() {
-    const btn = document.getElementById('micBtn'); 
-    const titleSpan = btn ? btn.querySelector('.title') : null;
     const fv = document.getElementById('falling-view'); 
     const fc = document.getElementById('fallingCanvas'); 
     const hc = document.getElementById('handpanCanvasFalling');
@@ -1687,8 +1712,10 @@ async function toggleMicMode() {
             isMicMode = true; 
             
             if (titleSpan) titleSpan.innerText = t('menu.mic_off_short');
-            if (btn) { btn.style.borderColor = "var(--success-color)"; btn.style.color = "var(--success-color)"; }
-            
+            if (btn) { 
+                btn.innerText = t('menu.mic_off_short') || "⏹️ خاموش کردن"; 
+                btn.style.background = "var(--success-color)"; 
+            }            
             if (fv) fv.classList.add('mic-active'); 
             if (hc) hc.style.display = 'none'; 
             if (fc) { fc.width = 820; fc.height = 500; fc.style.aspectRatio = "820 / 500"; HIT_Y = 420; }
@@ -1701,8 +1728,10 @@ async function toggleMicMode() {
         isMicMode = false; 
         
         if (titleSpan) titleSpan.innerText = t('menu.mic_short');
-        if (btn) { btn.style.borderColor = "var(--danger-color)"; btn.style.color = "var(--danger-color)"; }
-        
+        if (btn) { 
+            btn.innerText = t('menu.mic_mode') || "🎤 حالت ساز واقعی (میکروفون)"; 
+            btn.style.background = "#ef4444"; 
+        }        
         if (fv) fv.classList.remove('mic-active'); 
         if (hc) hc.style.display = 'block'; 
         if (fc) { fc.width = 820; fc.height = 280; fc.style.aspectRatio = "820 / 280"; HIT_Y = 220; }
@@ -2551,6 +2580,159 @@ function startResumeCountdown() {
             tx.innerText = count;
         }
     }, 1000);
+}
+
+function goToCommunitySongs() {
+    showView('community-songs-view');
+    loadCommunitySongs();
+}
+
+async function loadCommunitySongs() {
+    const token = localStorage.getItem('pm_token');
+    const list = document.getElementById('community-songs-list');
+    list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">در حال بارگذاری...</div>`;
+        // دکمه‌های کارت
+    const btnHtml = s.is_purchased 
+        ? `<button class="pm-game-song-btn" style="...">🎮 تمرین (۲۰ سکه)</button>` 
+        : `<button class="pm-buy-btn" onclick="buyCommunitySong(${s.id})" style="...">💎 خرید (${s.price_diamonds} الماس)</button>`;
+    
+    card.innerHTML = `
+        <!-- ... -->
+        <div style="display:flex; gap:6px;">
+            <button onclick="playPreview(${JSON.stringify(s.notes_data).replace(/"/g, '&quot;')})" style="background:var(--secondary); color:#fff; ...">▶ ۲۰s پیش‌نمایش</button>
+            ${btnHtml}
+        </div>
+    `;
+    // رویداد کلیک برای دکمه بازی
+    if (s.is_purchased) {
+        card.querySelector('.pm-game-song-btn').onclick = () => {
+            const communitySong = {...s, isCommunity: true}; // فلگ برای تشخیص
+            goToFallingGame(communitySong);
+        };
+    }
+    try {
+        const res = await fetch('/api/users/community-songs', { headers: { 'Authorization': `Bearer ${token}` } });
+        const songs = await res.json();
+        
+        if (!songs.length) {
+            list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px;">${t('community.empty')}</div>`;
+            return;
+        }
+        
+        list.innerHTML = '';
+        songs.forEach(s => {
+            const totalNotes = s.notes_data.reduce((acc, st) => acc + (st.notes?.length || 0), 0);
+            
+            // ساخت ستاره‌ها
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                const isActive = s.user_rating && i <= s.user_rating;
+                starsHtml += `<span onclick="rateSong(${s.id}, ${i})" style="cursor:pointer; font-size:18px; color:${isActive ? '#fbbf24' : '#475569'};">★</span>`;
+            }
+
+            const card = document.createElement('div');
+            card.style.cssText = 'background:var(--bg-main); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div>
+                        <div style="font-weight:bold; color:var(--primary); font-size:15px;">🎵 ${escapeHtml(s.title)}</div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">👤 ${escapeHtml(s.author_name)} • ${s.difficulty} • ${totalNotes} نت</div>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-size:12px; color:#fbbf24; font-weight:bold;">⭐ ${s.avg_rating} / 5</div>
+                    </div>
+                </div>
+                
+                <!-- ستاره‌های امتیازدهی کاربر -->
+                <div style="display:flex; gap:2px; justify-content:center; margin:5px 0;">
+                    ${starsHtml}
+                </div>
+
+                <div style="display:flex; gap:6px; justify-content:center;">
+                    <button class="pm-game-song-btn" style="flex:1; background:#fbbf24; color:#0f172a; border:none; padding:6px; border-radius:8px; font-weight:bold; cursor:pointer;">🎮 بازی</button>
+                    <button class="pm-play-song-btn" style="flex:1; background:var(--primary); color:#0f172a; border:none; padding:6px; border-radius:8px; font-weight:bold; cursor:pointer;">▶️ پخش</button>
+                </div>
+            `;
+            card.querySelector('.pm-game-song-btn').onclick = () => goToFallingGame(s);
+            card.querySelector('.pm-play-song-btn').onclick = () => playSteps(s.notes_data);
+            list.appendChild(card);
+        });
+    } catch(e) {
+        list.innerHTML = `<div style="text-align:center; color:var(--danger-color); padding:20px;">خطا در دریافت اطلاعات</div>`;
+    }
+}
+
+async function rateSong(songId, rating) {
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch(`/api/users/songs/${songId}/rate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ rating })
+        });
+        if (res.ok) {
+            // رفرش کردن لیست برای نمایش میانگین جدید
+            loadCommunitySongs();
+        } else {
+            const err = await res.json();
+            alert(err.detail);
+        }
+    } catch(e) { alert("خطا در ارتباط با سرور"); }
+}
+
+function playPreview(notesData) {
+    if (isPlaying) stopSong();
+    if (!Array.isArray(notesData) || notesData.length === 0) return;
+    
+    const ctx = initAudio();
+    if (!ctx) return;
+    isPlaying = true;
+    
+    let timeElapsed = 0;
+    let idx = 0;
+    
+    const tick = () => {
+        if (!isPlaying || timeElapsed >= 20) { 
+            isPlaying = false; 
+            return; 
+        }
+        
+        if (idx >= notesData.length) {
+            idx = 0; // لوپ میشه اگر کمتر از ۲۰ ثانیه بود
+        }
+        
+        const step = notesData[idx];
+        const notes = Array.isArray(step?.notes) ? step.notes : (step?.note ? [step.note] : []);
+        notes.forEach(n => playSound(n));
+        
+        // زمان تقریبی هر گام 0.5 ثانیه
+        const stepTime = 500; 
+        timeElapsed += stepTime / 1000;
+        idx++;
+        
+        playTimer = setTimeout(tick, stepTime);
+    };
+    tick();
+}
+
+async function buyCommunitySong(songId) {
+    if (!confirm("آیا این آهنگ را با الماس می‌خرید؟")) return;
+    const token = localStorage.getItem('pm_token');
+    try {
+        const res = await fetch('/api/users/buy-song', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ song_id: songId })
+        });
+        if (res.ok) {
+            alert("✅ خرید موفق! آهنگ به لیست شما اضافه شد.");
+            await fetchUserProfile(); // آپدیت موجودی الماس
+            loadCommunitySongs(); // رفرش لیست
+        } else {
+            const err = await res.json();
+            alert(err.detail);
+        }
+    } catch(e) { alert("خطا در ارتباط با سرور"); }
 }
 
 // شروع برنامه و بررسی توکن

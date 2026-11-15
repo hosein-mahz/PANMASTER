@@ -10,6 +10,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     coins = Column(Integer, default=0)
+    diamonds = Column(Integer, default=0, nullable=False)
     xp = Column(Integer, default=0, nullable=False)
     owned_skins = Column(String, default="[]", nullable=False)
     extra_notes = Column(Integer, default=0, nullable=False)
@@ -55,6 +56,7 @@ class Song(Base):
     is_premium = Column(Boolean, default=False)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_public = Column(Boolean, default=True)
+    price_diamonds = Column(Integer, default=0, nullable=False)
     difficulty = Column(String, default="Easy", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -103,3 +105,17 @@ class CoinTransaction(Base):
     accuracy = Column(Float, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+class SongRating(Base):
+    __tablename__ = "song_ratings"
+    id = Column(Integer, primary_key=True, index=True)
+    song_id = Column(Integer, ForeignKey("songs.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    rating = Column(Integer, nullable=False)  # ۱ تا ۵
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class PurchasedSong(Base):
+    __tablename__ = "purchased_songs"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    song_id = Column(Integer, ForeignKey("songs.id"), nullable=False)
+    purchased_at = Column(DateTime(timezone=True), server_default=func.now())

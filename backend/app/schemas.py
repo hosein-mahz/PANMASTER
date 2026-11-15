@@ -15,6 +15,7 @@ class UserOut(BaseModel):
     username: str
     email: EmailStr
     coins: int
+    diamonds: int = 0
     xp: int
     level: int
     level_name: str
@@ -160,6 +161,7 @@ class SongCreate(BaseModel):
     notes_data: List[dict] = []
     is_public: bool = True
     fall_speed: float = 1.0
+    price_diamonds: int = 0
 
 class SongOut(BaseModel):
     id: int
@@ -172,8 +174,12 @@ class SongOut(BaseModel):
     is_public: bool = True
     fall_speed: float = 1.0
     created_at: Optional[datetime] = None
+    price_diamonds: int = 0
     class Config:
         from_attributes = True
+
+class CommunitySongOut(SongOut):
+    author_name: str
 
 # ===== Password Reset =====
 class ForgotPasswordRequest(BaseModel):
@@ -186,3 +192,14 @@ class ResetPasswordRequest(BaseModel):
 
 class ResetPasswordResponse(BaseModel):
     message: str
+
+class CommunitySongOut(SongOut):
+    author_name: str
+    avg_rating: float = 0.0
+    user_rating: Optional[int] = None
+
+class SongRatingCreate(BaseModel):
+    rating: int = Field(..., ge=1, le=5)
+
+class BuySongRequest(BaseModel):
+    song_id: int
