@@ -166,7 +166,10 @@ def _build_user_out(user: models.User) -> dict:
         "failed_attempts_in_stage": user.failed_attempts_in_stage or 0,
         "lockout_until": user.lockout_until,
         "phone": user.phone,
-        "song_discount_until": user.song_discount_until # 👈 این خط باید اینجا باشه
+        "song_discount_until": user.song_discount_until,
+        "wallet_discount_until": user.wallet_discount_until,
+        "vip_discount_until": user.vip_discount_until,
+        "avatar_discount_until": user.avatar_discount_until,
     }
 
 # ===== Auth =====
@@ -406,7 +409,12 @@ def buy_coins(
     data: schemas.BuyCoinsRequest,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
+    
 ):
+    now = datetime.now()
+    if current_user.wallet_discount_until and current_user.wallet_discount_until > now:
+        current_user.wallet_discount_until = None
+
     pkg = COIN_PACKAGES.get(data.package_id)
     if not pkg:
         raise HTTPException(status_code=404, detail="بسته پیدا نشد")
@@ -486,7 +494,15 @@ def game_reward(
             else:
                 earned = -5
                 xp_gained = 0
-        else:
+        elif reward.mode == "community":
+            if acc >= 25: 
+                earned = 25
+                if reward.max_combo >= 5: earned += 5 
+                xp_gained = 20
+            else:
+                earned = 0
+                xp_gained = 0
+        else: # حالت‌های falling (تستی) و tutorial (آموزشی)
             if acc >= 75:
                 earned = 15
                 xp_gained = 20
@@ -499,17 +515,6 @@ def game_reward(
             else:
                 earned = -5
                 xp_gained = 0
-
-                # 👇 بررسی آهنگ‌های جامعه
-    if reward.mode == "community":
-        if acc >= 25: # (مثلا اگر دقت بالای ۲۵ باشه، پاداش پایه بگیره)
-            earned = 25
-            if reward.max_combo >= 5: earned += 5 # با کمبو ۳۰ سکه
-            xp_gained = 20
-        else:
-            earned = 0
-            xp_gained = 0
-    # ... بقیه حالت‌ها (song, falling, tutorial)
 
     # 👇 ۲. پاداش کمبو (فقط یک بار!)
     if reward.max_combo >= 5:
@@ -537,7 +542,7 @@ def game_reward(
     if xp_gained > 0:
         current_user.xp = (current_user.xp or 0) + xp_gained
 
-    # ۵. بررسی Level-up
+    # ۵. بررسی Level-up و اعطای جوایز
     old_level = get_level_from_xp((current_user.xp or 0) - xp_gained)
     new_level = get_level_from_xp(current_user.xp or 0)
 
@@ -547,18 +552,55 @@ def game_reward(
             reward_info = LEVEL_REWARDS.get(lvl)
             if not reward_info: continue
             rtype = reward_info.get("type")
+            
+            # 👇 بررسی شرط VIP برای اسکین‌ها
+            is_vip_required = reward_info.get("vip_only", False)
+            if is_vip_required and not (current_user.is_vip and current_user.vip_expire_date and current_user.vip_expire_date > datetime.now()):
+                # اگر VIP نبود، به جای جایزه اصلی، ۵۰ سکه می‌گیره
+                current_user.coins = (current_user.coins or 0) + 50
+                rewards_granted.append({
+                    "level": lvl, 
+                    "name": f"🔒 {reward_info['name']} (نیاز به VIP) - دریافت ۵۰ سکه"
+                })
+                continue
+            
+            # 👇 اعطای انواع جایزه
             if rtype == "coins":
                 current_user.coins = (current_user.coins or 0) + reward_info.get("amount", 0)
+                rewards_granted.append({"level": lvl, **reward_info})
+                
+            elif rtype == "diamonds":
+                current_user.diamonds = (current_user.diamonds or 0) + reward_info.get("amount", 0)
+                # جوایز اضافی مرحله ۳۰ (اسکین و سکه)
+                if reward_info.get("extra_skin"):
+                    skins = json.loads(current_user.owned_skins or "[]")
+                    sid = reward_info.get("extra_skin")
+                    if sid and sid not in skins:
+                        skins.append(sid); current_user.owned_skins = json.dumps(skins)
+                if reward_info.get("extra_coins"):
+                    current_user.coins = (current_user.coins or 0) + reward_info.get("extra_coins")
+                rewards_granted.append({"level": lvl, **reward_info})
+
             elif rtype == "handpan_skin":
                 skins = json.loads(current_user.owned_skins or "[]")
                 sid = reward_info.get("id")
                 if sid and sid not in skins:
                     skins.append(sid); current_user.owned_skins = json.dumps(skins)
-            elif rtype == "handpan_notes":
-                current_user.extra_notes = (current_user.extra_notes or 0) + reward_info.get("extra", 1)
-                if reward_info.get("coins"):
-                    current_user.coins = (current_user.coins or 0) + reward_info.get("amount", 0)
-            rewards_granted.append({"level": lvl, **reward_info})
+                rewards_granted.append({"level": lvl, **reward_info})
+
+            # 👇 اعطای تخفیف‌ها (همه به مدت ۲۴ ساعت)
+            elif rtype == "song_discount":
+                current_user.song_discount_until = datetime.now() + timedelta(hours=24)
+                rewards_granted.append({"level": lvl, **reward_info})
+            elif rtype == "wallet_discount":
+                current_user.wallet_discount_until = datetime.now() + timedelta(hours=24)
+                rewards_granted.append({"level": lvl, **reward_info})
+            elif rtype == "vip_discount":
+                current_user.vip_discount_until = datetime.now() + timedelta(hours=24)
+                rewards_granted.append({"level": lvl, **reward_info})
+            elif rtype == "avatar_discount":
+                current_user.avatar_discount_until = datetime.now() + timedelta(hours=24)
+                rewards_granted.append({"level": lvl, **reward_info})
 
     db.commit(); db.refresh(current_user)
 
@@ -648,15 +690,20 @@ def reset_calibration(
     return {"message": "کالیبراسیون پاک شد"}
 
 # ===== Buy Avatar =====
+# ===== Buy Avatar =====
 @router.post("/buy-avatar", response_model=schemas.TokenBalance)
 def buy_avatar(
     data: schemas.AvatarPurchase,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(database.get_db),
 ):
-    # خواندن قیمت از دیکشنری
-    cost = AVATAR_PRICES.get(data.avatar_id, 50) # اگر پیدا نشد، پیش‌فرض 50
+    cost = AVATAR_PRICES.get(data.avatar_id, 50)
     if data.avatar_id == "random": cost = 20
+
+    now = datetime.now()
+    if current_user.avatar_discount_until and current_user.avatar_discount_until > now:
+        cost = int(cost * 0.75)
+        current_user.avatar_discount_until = None
 
     if current_user.coins < cost:
         raise HTTPException(status_code=400, detail="سکه کافی نیست")
@@ -680,10 +727,6 @@ def buy_avatar(
     current_user.owned_avatars = json.dumps(avatars)
     db.commit()
     return schemas.TokenBalance(new_balance=current_user.coins)
-
- # ____هایلایت/انهایلایت_______
-
-@router.post("/toggle-highlight")
 def toggle_highlight(
     data: schemas.HighlightToggle,
     current_user: models.User = Depends(get_current_user),
@@ -761,13 +804,17 @@ def buy_vip(
     db: Session = Depends(database.get_db),
 ):
     cost = 1000
-    if current_user.coins < cost:
-        raise HTTPException(status_code=400, detail="سکه کافی نیست (نیاز به ۱۰۰۰ سکه)")
-
-    # کسر سکه
-    current_user.coins -= cost
+    now = datetime.now()
     
-    # تنظیم وضعیت VIP برای ۳۰ روز
+    # 👈 چک کردن تخفیف VIP
+    if current_user.vip_discount_until and current_user.vip_discount_until > now:
+        cost = 750 # ۲۵٪ تخفیف
+        current_user.vip_discount_until = None # مصرف شد
+
+    if current_user.coins < cost:
+        raise HTTPException(status_code=400, detail=f"سکه کافی نیست (نیاز به {cost} سکه)")
+
+    current_user.coins -= cost
     current_user.is_vip = True
     current_user.vip_expire_date = datetime.utcnow() + timedelta(days=30)
 
@@ -992,19 +1039,20 @@ def forgot_password(
     ).first()
     
     if not user:
-        # Don't reveal if user exists
         return {"message": "If the user exists, a reset code has been sent."}
     
     import random
     code = str(random.randint(100000, 999999))
     user.reset_code = code
-    user.reset_code_expire = datetime.utcnow() + timedelta(minutes=15)
-    user.reset_method = "email"
+    user.reset_code_expire = datetime.now() + timedelta(minutes=15) # 👈 تغییر به now
+    user.reset_method = "phone" # 👈 تغییر به phone (چون میخوای پیامک بدی)
     db.commit()
     
-    # In production, send code via email/SMS
-    return {"message": "Reset code generated", "code": code}  # DEBUG: remove in production
-
+    # 👇 اینجا محل اتصال به پنل پیامکی است. فعلاً فقط چاپ میکنیم
+    print(f"📱 MOCK SMS to {user.phone}: Your reset code is {code}")
+    
+    # 👈 کد رو دیگه به فرانت‌اند برنمی‌گردونیم
+    return {"message": "کد بازیابی ارسال شد"} 
 
 @router.post("/reset-password", response_model=schemas.ResetPasswordResponse)
 def reset_password(
@@ -1023,7 +1071,7 @@ def reset_password(
     if not user.reset_code or user.reset_code != data.code:
         raise HTTPException(status_code=400, detail="کد بازیابی نامعتبر است")
     
-    if user.reset_code_expire and user.reset_code_expire < datetime.utcnow():
+    if user.reset_code_expire and user.reset_code_expire < datetime.now():
         raise HTTPException(status_code=400, detail="کد بازیابی منقضی شده است")
     
     # Update password and reset security

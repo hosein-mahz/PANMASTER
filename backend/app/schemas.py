@@ -1,6 +1,9 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
+import re
+
+
 
 class UserBase(BaseModel):
     username: str
@@ -9,6 +12,13 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     phone: str
+
+    @field_validator('phone')
+    @classmethod
+    def validate_phone(cls, v):
+        if not re.match(r'^09\d{9}$', v):
+            raise ValueError('شماره تلفن باید ۱۱ رقم و با ۰۹ شروع شود')
+        return v
 
 class UserOut(BaseModel):
     id: int
@@ -41,7 +51,10 @@ class UserOut(BaseModel):
     failed_attempts_in_stage: int = 0
     lockout_until: Optional[datetime] = None
     phone: Optional[str] = None
-    song_discount_until: Optional[datetime] = None  # 👈 این خط باید اینجا باشه
+    song_discount_until: Optional[datetime] = None  
+    wallet_discount_until: Optional[datetime] = None
+    vip_discount_until: Optional[datetime] = None
+    avatar_discount_until: Optional[datetime] = None
     
 class Token(BaseModel):
     access_token: str

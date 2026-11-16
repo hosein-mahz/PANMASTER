@@ -368,8 +368,8 @@ async function sendResetCode() {
         if (res.ok) {
             const data = await res.json();
             msgEl.style.color = 'var(--success-color)';
-            msgEl.innerText = data.code ? `کد بازیابی (برای تست): ${data.code}` : t('auth.code_sent');
-            
+            msgEl.innerText = t('auth.code_sent'); 
+
             // 👈 نمایش مرحله ۲ و قفل کردن فیلد اول
             document.getElementById('reset-step-2').style.display = 'block';
             document.getElementById('forgotIdentifier').disabled = true;
@@ -511,6 +511,12 @@ async function register(){
 
     if(!username || !email || !password || !phone) { errorEl.innerText = t('auth.error.empty'); return; }
     if(!email.includes('@') || !email.includes('.')) { errorEl.innerText = t('auth.error.email'); return; }
+        // 👇 چک کردن فرمت شماره تلفن (۱۱ رقم و شروع با ۰۹)
+    const phoneRegex = /^09\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+        errorEl.innerText = "شماره تلفن باید ۱۱ رقم و با ۰۹ شروع شود.";
+        return;
+    }
     
     const submitBtn = document.querySelector('#register-form button');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = '...'; }
@@ -541,6 +547,14 @@ async function register(){
         else { 
             if (res.status === 429) {
                 startAuthCooldown(60);
+            } else if (res.status === 422) {
+                // 👈 مدیریت خطای اعتبارسنجی (مثل فرمت شماره)
+                const err = await res.json().catch(() => ({})); 
+                let msg = "اطلاعات وارد شده معتبر نیست.";
+                if (err.detail && Array.isArray(err.detail) && err.detail[0] && err.detail[0].msg) {
+                    msg = err.detail[0].msg;
+                }
+                errorEl.innerText = msg;
             } else {
                 const err = await res.json().catch(() => ({})); 
                 errorEl.innerText = err.detail || t('auth.error.register'); 
@@ -853,16 +867,19 @@ async function goToWallet(){
     const statusEl = document.getElementById('vipStatusText');
     const btnEl = document.getElementById('buyVipBtn');
     if (statusEl && btnEl) {
+        const hasVipDisc = currentUser.vip_discount_until && new Date(currentUser.vip_discount_until) > new Date();
+        
         if (currentUser.is_vip) {
             const expireDate = new Date(currentUser.vip_expire_date).toLocaleDateString(CURRENT_LANG === 'fa' ? 'fa-IR' : 'en-US');
             statusEl.innerText = t('wallet.vip_active').replace('{date}', expireDate);
             btnEl.innerText = t('wallet.renew_vip_btn');
         } else {
             statusEl.innerText = t('wallet.vip_inactive');
-            btnEl.innerText = t('wallet.buy_vip_btn');
+            // 👈 اگر تخفیف VIP داشت، قیمت ۷۵۰ رو نشون بده
+            btnEl.innerText = hasVipDisc ? "خرید VIP (۷۵۰ سکه - ۲۵٪ تخفیف!)" : t('wallet.buy_vip_btn');
         }
     }
-}   
+}  
 function goToProfile(){ showView('profile-view'); fetchUserProfile(); }
 
 function getLeagueInfo(leagueId) {
@@ -1512,19 +1529,24 @@ function closeRewardModal(){ document.getElementById('reward-modal').classList.r
 // ==========================================================
 async function loadCoinPackages(){
     try{
+        const hasWalletDisc = currentUser?.wallet_discount_until && new Date(currentUser.wallet_discount_until) > new Date();
+
         // ۱. لود سکه‌ها
-        const res=await fetch('/api/users/coin-packages'); 
+        const res=await fetch(API_BASE_URL + '/api/users/coin-packages'); 
         if(res.ok) {
             const pkgs=await res.json(); 
             const grid=document.getElementById('packagesGrid'); 
             grid.innerHTML='';
             pkgs.forEach(p => {
                 const c=document.createElement('div'); c.className='pkg-card';
-                const priceHtml = p.original_price 
-                    ? `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.original_price}</div>
-                       <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${p.price}</div>
-                       <div class="discount-timer" data-ends="${p.discount_ends_at}" style="font-size: 11px; color: #fbbf24; margin-top: 5px;">⏳</div>`
-                    : `<div class="pkg-price">${p.price}</div>`;
+                let priceHtml = `<div class="pkg-price">${p.price}</div>`;
+                
+                if (hasWalletDisc) {
+                    let num = parseInt(p.price.replace(/[^\d]/g, ''));
+                    let disc = Math.floor(num * 0.75);
+                    priceHtml = `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.price}</div>
+                                 <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${disc.toLocaleString()} تومان</div>`;
+                }
                 
                 c.innerHTML=`<div class="pkg-name">${t('wallet.pkg_'+p.id)||p.name}</div><div class="pkg-coins"><img src="/assets/coin.svg" alt="coin">${p.coins}</div>${priceHtml}`;
                 c.onclick=()=>buyCoinPackage(p.id); 
@@ -1533,7 +1555,7 @@ async function loadCoinPackages(){
         }
 
         // ۲. لود الماس‌ها
-        const resDia = await fetch('/api/users/diamond-packages'); 
+        const resDia = await fetch(API_BASE_URL + '/api/users/diamond-packages'); 
         if (resDia.ok) {
             const dPkgs = await resDia.json(); 
             const diaGrid = document.getElementById('diamondsGrid'); 
@@ -1541,22 +1563,21 @@ async function loadCoinPackages(){
                 diaGrid.innerHTML='';
                 dPkgs.forEach(p => {
                     const c=document.createElement('div'); c.className='pkg-card';
-                    const priceHtml = p.original_price 
-                        ? `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.original_price}</div>
-                           <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${p.price}</div>
-                           <div class="discount-timer" data-ends="${p.discount_ends_at}" style="font-size: 11px; color: #fbbf24; margin-top: 5px;">⏳</div>`
-                        : `<div class="pkg-price">${p.price}</div>`;
-
+                    let priceHtml = `<div class="pkg-price">${p.price}</div>`;
+                    
+                    if (hasWalletDisc) {
+                        let num = parseInt(p.price.replace(/[^\d]/g, ''));
+                        let disc = Math.floor(num * 0.75);
+                        priceHtml = `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.price}</div>
+                                     <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${disc.toLocaleString()} تومان</div>`;
+                    }
+                    
                     c.innerHTML=`<div class="pkg-name">${t('wallet.' + p.id) || p.name}</div><div class="pkg-coins" style="color:#a78bfa;">💎 ${p.diamonds}</div>${priceHtml}`;
                     c.onclick=()=>buyDiamondPackage(p.id); 
                     diaGrid.appendChild(c);
                 });
             }
         }
-        
-        // 👇 راه‌اندازی تایمرها بعد از لود شدن
-        startDiscountTimers();
-        
     }catch(e){ console.error(e); }
 }
 
@@ -2072,7 +2093,13 @@ function renderAvatarGallery() {
 }
 
 async function promptBuyAvatar(avName) {
-    const price = AVATAR_PRICES[avName] || 50;
+    let price = AVATAR_PRICES[avName] || 50;
+    const hasAvatarDisc = currentUser?.avatar_discount_until && new Date(currentUser.avatar_discount_until) > new Date();
+    
+    if (hasAvatarDisc) {
+        price = Math.floor(price * 0.75); // 👈 اعمال ۲۵٪ تخفیف
+    }
+    
     const msg = t('msg.confirm_buy_avatar').replace('{name}', avName).replace('{price}', price);
     if (!confirm(msg)) return;
     

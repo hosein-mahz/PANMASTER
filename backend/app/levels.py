@@ -16,35 +16,46 @@ LEVEL_NAMES = [
 
 # ===== جوایز هر مرحله =====
 LEVEL_REWARDS = {
-    2:  {"type": "coins", "amount": 10,   "name": "10 سکه"},
-    3:  {"type": "coins", "amount": 30,   "name": "30 سکه"},
-    4:  {"type": "handpan_skin", "id": "wood",      "name": "اسکین چوبی"},
-    5:  {"type": "coins", "amount": 50,  "name": "50 سکه"},
-    6:  {"type": "coins", "amount": 70,  "name": "70 سکه"},
-    7:  {"type": "handpan_skin", "id": "silver",    "name": "اسکین نقره‌ای"},
-    8:  {"type": "coins", "amount": 70,  "name": "70 سکه"},
-    9:  {"type": "coins", "amount": 100,  "name": "100 سکه"},
-    10: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    11: {"type": "coins", "amount": 120,  "name": "120 سکه"},
-    12: {"type": "handpan_skin", "id": "gold",      "name": "اسکین طلایی"},
-    13: {"type": "coins", "amount": 300,  "name": "300 سکه"},
-    14: {"type": "handpan_skin", "id": "rainbow",    "name": "اسکین رنگین‌کمان"},
-    15: {"type": "handpan_skin", "id": "marble",   "name": "اسکین مرمری"},
-    16: {"type": "handpan_skin", "id": "ice_blue", "name": "اسکین کریستال آبی"},
-    17: {"type": "coins", "amount": 400,  "name": "400 سکه"},
-    18: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    19: {"type": "handpan_skin", "id": "bronze",  "name": "اسکین برنزی"},
-    20: {"type": "handpan_skin", "id": "turquoise",    "name": "اسکین فیروزه‌ای"},
-    21: {"type": "coins", "amount": 500,  "name": "۵۰۰ سکه"},
-    22: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    23: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    24: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    25: {"type": "coins", "amount": 600,  "name": "600 سکه"},
-    26: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    27: {"type": "handpan_skin", "id": "dark",   "name": "اسکین تاریکی"},
-    28: {"type": "handpan_notes", "extra": 1, "name": "هنگ‌درام +۱ نت"},
-    29: {"type": "coins", "amount": 750,  "name": "۷۵۰ سکه"},
-    30: {"type": "handpan_skin", "id": "royal", "coins": True, "amount": 1000, "extra": 2, "name": "اسکین افسانه‌ای + 1000 سکه"},
+    # --- شروع بازی ---
+    2:  {"type": "coins", "amount": 5,    "name": "۵ سکه"},
+    3:  {"type": "handpan_skin", "id": "wood", "name": "اسکین چوبی"},
+    4:  {"type": "song_discount", "name": "تخفیف ۲۵٪ ساخت آهنگ"},
+    5:  {"type": "coins", "amount": 15,   "name": "۱۵ سکه"},
+    6:  {"type": "wallet_discount", "name": "تخفیف ۲۵٪ خرید سکه"},
+    7:  {"type": "handpan_skin", "id": "silver", "name": "اسکین نقره‌ای"},
+    8:  {"type": "avatar_discount", "name": "تخفیف ۲۵٪ خرید آواتار"},
+    9:  {"type": "coins", "amount": 30,   "name": "۳۰ سکه"},
+    
+    # --- اولین الماس ---
+    10: {"type": "diamonds", "amount": 1, "name": "۱ الماس"},
+    
+    # --- میان بازی ---
+    11: {"type": "vip_discount", "name": "تخفیف ۲۵٪ خرید VIP"},
+    12: {"type": "handpan_skin", "id": "gold", "name": "اسکین طلایی"},
+    13: {"type": "song_discount", "name": "تخفیف ۲۵٪ ساخت آهنگ"},
+    14: {"type": "coins", "amount": 50,   "name": "۵۰ سکه"},
+    15: {"type": "handpan_skin", "id": "rainbow", "name": "اسکین رنگین‌کمان", "vip_only": True},
+    16: {"type": "wallet_discount", "name": "تخفیف ۲۵٪ خرید سکه"},
+    17: {"type": "coins", "amount": 60,   "name": "۶۰ سکه"},
+    18: {"type": "avatar_discount", "name": "تخفیف ۲۵٪ خرید آواتار"},
+    19: {"type": "handpan_skin", "id": "marble", "name": "اسکین مرمری", "vip_only": True},
+    
+    # --- دومین الماس ---
+    20: {"type": "diamonds", "amount": 2, "name": "۲ الماس"},
+    
+    # --- بازی پیشرفته ---
+    21: {"type": "vip_discount", "name": "تخفیف ۲۵٪ خرید VIP"},
+    22: {"type": "handpan_skin", "id": "ice_blue", "name": "اسکین کریستال آبی", "vip_only": True},
+    23: {"type": "song_discount", "name": "تخفیف ۲۵٪ ساخت آهنگ"},
+    24: {"type": "coins", "amount": 100,  "name": "۱۰۰ سکه"},
+    25: {"type": "handpan_skin", "id": "bronze", "name": "اسکین برنزی", "vip_only": True},
+    26: {"type": "wallet_discount", "name": "تخفیف ۲۵٪ خرید سکه"},
+    27: {"type": "coins", "amount": 120,  "name": "۱۲۰ سکه"},
+    28: {"type": "handpan_skin", "id": "dark", "name": "اسکین تاریکی", "vip_only": True},
+    29: {"type": "avatar_discount", "name": "تخفیف ۲۵٪ خرید آواتار"},
+    
+    # --- فینال (سومین الماس + اسکین افسانه‌ای) ---
+    30: {"type": "diamonds", "amount": 3, "name": "۳ الماس + اسکین افسانه‌ای + ۳۰۰ سکه", "extra_skin": "royal", "extra_coins": 300 }
 }
 
 # ===== توابع =====

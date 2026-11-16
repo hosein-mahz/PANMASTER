@@ -175,7 +175,7 @@
                 <div class="input-group"><label data-i18n="auth.username">نام کاربری</label><input type="text" id="regUser"></div>
                 <div class="input-group"><label data-i18n="auth.email">ایمیل</label><input type="email" id="regEmail"></div>
                 <div class="input-group"><label data-i18n="auth.password">رمز عبور</label><input type="password" id="regPass"></div>
-                <div class="input-group"><label data-i18n="auth.phone">شماره تلفن</label><input type="text" id="regPhone" required></div>
+                <div class="input-group"><label data-i18n="auth.phone">شماره تلفن</label><input type="text" id="regPhone" required pattern="09[0-9]{9}" maxlength="11" title="شماره تلفن باید ۱۱ رقم و با ۰۹ شروع شود"></div>
                 <button class="btn" onclick="register()" data-i18n="auth.register_btn">ساخت حساب</button>
                 <span class="toggle-link" onclick="toggleAuth('login')" data-i18n="auth.have_account">قبلاً ثبت‌نام کرده‌اید؟ وارد شوید</span>
             </div>
