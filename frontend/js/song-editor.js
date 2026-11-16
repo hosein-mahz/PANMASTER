@@ -203,7 +203,7 @@ async function saveSong() {
     if (!token) { alert(t('editor.error_login')); return; }
 
     try {
-        const res = await fetch('/api/users/songs', {
+        const res = await fetch(API_BASE_URL + '/api/users/songs', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -257,7 +257,7 @@ async function loadMySongsInto(containerId) {
     list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">' + t('editor.loading') + '</div>';
 
     try {
-        var res = await fetch('/api/users/songs', { headers: { 'Authorization': 'Bearer ' + token } });
+        var res = await fetch(API_BASE_URL + '/api/users/songs', { headers: { 'Authorization': 'Bearer ' + token } });
         if (!res.ok) {
             list.innerHTML = '<div style="text-align:center; color:var(--danger-color); padding:20px;">' + t('editor.error_load') + '</div>';
             return;

@@ -1,3 +1,6 @@
+// آدرس پایه API — در اپ اندروید (Capacitor) به بک‌اند اشاره می‌کند
+const API_BASE_URL = window.location.protocol === 'capacitor:' ? 'http://192.168.1.4:8000' : '';
+
 function getThemeColor(colorKey, fallback) {
     const root = getComputedStyle(document.documentElement);
     const varName = `--${colorKey.toLowerCase()}`;
@@ -351,7 +354,7 @@ async function sendResetCode() {
     btn.disabled = true;
     
     try {
-        const res = await fetch('/api/users/forgot-password', {
+        const res = await fetch(API_BASE_URL + '/api/users/forgot-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ identifier })
@@ -391,7 +394,7 @@ async function sendResetCode() {
     if (btn) { btn.innerText = 'در حال ارسال...'; btn.disabled = true; }
     
     try {
-        const res = await fetch('/api/users/forgot-password', {
+        const res = await fetch(API_BASE_URL + '/api/users/forgot-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ identifier })
@@ -444,7 +447,7 @@ async function login(){
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = '...'; }
 
     try {
-        const res = await fetch('/api/users/login', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:fd});
+        const res = await fetch(API_BASE_URL + '/api/users/login', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:fd});
         
         if(res.ok) { 
             const d = await res.json(); 
@@ -507,14 +510,14 @@ async function register(){
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = '...'; }
 
     try {
-        const res = await fetch('/api/users/register', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,email, phone,password})});
+        const res = await fetch(API_BASE_URL + '/api/users/register', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,email, phone,password})});
         
         if(res.ok) { 
             const loginFd = new URLSearchParams();
             loginFd.append('username', username);
             loginFd.append('password', password);
             
-            const loginRes = await fetch('/api/users/login', {
+            const loginRes = await fetch(API_BASE_URL + '/api/users/login', {
                 method: 'POST', 
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}, 
                 body: loginFd
@@ -558,7 +561,7 @@ function logout(){
 async function fetchUserProfile(){
     const token=localStorage.getItem('pm_token'); if(!token) return;
     try{
-        const res=await fetch('/api/users/me',{headers:{'Authorization':`Bearer ${token}`}});
+        const res=await fetch(API_BASE_URL + '/api/users/me',{headers:{'Authorization':`Bearer ${token}`}});
         if(res.ok){ currentUser=await res.json(); userTokens=currentUser.coins; updateUIFromUser(currentUser); }
         else if(res.status===401) logout();
     }catch(e){ console.error(e); }
@@ -704,7 +707,7 @@ function updateLiveSetting(key, value) {
     const payload = {};
     payload[key] = parsedValue;
     
-    fetch('/api/users/settings', {
+    fetch(API_BASE_URL + '/api/users/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(payload)
@@ -791,7 +794,7 @@ async function goToFallingGame(song = null) {
         if (userTokens < entryCost) { alert(t('misc.not_enough_coins')); return; }
         const token = localStorage.getItem('pm_token');
         try {
-            const res = await fetch('/api/users/spend-tokens', {
+            const res = await fetch(API_BASE_URL + '/api/users/spend-tokens', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ amount: entryCost })
@@ -889,7 +892,7 @@ async function goToLeaderboard() {
     }
 
     try {
-        const res = await fetch('/api/users/leaderboard');
+        const res = await fetch(API_BASE_URL + '/api/users/leaderboard');
         if (!res.ok) throw new Error('Network error');
         
         const players = await res.json();
@@ -1403,7 +1406,7 @@ async function endFallingGame(){
         const token = localStorage.getItem('pm_token');
         try {
             // 👇 ارسال پاداش همراه با max_combo و total_notes
-            const res = await fetch('/api/users/game-reward', { 
+            const res = await fetch(API_BASE_URL + '/api/users/game-reward', { 
                 method: 'POST', 
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, 
                 body: JSON.stringify({
@@ -1430,7 +1433,7 @@ async function endFallingGame(){
             }
             
             // 👇 ذخیره تاریخچه همراه با max_combo و total_notes
-            await fetch('/api/users/practice-history', { 
+            await fetch(API_BASE_URL + '/api/users/practice-history', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
                 body: JSON.stringify({ 
@@ -1502,7 +1505,7 @@ function closeRewardModal(){ document.getElementById('reward-modal').classList.r
 // ==========================================================
 async function loadCoinPackages(){
     try{
-        const res=await fetch('/api/users/coin-packages'); if(!res.ok) return;
+        const res=await fetch(API_BASE_URL + '/api/users/coin-packages'); if(!res.ok) return;
         const pkgs=await res.json(); const grid=document.getElementById('packagesGrid'); grid.innerHTML='';
         pkgs.forEach(p=>{
             const c=document.createElement('div'); c.className='pkg-card';
@@ -1514,7 +1517,7 @@ async function loadCoinPackages(){
 async function buyCoinPackage(pid){
     const token=localStorage.getItem('pm_token');
     try{
-        const res=await fetch('/api/users/buy-coins',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({package_id:pid})});
+        const res=await fetch(API_BASE_URL + '/api/users/buy-coins',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({package_id:pid})});
         if(res.ok){ const d=await res.json(); alert(`${d.coins_added} ${t('misc.coin')}`); await fetchUserProfile(); loadCoinPackages(); }
         else { const e=await res.json(); alert(e.detail||t('msg.error_generic')); }
     }catch(e){ alert(t('msg.error_server')); }
@@ -1525,7 +1528,7 @@ async function saveProfileInfo(){
     const u=document.getElementById('setUsername').value.trim(); const em=document.getElementById('setEmail').value.trim();
     const msg=document.getElementById('profileMsg'); msg.innerText='';
     try{
-        const res=await fetch('/api/users/profile',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({username:u,email:em})});
+        const res=await fetch(API_BASE_URL + '/api/users/profile',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({username:u,email:em})});
         if(res.ok){ const d=await res.json(); if(d.access_token) localStorage.setItem('pm_token',d.access_token); msg.style.color='var(--success-color)'; msg.innerText=d.access_token?t('msg.saved_token'):t('msg.saved'); await fetchUserProfile(); }
         else { const e=await res.json(); msg.style.color='var(--danger-color)'; msg.innerText=e.detail||t('msg.error_generic'); }
     }catch(e){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.error_server'); }
@@ -1536,7 +1539,7 @@ async function changePassword(){
     const msg=document.getElementById('passwordMsg'); msg.innerText='';
     if(n.length<6){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.pass_short'); return; }
     try{
-        const res=await fetch('/api/users/password',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({current_password:o,new_password:n})});
+        const res=await fetch(API_BASE_URL + '/api/users/password',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({current_password:o,new_password:n})});
         if(res.ok){ msg.style.color='var(--success-color)'; msg.innerText=t('msg.pass_changed'); document.getElementById('setOldPass').value=''; document.getElementById('setNewPass').value=''; }
         else { const e=await res.json(); msg.style.color='var(--danger-color)'; msg.innerText=e.detail||t('msg.error_generic'); }
     }catch(e){ msg.style.color='var(--danger-color)'; msg.innerText=t('msg.error_server'); }
@@ -1559,7 +1562,7 @@ async function saveSettings(){
     };
     
     try{
-        const res = await fetch('/api/users/settings', {
+        const res = await fetch(API_BASE_URL + '/api/users/settings', {
             method: 'PUT', 
             headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, 
             body: JSON.stringify(payload)
@@ -1613,7 +1616,7 @@ function setupInteraction(canvas, mode){
 async function loadPracticeHistory() {
     const token = localStorage.getItem('pm_token'); if (!token) return;
     try {
-        const res = await fetch('/api/users/practice-history?limit=10', { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(API_BASE_URL + '/api/users/practice-history?limit=10', { headers: { 'Authorization': `Bearer ${token}` } });
         if (!res.ok) return;
         const entries = await res.json(); renderHistoryList(entries);
     } catch(e) { console.error('history load error', e); }
@@ -1659,7 +1662,7 @@ async function loadCalibration() {
     const token = localStorage.getItem('pm_token');
     if (!token) return;
     try {
-        const res = await fetch('/api/users/calibration', {
+        const res = await fetch(API_BASE_URL + '/api/users/calibration', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -1846,7 +1849,7 @@ async function finishCalibration() {
     if (Object.keys(result).length === 0) { alert(t('calib.none')); calibrationState = null; backToMenu(); return; }
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/calibration', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ notes: result }) });
+        const res = await fetch(API_BASE_URL + '/api/users/calibration', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ notes: result }) });
         if (res.ok) {
             calibrationData = { notes: result, calibrated_at: new Date().toISOString() };
             window.pitchDetector.setCalibration(result);
@@ -1987,7 +1990,7 @@ async function promptBuyAvatar(avName) {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/buy-avatar', {
+        const res = await fetch(API_BASE_URL + '/api/users/buy-avatar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ avatar_id: avName, cost: price })
@@ -2020,7 +2023,7 @@ async function selectAvatar(avName) {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/settings', {
+        const res = await fetch(API_BASE_URL + '/api/users/settings', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ selected_avatar: avName })
@@ -2069,7 +2072,7 @@ async function generateRandomAvatar() {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/buy-avatar', {
+        const res = await fetch(API_BASE_URL + '/api/users/buy-avatar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ avatar_id: dicebearUrl, cost: cost })
@@ -2123,7 +2126,7 @@ async function toggleHighlight(avatarUrl) {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/toggle-highlight', {
+        const res = await fetch(API_BASE_URL + '/api/users/toggle-highlight', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ avatar_url: avatarUrl })
@@ -2145,7 +2148,7 @@ async function deleteRandomAvatar(avatarUrl) {
 
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/delete-avatar', {
+        const res = await fetch(API_BASE_URL + '/api/users/delete-avatar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ avatar_url: avatarUrl })
@@ -2177,7 +2180,7 @@ async function buyVip() {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/buy-vip', {
+        const res = await fetch(API_BASE_URL + '/api/users/buy-vip', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -2297,7 +2300,7 @@ async function selectSkin(skinId) {
     
     const token = localStorage.getItem('pm_token');
     try {
-        await fetch('/api/users/settings', {
+        await fetch(API_BASE_URL + '/api/users/settings', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ active_skin: skinId })
@@ -2312,7 +2315,7 @@ async function promptBuySkin(skinId) {
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/buy-skin', {
+        const res = await fetch(API_BASE_URL + '/api/users/buy-skin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ skin_id: skinId })
@@ -2379,7 +2382,7 @@ async function goToLevels() {
         if (listEl) listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">در حال دریافت اطلاعات...</div>';
         
         try {
-            const res = await fetch('/api/users/levels-data');
+            const res = await fetch(API_BASE_URL + '/api/users/levels-data');
             if (res.ok) levelsConfig = await res.json();
         } catch(e) {
             console.error("Failed to load levels data", e);
@@ -2518,7 +2521,7 @@ async function submitNewPassword() {
     }
 
     try {
-        const res = await fetch('/api/users/reset-password', {
+        const res = await fetch(API_BASE_URL + '/api/users/reset-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ identifier, code, new_password: newPassword })
@@ -2611,7 +2614,7 @@ async function loadCommunitySongs() {
         };
     }
     try {
-        const res = await fetch('/api/users/community-songs', { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(API_BASE_URL + '/api/users/community-songs', { headers: { 'Authorization': `Bearer ${token}` } });
         const songs = await res.json();
         
         if (!songs.length) {
@@ -2665,7 +2668,7 @@ async function loadCommunitySongs() {
 async function rateSong(songId, rating) {
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch(`/api/users/songs/${songId}/rate`, {
+        const res = await fetch(API_BASE_URL + `/api/users/songs/${songId}/rate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ rating })
@@ -2719,7 +2722,7 @@ async function buyCommunitySong(songId) {
     if (!confirm("آیا این آهنگ را با الماس می‌خرید؟")) return;
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/buy-song', {
+        const res = await fetch(API_BASE_URL + '/api/users/buy-song', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ song_id: songId })
@@ -2746,7 +2749,7 @@ if (!savedToken) {
     document.getElementById('auth-section').style.display = 'none';
     document.getElementById('game-section').style.display = 'flex';
     
-    fetch('/api/users/me', { headers: { 'Authorization': `Bearer ${savedToken}` } })
+    fetch(API_BASE_URL + '/api/users/me', { headers: { 'Authorization': `Bearer ${savedToken}` } })
         .then(res => { 
             if (res.ok) { showGame(); } else { logout(); } 
         })
@@ -2759,7 +2762,7 @@ if (!savedToken) {
 async function devToggleVip() {
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch('/api/users/dev/toggle-vip', {
+        const res = await fetch(API_BASE_URL + '/api/users/dev/toggle-vip', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });

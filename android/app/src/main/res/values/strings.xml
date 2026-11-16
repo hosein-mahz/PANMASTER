@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PanMaster</string>
+    <string name="title_activity_main">PanMaster</string>
+    <string name="package_name">com.panmaster.app</string>
+    <string name="custom_url_scheme">com.panmaster.app</string>
+</resources>

@@ -43,6 +43,23 @@ app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name
 app.mount("/js", StaticFiles(directory=os.path.join(FRONTEND_DIR, "js")), name="js")
 app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
 
+
+@app.get("/manifest.json")
+def get_manifest():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "manifest.json"),
+        media_type="application/manifest+json",
+    )
+
+
+@app.get("/sw.js")
+def get_service_worker():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "sw.js"),
+        media_type="application/javascript",
+    )
+
+
 @app.get("/")
 def read_root():
     return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
