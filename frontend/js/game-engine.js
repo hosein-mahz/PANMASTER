@@ -66,6 +66,9 @@ const I18N = {
     
         "editor.total_notes": "تعداد نت‌ها:","editor.duration": "مدت زمان:","editor.is_public": "انتشار در جامعه (عمومی)","misc.seconds": "ثانیه",
     
+        "wallet.buy_diamonds": "💎 خرید الماس","wallet.dia_small": "پول تو جیبی","wallet.dia_medium": "ارثیه خان","wallet.dia_large": "گنجینه گم شده",
+        // # Payment Gateway
+        "payment.title": "💳 درگاه پرداخت اینترنتی","payment.subtitle": "شبیه‌ساز درگاه بانکی","payment.amount_label": "مبلغ قابل پرداخت:","payment.pay_btn": "تایید و پرداخت","payment.cancel_btn": "انصراف و بازگشت","payment.connecting": "⏳ در حال اتصال به بانک...","payment.success": "✅ پرداخت موفق! در حال بازگشت...","payment.error": "خطا در پرداخت",
     },
     en: {
         // # Auth
@@ -115,6 +118,9 @@ const I18N = {
     
         "editor.total_notes": "Total Notes:","editor.duration": "Duration:","editor.is_public": "Publish to Community (Public)","misc.seconds": "sec",
     
+        "wallet.buy_diamonds": "💎 Buy Diamonds","wallet.dia_small": "Pocket Money","wallet.dia_medium": "Khan's Inheritance","wallet.dia_large": "Lost Treasure",
+        // # Payment Gateway
+        "payment.title": "💳 Online Payment Gateway","payment.subtitle": "Bank Gateway Simulator","payment.amount_label": "Amount to pay:","payment.pay_btn": "Confirm & Pay","payment.cancel_btn": "Cancel & Return","payment.connecting": "⏳ Connecting to bank...","payment.success": "✅ Payment successful! Returning...","payment.error": "Payment Error",
     }
 };
 
@@ -602,6 +608,7 @@ function updateUIFromUser(d){
     }
 
     const wb=document.getElementById('walletBalance'); if(wb) wb.innerText=d.coins;
+    const db=document.getElementById('diamondBalance'); if(db) db.innerText=d.diamonds || 0;
     const pn=document.getElementById('profileUsername'); if(pn) pn.innerText=d.username;
     const pl=document.getElementById('profileLevel'); if(pl) pl.innerText=`${t('header.level_prefix')} ${d.level} · ${getLocalizedLevelName(d.level,d.level_name)}`;
     const pf=document.getElementById('profileXpFill'); if(pf) pf.style.width=`${d.progress_percent}%`;
@@ -1505,22 +1512,103 @@ function closeRewardModal(){ document.getElementById('reward-modal').classList.r
 // ==========================================================
 async function loadCoinPackages(){
     try{
-        const res=await fetch(API_BASE_URL + '/api/users/coin-packages'); if(!res.ok) return;
-        const pkgs=await res.json(); const grid=document.getElementById('packagesGrid'); grid.innerHTML='';
-        pkgs.forEach(p=>{
-            const c=document.createElement('div'); c.className='pkg-card';
-            c.innerHTML=`<div class="pkg-name">${t('wallet.pkg_'+p.id)||p.name}</div><div class="pkg-coins"><img src="/assets/coin.svg" alt="coin">${p.coins}</div><div class="pkg-price">${p.price}</div>`;
-            c.onclick=()=>buyCoinPackage(p.id); grid.appendChild(c);
-        });
+        // ۱. لود سکه‌ها
+        const res=await fetch('/api/users/coin-packages'); 
+        if(res.ok) {
+            const pkgs=await res.json(); 
+            const grid=document.getElementById('packagesGrid'); 
+            grid.innerHTML='';
+            pkgs.forEach(p => {
+                const c=document.createElement('div'); c.className='pkg-card';
+                const priceHtml = p.original_price 
+                    ? `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.original_price}</div>
+                       <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${p.price}</div>
+                       <div class="discount-timer" data-ends="${p.discount_ends_at}" style="font-size: 11px; color: #fbbf24; margin-top: 5px;">⏳</div>`
+                    : `<div class="pkg-price">${p.price}</div>`;
+                
+                c.innerHTML=`<div class="pkg-name">${t('wallet.pkg_'+p.id)||p.name}</div><div class="pkg-coins"><img src="/assets/coin.svg" alt="coin">${p.coins}</div>${priceHtml}`;
+                c.onclick=()=>buyCoinPackage(p.id); 
+                grid.appendChild(c);
+            });
+        }
+
+        // ۲. لود الماس‌ها
+        const resDia = await fetch('/api/users/diamond-packages'); 
+        if (resDia.ok) {
+            const dPkgs = await resDia.json(); 
+            const diaGrid = document.getElementById('diamondsGrid'); 
+            if (diaGrid) {
+                diaGrid.innerHTML='';
+                dPkgs.forEach(p => {
+                    const c=document.createElement('div'); c.className='pkg-card';
+                    const priceHtml = p.original_price 
+                        ? `<div class="pkg-price" style="text-decoration: line-through; opacity: 0.5; font-size: 12px;">${p.original_price}</div>
+                           <div class="pkg-price" style="color: #ef4444; font-weight: bold;">${p.price}</div>
+                           <div class="discount-timer" data-ends="${p.discount_ends_at}" style="font-size: 11px; color: #fbbf24; margin-top: 5px;">⏳</div>`
+                        : `<div class="pkg-price">${p.price}</div>`;
+
+                    c.innerHTML=`<div class="pkg-name">${t('wallet.' + p.id) || p.name}</div><div class="pkg-coins" style="color:#a78bfa;">💎 ${p.diamonds}</div>${priceHtml}`;
+                    c.onclick=()=>buyDiamondPackage(p.id); 
+                    diaGrid.appendChild(c);
+                });
+            }
+        }
+        
+        // 👇 راه‌اندازی تایمرها بعد از لود شدن
+        startDiscountTimers();
+        
     }catch(e){ console.error(e); }
 }
+
+// 👇 تابع جدید برای شمارش معکوس تخفیف‌ها
+function startDiscountTimers() {
+    const timers = document.querySelectorAll('.discount-timer');
+    timers.forEach(el => {
+        const endsAt = new Date(el.getAttribute('data-ends')).getTime();
+        
+        const updateTimer = () => {
+            const now = Date.now();
+            const left = endsAt - now;
+            if (left <= 0) {
+                el.innerText = "پایان یافت";
+                // بعد از پایان تایمر، لیست رو رفرش کن تا قیمت‌ها به حالت عادی برگردن
+                loadCoinPackages();
+                return;
+            }
+            
+            const hours = Math.floor(left / (1000 * 60 * 60));
+            const minutes = Math.floor((left % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((left % (1000 * 60)) / 1000);
+            
+            el.innerText = `⏳ ${hours}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        };
+        
+        updateTimer();
+        setInterval(updateTimer, 1000); // هر ثانیه آپدیت میشه
+    });
+}
+
 async function buyCoinPackage(pid){
-    const token=localStorage.getItem('pm_token');
-    try{
-        const res=await fetch(API_BASE_URL + '/api/users/buy-coins',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({package_id:pid})});
-        if(res.ok){ const d=await res.json(); alert(`${d.coins_added} ${t('misc.coin')}`); await fetchUserProfile(); loadCoinPackages(); }
-        else { const e=await res.json(); alert(e.detail||t('msg.error_generic')); }
-    }catch(e){ alert(t('msg.error_server')); }
+    // پیدا کردن قیمت پکیج برای نمایش در درگاه
+    const res = await fetch(API_BASE_URL + '/api/users/coin-packages');
+    if (res.ok) {
+        const pkgs = await res.json();
+        const pkg = pkgs.find(p => p.id === pid);
+        if (pkg) {
+            openMockPayment('coins', pid, pkg.price); // 👈 باز کردن درگاه
+        }
+    }
+}
+
+async function buyDiamondPackage(pid){
+    const res = await fetch(API_BASE_URL + '/api/users/diamond-packages');
+    if (res.ok) {
+        const dPkgs = await res.json();
+        const pkg = dPkgs.find(p => p.id === pid);
+        if (pkg) {
+            openMockPayment('diamonds', pid, pkg.price); // 👈 باز کردن درگاه
+        }
+    }
 }
 
 async function saveProfileInfo(){
@@ -2514,44 +2602,57 @@ async function submitNewPassword() {
     const newPassword = document.getElementById('newPassword').value;
     const msgEl = document.getElementById('forgotMsg');
 
-    if (!code || !newPassword) {
+    if (!code || code.length < 6) {
         msgEl.style.color = 'var(--danger-color)';
-        msgEl.innerText = t('auth.error.empty');
+        msgEl.innerText = "لطفاً کد ۶ رقمی را به درستی وارد کنید.";
         return;
     }
+    if (!newPassword || newPassword.length < 6) {
+        msgEl.style.color = 'var(--danger-color)';
+        msgEl.innerText = "رمز عبور جدید باید حداقل ۶ کاراکتر باشد.";
+        return;
+    }
+
+    const submitBtn = document.querySelector('#reset-step-2 button');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'در حال تغییر...'; }
 
     try {
         const res = await fetch(API_BASE_URL + '/api/users/reset-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, code, new_password: newPassword })
+            body: JSON.stringify({
+                identifier: identifier,
+                code: code,
+                new_password: newPassword
+            })
         });
-        
+
         if (res.ok) {
+            const data = await res.json();
             msgEl.style.color = 'var(--success-color)';
-            msgEl.innerText = t('auth.reset_success');
+            msgEl.innerText = t('auth.reset_success'); 
             
-            // بعد از ۲ ثانیه، کاربر رو برگردون به صفحه لاگین و فرم‌ها رو ریست کن
+            // بعد از ۲ ثانیه، کاربر رو برگردون به صفحه لاگین
             setTimeout(() => {
                 toggleAuth('login');
+                document.getElementById('loginUser').value = identifier; // اسم کاربری رو خودکار پر کن
+                document.getElementById('loginPass').value = '';
+                // ریست کردن فرم فراموشی برای بار بعد
                 document.getElementById('reset-step-2').style.display = 'none';
                 document.getElementById('forgotIdentifier').disabled = false;
-                document.getElementById('forgotIdentifier').value = '';
                 document.getElementById('btn-send-code').style.display = 'block';
-                document.getElementById('btn-send-code').innerText = t('auth.send_code_btn');
-                document.getElementById('btn-send-code').disabled = false;
-                document.getElementById('resetCode').value = '';
-                document.getElementById('newPassword').value = '';
-                msgEl.innerText = '';
-            }, 2500);
+                document.getElementById('forgotMsg').innerText = '';
+            }, 2000);
         } else {
             const err = await res.json();
             msgEl.style.color = 'var(--danger-color)';
-            msgEl.innerText = err.detail || t('msg.error_server');
+            msgEl.innerText = err.detail || t('msg.error_generic');
         }
-    } catch(e) {
+    } catch (e) {
         msgEl.style.color = 'var(--danger-color)';
         msgEl.innerText = t('msg.error_server');
+    } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = t('auth.submit_new_password'); }
     }
 }
 
@@ -2736,6 +2837,64 @@ async function buyCommunitySong(songId) {
             alert(err.detail);
         }
     } catch(e) { alert("خطا در ارتباط با سرور"); }
+}
+
+// ===== درگاه پرداخت شبیه‌سازی‌شده =====
+let pendingPurchase = null;
+
+function openMockPayment(type, packageId, price) {
+    pendingPurchase = { type, packageId };
+    document.getElementById('mock-payment-amount').innerText = price;
+    document.getElementById('mock-payment-modal').classList.add('show');
+    
+    const payBtn = document.getElementById('mock-pay-btn');
+    payBtn.disabled = false;
+    payBtn.innerText = t('payment.pay_btn'); // 👈 استفاده از ترجمه
+}
+
+function closeMockPayment() {
+    document.getElementById('mock-payment-modal').classList.remove('show');
+    pendingPurchase = null;
+}
+
+async function processMockPayment() {
+    if (!pendingPurchase) return;
+    
+    const payBtn = document.getElementById('mock-pay-btn');
+    payBtn.disabled = true;
+    payBtn.innerText = t('payment.connecting'); // 👈 استفاده از ترجمه
+    
+    // شبیه‌سازی تاخیر بانک (۲ ثانیه)
+    setTimeout(async () => {
+        payBtn.innerText = t('payment.success'); // 👈 استفاده از ترجمه
+        
+        const token = localStorage.getItem('pm_token');
+        const endpoint = pendingPurchase.type === 'coins' ? '/api/users/buy-coins' : '/api/users/buy-diamonds';
+        
+        try {
+            const res = await fetch(API_BASE_URL + endpoint, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                body: JSON.stringify({ package_id: pendingPurchase.packageId })
+            });
+            
+            if (res.ok) {
+                const d = await res.json();
+                setTimeout(async () => {
+                    closeMockPayment();
+                    alert(d.message); // پیام موفقیت از بک‌اند (چون بک‌اند فارسیه، الان فارسی میاد)
+                    await fetchUserProfile();
+                    loadCoinPackages();
+                }, 500);
+            } else {
+                alert(t('payment.error')); // 👈 استفاده از ترجمه
+                closeMockPayment();
+            }
+        } catch (e) {
+            alert(t('msg.error_server')); // 👈 استفاده از ترجمه
+            closeMockPayment();
+        }
+    }, 2000);
 }
 
 // شروع برنامه و بررسی توکن

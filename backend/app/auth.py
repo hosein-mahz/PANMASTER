@@ -13,6 +13,8 @@ from slowapi.util import get_remote_address
 import os
 from dotenv import load_dotenv
 
+import requests
+
 from . import models, schemas, database
 from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
 from .levels import LEVEL_NAMES, XP_THRESHOLDS, LEVEL_REWARDS
@@ -34,13 +36,41 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
+# 👇 تابع کمکی برای تشخیص کشور
+def get_currency_by_ip(request: Request):
+    client_ip = request.client.host
+    # اگر IP لوکال بود (برای تست)، تومان در نظر بگیر
+    if client_ip.startswith(("127.", "192.168.", "10.", "172.")):
+        return "toman"
+    try:
+        # گرفتن اطلاعات IP از سرویس رایگان
+        res = requests.get(f"http://ip-api.com/json/{client_ip}", timeout=2)
+        data = res.json()
+        if data.get("countryCode") == "IR":
+            return "toman"
+    except:
+        pass # در صورت خطا، پیش‌فرض دلار
+    return "usd"
 
 # ===== بسته‌های سکه (mock) =====
 COIN_PACKAGES = {
-    "starter":  {"coins": 100,  "price": "$0.99",  "name": "بسته شروع"},
-    "standard": {"coins": 500,  "price": "$4.99",  "name": "بسته استاندارد"},
-    "premium":  {"coins": 1200, "price": "$9.99",  "name": "بسته پریمیوم"},
-    "ultimate": {"coins": 3000, "price": "$19.99", "name": "بسته نهایی"},
+    "starter":  {"coins": 100,  "price": {"toman": "30,000 تومان", "usd": "$0.99"},  "name": "بسته شروع"},
+    "standard": {"coins": 300,  "price": {"toman": "90,000 تومان", "usd": "$3.99"},  "name": "بسته استاندارد"},
+    "premium":  {"coins": 600, "price": {"toman": "180,000 تومان", "usd": "$6.99"},  "name": "بسته پریمیوم"},
+    "ultimate": {"coins": 1000, "price": {"toman":"360,000 تومان", "usd": "$9.99"}, "name": "بسته نهایی"},
+}
+
+DIAMOND_PACKAGES = {
+    "dia_small":  {"diamonds": 1,   "price":{"toman": "49,000 تومان", "usd": "$1.99"},  "name": "wallet.dia_pocket"},
+    "dia_medium": {"diamonds": 10,  "price": {"toman": "490,000 تومان", "usd": "$5.99"}, "name": "wallet.dia_inheritance"},
+    "dia_large":  {"diamonds": 30,  "price": {"toman": "1,470,000 تومان", "usd": "$12.99"}, "name": "wallet.dia_treasure"},
+}
+
+# ===== ماژول تخفیف =====
+ACTIVE_DISCOUNTS = {
+    # شناسه پکیج: {درصد تخفیف، زمان انقضا}
+    "starter": {"percent": 15, "ends_at": datetime.utcnow() + timedelta(hours=2)},      # ۲۰٪ تخفیف برای ۲ ساعت
+    "dia_medium": {"percent": 20, "ends_at": datetime.utcnow() + timedelta(days=1)},   # ۵۰٪ تخفیف برای ۱ روز
 }
 
 # ===== قیمت‌گذاری آواتارها و اسکین‌ها =====
@@ -109,6 +139,7 @@ def _build_user_out(user: models.User) -> dict:
         "id": user.id,
         "username": user.username,
         "email": user.email,
+        "diamonds": user.diamonds or 0,
         "coins": user.coins or 0,
         "xp": user.xp or 0,
         "level": level,
@@ -320,11 +351,55 @@ def update_settings(
 # ===== Buy Coins (mock) =====
 @router.get("/coin-packages")
 def get_coin_packages():
-    return [
-        {"id": pid, **info}
-        for pid, info in COIN_PACKAGES.items()
-    ]
+    result = []
+    now = datetime.utcnow()
+    for pid, info in COIN_PACKAGES.items():
+        pkg_data = {"id": pid, **info}
+        
+        # قیمت تومانی به صورت متن
+        price_str = info["price"]["toman"]
+        pkg_data["price"] = price_str 
+        
+        if pid in ACTIVE_DISCOUNTS:
+            discount = ACTIVE_DISCOUNTS[pid]
+            if now < discount["ends_at"]:
+                # 👇 محاسبه قیمت جدید با تخفیف
+                orig_num = int(price_str.replace("تومان", "").replace(",", "").strip())
+                new_num = int(orig_num * (1 - discount["percent"] / 100))
+                new_price_str = f"{new_num:,} تومان"
+                
+                pkg_data["original_price"] = price_str
+                pkg_data["price"] = new_price_str # 👈 قیمت واقعیِ تخفیف‌خورده
+                pkg_data["discount_percent"] = discount["percent"]
+                pkg_data["discount_ends_at"] = discount["ends_at"].isoformat() + "Z"
+        
+        result.append(pkg_data)
+    return result
 
+@router.get("/diamond-packages")
+def get_diamond_packages():
+    result = []
+    now = datetime.utcnow()
+    for pid, info in DIAMOND_PACKAGES.items():
+        pkg_data = {"id": pid, **info}
+        
+        price_str = info["price"]["toman"]
+        pkg_data["price"] = price_str 
+        
+        if pid in ACTIVE_DISCOUNTS:
+            discount = ACTIVE_DISCOUNTS[pid]
+            if now < discount["ends_at"]:
+                orig_num = int(price_str.replace("تومان", "").replace(",", "").strip())
+                new_num = int(orig_num * (1 - discount["percent"] / 100))
+                new_price_str = f"{new_num:,} تومان"
+                
+                pkg_data["original_price"] = price_str
+                pkg_data["price"] = new_price_str
+                pkg_data["discount_percent"] = discount["percent"]
+                pkg_data["discount_ends_at"] = discount["ends_at"].isoformat() + "Z"
+
+        result.append(pkg_data)
+    return result
 
 @router.post("/buy-coins", response_model=schemas.BuyCoinsResponse)
 def buy_coins(
@@ -354,6 +429,33 @@ def buy_coins(
         new_balance=current_user.coins,
     )
 
+@router.post("/buy-diamonds", response_model=schemas.BuyCoinsResponse)
+def buy_diamonds(
+    data: schemas.BuyCoinsRequest,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    pkg = DIAMOND_PACKAGES.get(data.package_id)
+    if not pkg:
+        raise HTTPException(status_code=404, detail="بسته الماس پیدا نشد")
+
+    # ⚠️ اینجا باید درگاه پرداخت وصل شود — فعلاً mock
+    current_user.diamonds = (current_user.diamonds or 0) + pkg["diamonds"]
+
+    purchase = models.Purchase(
+        user_id=current_user.id,
+        item_type="diamonds",
+        amount_paid=pkg["diamonds"],
+        gateway_ref=f"MOCK-DIA-{uuid.uuid4().hex[:12]}",
+    )
+    db.add(purchase)
+    db.commit(); db.refresh(current_user)
+
+    return schemas.BuyCoinsResponse(
+        message=f"{pkg['diamonds']} الماس به حساب شما اضافه شد",
+        coins_added=pkg["diamonds"],
+        new_balance=current_user.coins,
+    )
 
 # ===== Game Reward =====
 @router.post("/game-reward", response_model=schemas.GameRewardResponse)
@@ -397,6 +499,17 @@ def game_reward(
             else:
                 earned = -5
                 xp_gained = 0
+
+                # 👇 بررسی آهنگ‌های جامعه
+    if reward.mode == "community":
+        if acc >= 25: # (مثلا اگر دقت بالای ۲۵ باشه، پاداش پایه بگیره)
+            earned = 25
+            if reward.max_combo >= 5: earned += 5 # با کمبو ۳۰ سکه
+            xp_gained = 20
+        else:
+            earned = 0
+            xp_gained = 0
+    # ... بقیه حالت‌ها (song, falling, tutorial)
 
     # 👇 ۲. پاداش کمبو (فقط یک بار!)
     if reward.max_combo >= 5:

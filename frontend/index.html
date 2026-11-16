@@ -222,8 +222,10 @@
             <h1 style="color: var(--primary); font-size: 18px; white-space: nowrap; margin: 0;">PanMaster</h1>
             
             <div class="user-info" style="display: flex; align-items: center; gap: 12px; flex-wrap: nowrap;">
+                <!-- آواتار -->
                 <div id="headerAvatar"></div>
                 
+                <!-- اطلاعات سطح (نام، لول، نوار XP) -->
                 <div class="user-level-block" onclick="goToLevels()" style="display: flex; flex-direction: column; justify-content: center; cursor: pointer; min-width: 130px;" title="مشاهده مراحل و جوایز">
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
                         <span id="usernameDisplay" style="font-weight: bold; font-size: 14px; white-space: nowrap; color: var(--text-main);">User</span>
@@ -236,17 +238,26 @@
                         </div>
                         <span id="xpText" style="font-size: 10px; color: var(--text-muted); white-space: nowrap; direction: ltr;">0 / 20</span>
                     </div>
-
-                    <div class="token-badge" style="border-color: #38bdf8; color: #38bdf8;">
+                </div>
+                
+                <!-- 👇 گروه سکه و الماس (روی هم) 👇 -->
+                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center;">
+                    
+                    <!-- کادر سکه (همون استایل قبلی) -->
+                    <div class="token-badge" style="white-space: nowrap; padding: 2px 8px; font-size: 13px; min-width: 65px; justify-content: center;">
+                        <img src="/assets/coin.svg" alt="coin" style="width: 18px; height: 18px;">
+                        <span id="tokenDisplay">0</span>
+                    </div>
+                    
+                    <!-- کادر الماس (دقیقاً مشابه سکه اما با رنگ آبی) -->
+                    <div class="token-badge" style="white-space: nowrap; border-color: #38bdf8; color: #38bdf8; padding: 2px 8px; font-size: 13px; min-width: 65px; justify-content: center;">
                         <img src="/assets/diamond.png" alt="diamond" style="width: 18px; height: 18px;">
                         <span id="diamondDisplay">0</span>
                     </div>
+                    
                 </div>
-                
-                <div class="token-badge" style="white-space: nowrap; margin-left: 5px;">
-                    <img src="/assets/coin.svg" alt="coin" style="width: 18px; height: 18px;">
-                    <span id="tokenDisplay">0</span>
-                </div>
+                <!-- 👆 پایان گروه سکه و الماس 👆 -->
+
             </div>
         </div>
         <!-- 👆 پایان هدر -->
@@ -422,6 +433,7 @@
             <div class="card-section">
                 <h2 data-i18n="wallet.title">💰 موجودی کیف پول</h2>
                 <div class="wallet-balance"><img src="/assets/coin.svg" alt="coin"><span id="walletBalance">0</span></div>
+                <div class="wallet-balance" style="margin-top: 5px; gap: 8px;"><img src="/assets/diamond.png" alt="diamond" style="width: 42px; height: 42px;"><span id="diamondBalance" style="font-size: 38px; font-weight: 900; color: #a78bfa;">0</span></div>
             </div>
             <div class="card-section" style="margin-top: 15px;">
                 <h2 data-i18n="wallet.vip_title">👑 اشتراک VIP</h2>
@@ -431,9 +443,15 @@
                 <button class="btn-sm" onclick="devToggleVip()" style="background: #ef4444; margin-top: 10px; width: 100%; font-size: 12px;" data-i18n="settings.dev_vip">🛠️ خاموش / روشن کردن VIP (تست)</button>
                 <!-- 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑 -->
             </div>
+                <!-- 👇 بخش خرید سکه-->
             <div class="card-section">
                 <h2 data-i18n="wallet.buy">🛒 خرید سکه</h2>
                 <div class="packages-grid" id="packagesGrid"></div>
+            </div>
+                        <!-- 👇 بخش خرید الماس -->
+            <div class="card-section">
+                <h2 style="color: #a78bfa;" data-i18n="wallet.buy_diamonds">💎 خرید الماس</h2>
+                <div class="packages-grid" id="diamondsGrid"></div>
             </div>
         </div>
 
@@ -714,6 +732,22 @@
                 <img id="skin-preview-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <button class="btn" onclick="document.getElementById('skin-preview-modal').classList.remove('show')" style="margin-top:10px;">بستن</button>
+        </div>
+    </div>
+
+    <!-- مودال درگاه پرداخت شبیه‌سازی‌شده -->
+    <div id="mock-payment-modal" class="reward-modal" style="background: rgba(15, 23, 42, 0.9); z-index: 10000;">
+        <div class="reward-content" style="border-color: #38bdf8; max-width: 400px; text-align: center;">
+            <div style="background: #fff; padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="color: #0f172a; margin: 0; font-family: sans-serif;" data-i18n="payment.title">💳 درگاه پرداخت اینترنتی</h3>
+                <p style="color: #64748b; font-size: 12px; margin: 5px 0 0 0;" data-i18n="payment.subtitle">شبیه‌ساز درگاه بانکی</p>
+            </div>
+            
+            <p style="color: var(--text-main); font-size: 15px; margin-bottom: 10px;" data-i18n="payment.amount_label">مبلغ قابل پرداخت:</p>
+            <div id="mock-payment-amount" style="font-size: 28px; font-weight: 900; color: #fbbf24; margin-bottom: 20px;">0 تومان</div>
+            
+            <button class="btn" id="mock-pay-btn" onclick="processMockPayment()" style="background: #10b981; color: #fff; font-size: 16px;" data-i18n="payment.pay_btn">تایید و پرداخت</button>
+            <button class="btn btn-ghost" onclick="closeMockPayment()" style="margin-top: 10px;" data-i18n="payment.cancel_btn">انصراف و بازگشت</button>
         </div>
     </div>
 
