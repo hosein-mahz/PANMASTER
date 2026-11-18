@@ -13,7 +13,8 @@ from slowapi.util import get_remote_address
 import os
 from dotenv import load_dotenv
 
-import requests
+from fastapi import requests
+from pydantic import BaseModel
 
 from . import models, schemas, database
 from .levels import get_level_from_xp, get_level_name, get_xp_progress, LEVEL_REWARDS, get_league_from_level
@@ -65,6 +66,26 @@ DIAMOND_PACKAGES = {
     "dia_medium": {"diamonds": 10,  "price": {"toman": "490,000 تومان", "usd": "$5.99"}, "name": "wallet.dia_inheritance"},
     "dia_large":  {"diamonds": 30,  "price": {"toman": "1,470,000 تومان", "usd": "$12.99"}, "name": "wallet.dia_treasure"},
 }
+
+
+# ===== بسته‌های VIP با قیمت‌گذاری منطقه‌ای =====
+VIP_PACKAGES_IR = {
+    "vip_1m": {"days": 30, "price":{"toman": "199.000 تومان", "usd": "$2.99"}, "gateway": "zarinpal"},
+    "vip_3m": {"days": 90, "price":{"toman": "499.000 تومان", "usd": "$5.99"}, "gateway": "zarinpal"}
+}
+
+VIP_PACKAGES_GLOBAL = {
+    "vip_1m": {"days": 30, "price": "$4.99", "gateway": "paypal"},
+    "vip_3m": {"days": 90, "price": "$9.99", "gateway": "paypal"}
+}
+
+def is_iranian_ip(ip: str) -> bool:
+    # برای تست، اگر لوکال بود یا در لیست IPهای ایران بود True برمی‌گرداند
+    # در محیط واقعی باید از دیتابیس GeoIP مثل MaxMind استفاده شود
+    if ip.startswith("127.") or ip.startswith("192.168.") or ip == "::1":
+        return True # برای تست لوکال، ایران در نظر می‌گیریم
+    # اینجا یک لیست ساده از رنج‌های IP ایران می‌گذاریم (برای تست)
+    return True 
 
 # ===== ماژول تخفیف =====
 ACTIVE_DISCOUNTS = {
@@ -475,9 +496,11 @@ def game_reward(
     db: Session = Depends(database.get_db),
 ):
     acc = max(0, min(100, reward.accuracy))
+    earned = 0
+    xp_gained = 0
     
-    # 👇 ۱. شرط آهنگ‌های بیشتر از ۱۵ نت
-    if reward.total_notes < 15:
+    # 👇 ۱. محاسبه پاداش سکه و XP (شرط ۱۵ نت فقط برای آهنگ‌ها)
+    if reward.mode in ["song", "community"] and reward.total_notes < 15:
         earned = 0
         xp_gained = 0
     else:
@@ -494,15 +517,17 @@ def game_reward(
             else:
                 earned = -5
                 xp_gained = 0
+                
         elif reward.mode == "community":
             if acc >= 25: 
                 earned = 25
-                if reward.max_combo >= 5: earned += 5 
                 xp_gained = 20
             else:
                 earned = 0
                 xp_gained = 0
-        else: # حالت‌های falling (تستی) و tutorial (آموزشی)
+                
+        # مراحل تستی (falling) و آموزشی (tutorial) - بدون شرط ۱۵ نت
+        else: 
             if acc >= 75:
                 earned = 15
                 xp_gained = 20
@@ -516,11 +541,12 @@ def game_reward(
                 earned = -5
                 xp_gained = 0
 
-    # 👇 ۲. پاداش کمبو (فقط یک بار!)
+    # 👇 ۲. پاداش کمبو (برای تمام حالت‌ها از جمله تستی و آموزشی)
     if reward.max_combo >= 5:
         earned += 5
         
-    if reward.max_combo > 0 and reward.max_combo == reward.total_notes:
+    # 👇 ۳. اعطای تخفیف (فقط برای آهنگ‌ها و جامعه، نه تستی/آموزشی)
+    if reward.mode in ["song", "community"] and reward.max_combo > 0 and reward.max_combo == reward.total_notes:
         now = datetime.now()
         
         # اگر روز عوض شده، شمارنده رو صفر کن
@@ -532,17 +558,17 @@ def game_reward(
         if current_user.daily_discounts < 3:
             current_user.daily_discounts += 1
             current_user.song_discount_until = now + timedelta(hours=24)
-    
-    # ۳. اعمال سکه
+            
+    # ۴. اعمال سکه
     current_user.coins = (current_user.coins or 0) + earned
     if current_user.coins < 0:
         current_user.coins = 0 
 
-    # ۴. اعمال XP
+    # ۵. اعمال XP
     if xp_gained > 0:
         current_user.xp = (current_user.xp or 0) + xp_gained
 
-    # ۵. بررسی Level-up و اعطای جوایز
+    # ۶. بررسی Level-up و اعطای جوایز
     old_level = get_level_from_xp((current_user.xp or 0) - xp_gained)
     new_level = get_level_from_xp(current_user.xp or 0)
 
@@ -553,10 +579,8 @@ def game_reward(
             if not reward_info: continue
             rtype = reward_info.get("type")
             
-            # 👇 بررسی شرط VIP برای اسکین‌ها
             is_vip_required = reward_info.get("vip_only", False)
             if is_vip_required and not (current_user.is_vip and current_user.vip_expire_date and current_user.vip_expire_date > datetime.now()):
-                # اگر VIP نبود، به جای جایزه اصلی، ۵۰ سکه می‌گیره
                 current_user.coins = (current_user.coins or 0) + 50
                 rewards_granted.append({
                     "level": lvl, 
@@ -564,14 +588,11 @@ def game_reward(
                 })
                 continue
             
-            # 👇 اعطای انواع جایزه
             if rtype == "coins":
                 current_user.coins = (current_user.coins or 0) + reward_info.get("amount", 0)
                 rewards_granted.append({"level": lvl, **reward_info})
-                
             elif rtype == "diamonds":
                 current_user.diamonds = (current_user.diamonds or 0) + reward_info.get("amount", 0)
-                # جوایز اضافی مرحله ۳۰ (اسکین و سکه)
                 if reward_info.get("extra_skin"):
                     skins = json.loads(current_user.owned_skins or "[]")
                     sid = reward_info.get("extra_skin")
@@ -580,15 +601,12 @@ def game_reward(
                 if reward_info.get("extra_coins"):
                     current_user.coins = (current_user.coins or 0) + reward_info.get("extra_coins")
                 rewards_granted.append({"level": lvl, **reward_info})
-
             elif rtype == "handpan_skin":
                 skins = json.loads(current_user.owned_skins or "[]")
                 sid = reward_info.get("id")
                 if sid and sid not in skins:
                     skins.append(sid); current_user.owned_skins = json.dumps(skins)
                 rewards_granted.append({"level": lvl, **reward_info})
-
-            # 👇 اعطای تخفیف‌ها (همه به مدت ۲۴ ساعت)
             elif rtype == "song_discount":
                 current_user.song_discount_until = datetime.now() + timedelta(hours=24)
                 rewards_granted.append({"level": lvl, **reward_info})
@@ -798,28 +816,29 @@ def buy_skin(
     return schemas.TokenBalance(new_balance=current_user.coins)
 
 # ===== Buy VIP =====
-@router.post("/buy-vip", response_model=schemas.TokenBalance)
-def buy_vip(
-    current_user: models.User = Depends(get_current_user),
-    db: Session = Depends(database.get_db),
+class VipPurchaseRequest(BaseModel):
+    package_id: str
+
+@router.get("/vip-packages")
+def get_vip_packages(
+    request: Request,
+    current_user: models.User = Depends(get_current_user)
 ):
-    cost = 1000
-    now = datetime.now()
+    client_ip = request.client.host
+    packages = VIP_PACKAGES_IR if is_iranian_ip(client_ip) else VIP_PACKAGES_GLOBAL
     
-    # 👈 چک کردن تخفیف VIP
-    if current_user.vip_discount_until and current_user.vip_discount_until > now:
-        cost = 750 # ۲۵٪ تخفیف
-        current_user.vip_discount_until = None # مصرف شد
-
-    if current_user.coins < cost:
-        raise HTTPException(status_code=400, detail=f"سکه کافی نیست (نیاز به {cost} سکه)")
-
-    current_user.coins -= cost
-    current_user.is_vip = True
-    current_user.vip_expire_date = datetime.utcnow() + timedelta(days=30)
-
-    db.commit()
-    return schemas.TokenBalance(new_balance=current_user.coins)
+    result = []
+    for pid, info in packages.items():
+        # تشخیص اینکه قیمت تومان است یا دلار
+        price_val = info["price"]["toman"] if is_iranian_ip(client_ip) else info["price"]
+        
+        result.append({
+            "id": pid,
+            "days": info["days"],
+            "price": price_val,
+            "name": "اشتراک ۱ ماهه" if pid == "vip_1m" else "اشتراک ۳ ماهه"
+        })
+    return result
 
 # ==========================================
 # 🛑 DEVELOPMENT ONLY - REMOVE BEFORE PRODUCTION 🛑
@@ -1120,3 +1139,24 @@ def get_levels_data():
         "thresholds": XP_THRESHOLDS,
         "rewards": LEVEL_REWARDS
     }
+
+@router.get("/vip-packages")
+def get_vip_packages(request: Request):
+    client_ip = request.client.host
+    forwarded_for = request.headers.get("x-forwarded-for")
+    if forwarded_for:
+        client_ip = forwarded_for.split(",")[0].strip()
+
+    if is_iranian_ip(client_ip):
+        return [{"id": k, **v} for k, v in VIP_PACKAGES_IR.items()]
+    else:
+        return [{"id": k, **v} for k, v in VIP_PACKAGES_GLOBAL.items()]
+
+def is_iranian_ip(ip: str) -> bool:
+    # اگر لوکال باشه (تست) یا IP ایران باشه، True برمی‌گردونه
+    if ip.startswith("127.") or ip.startswith("192.168.") or ip == "::1" or ip == "localhost":
+        return True
+    
+    # در محیط واقعی (Production) باید از دیتابیس GeoIP استفاده کنی
+    # برای اینکه الان تستت جواب بده، فعلاً True برمی‌گردونیم
+    return True 

@@ -216,3 +216,6 @@ class SongRatingCreate(BaseModel):
 
 class BuySongRequest(BaseModel):
     song_id: int
+
+class VipPurchaseRequest(BaseModel):
+    package_id: str

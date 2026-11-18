@@ -179,7 +179,7 @@ async function saveSong() {
     if (!title) { alert(t('editor.error_no_title')); return; }
     if (songSteps.length === 0) { alert(t('editor.error_no_steps')); return; }
 
-    // 👇 محاسبه آمار برای چک کردن شرایط عمومی
+    // محاسبه آمار
     let totalNotes = 0;
     let totalTime = 0;
     songSteps.forEach(step => {
@@ -187,7 +187,7 @@ async function saveSong() {
         totalTime += (step.gap || 1.0);
     });
 
-    // 👇 اعتبارسنجی قانون‌های عمومی (فقط اگر کاربر تیک عمومی رو زده باشه)
+    // اعتبارسنجی قانون‌های عمومی
     if (isPublic) {
         if (totalNotes < 15) {
             alert(CURRENT_LANG === 'fa' ? "آهنگ عمومی باید حداقل ۱۵ نت داشته باشد." : "Public song must have at least 15 notes.");
@@ -213,14 +213,27 @@ async function saveSong() {
                 title: title,
                 artist: artist || null,
                 difficulty: difficulty,
-                notes_data: songSteps.map(s => ({ notes: s.notes, gap: s.gap || 1.0 })), // 👈 گپ رو هم می‌فرستیم
-                is_public: isPublic, // 👈 وضعیت عمومی بودن
+                notes_data: songSteps.map(s => ({ notes: s.notes, gap: s.gap || 1.0 })),
+                is_public: isPublic,
                 fall_speed: fallSpeed
             })
         });
 
         if (res.ok) {
             alert(t('editor.song_saved'));
+
+            // 👇 اصلاح اصلی: مصرف تخفیف در سمت کاربر 👇
+            if (typeof currentUser !== 'undefined' && currentUser) {
+                currentUser.song_discount_until = null;
+            }
+            
+            // 👇 برگرداندن متن قیمت آهنگساز به حالت عادی (۱۵۰ سکه) 👇
+            const costText = document.getElementById('editor-cost-text');
+            if (costText) {
+                costText.innerHTML = '💰 هزینه ساخت آهنگ: ۱۵۰ سکه';
+            }
+            // 👆 پایان اصلاح 👆
+
             if (typeof fetchUserProfile === 'function') await fetchUserProfile();            
             songSteps = [];
             currentStepNotes = [];
@@ -228,10 +241,11 @@ async function saveSong() {
             renderStepsList();
             document.getElementById('song-title').value = '';
             document.getElementById('song-artist').value = '';
-            document.getElementById('song-is-public').checked = true; // برگردوندن به حالت پیش‌فرض
-            updateSongStats(); // صفر کردن آمار
+            document.getElementById('song-is-public').checked = true;
+            updateSongStats();
             loadMySongs();
-        } else {
+        } 
+        else {
             const err = await res.json();
             alert(t('editor.error_save').replace('{msg}', err.detail || t('editor.error_save_default')));
         }

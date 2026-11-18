@@ -37,3 +37,26 @@ body { background-color: var(--bg-main); background-image: var(--app-bg, none) !
 /* ===== سازگاری LTR ===== */
 [dir="ltr"] .input-group, [dir="ltr"] .settings-block { text-align: left; }
 [dir="ltr"] .error { text-align: left; }
+
+/* جلوگیری از اسکرول افقی و زوم‌اوت */
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+/* اصلاح عرض منوها برای گوشی */
+.menu-grid {
+    width: 95% !important;
+    max-width: 420px;
+    gap: 10px !important;
+}
+.menu-btn {
+    width: 95% !important;
+    max-width: 400px;
+}
+/* اصلاح هدر برای اینکه در گوشی باریک نشود */
+.header {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px !important;
+}

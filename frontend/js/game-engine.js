@@ -69,6 +69,8 @@ const I18N = {
         "wallet.buy_diamonds": "💎 خرید الماس","wallet.dia_small": "پول تو جیبی","wallet.dia_medium": "ارثیه خان","wallet.dia_large": "گنجینه گم شده",
         // # Payment Gateway
         "payment.title": "💳 درگاه پرداخت اینترنتی","payment.subtitle": "شبیه‌ساز درگاه بانکی","payment.amount_label": "مبلغ قابل پرداخت:","payment.pay_btn": "تایید و پرداخت","payment.cancel_btn": "انصراف و بازگشت","payment.connecting": "⏳ در حال اتصال به بانک...","payment.success": "✅ پرداخت موفق! در حال بازگشت...","payment.error": "خطا در پرداخت",
+    
+        "wallet.vip_1m": "اشتراک ۱ ماهه","wallet.vip_3m": "اشتراک ۳ ماهه",
     },
     en: {
         // # Auth
@@ -121,6 +123,8 @@ const I18N = {
         "wallet.buy_diamonds": "💎 Buy Diamonds","wallet.dia_small": "Pocket Money","wallet.dia_medium": "Khan's Inheritance","wallet.dia_large": "Lost Treasure",
         // # Payment Gateway
         "payment.title": "💳 Online Payment Gateway","payment.subtitle": "Bank Gateway Simulator","payment.amount_label": "Amount to pay:","payment.pay_btn": "Confirm & Pay","payment.cancel_btn": "Cancel & Return","payment.connecting": "⏳ Connecting to bank...","payment.success": "✅ Payment successful! Returning...","payment.error": "Payment Error",
+    
+        "wallet.vip_1m": "1 Month VIP","wallet.vip_3m": "3 Months VIP",
     }
 };
 
@@ -861,7 +865,8 @@ async function goToFallingGame(song = null) {
 async function goToWallet(){ 
     showView('wallet-view'); 
     await fetchUserProfile(); 
-    loadCoinPackages(); 
+    loadCoinPackages();
+    loadVipPackages(); 
     
     if (!currentUser) return;
     const statusEl = document.getElementById('vipStatusText');
@@ -1379,30 +1384,35 @@ async function endFallingGame(){
     let comboBonus = 0;
     let gotDiscount = false;
 
-    // 👇 قانون: اگر کمتر از ۱۵ نت باشد، هیچ پاداشی تعلق نمی‌گیرد
-    if (totalNotes < 15) {
+    // 👇 اصلاح شد: شرط ۱۵ نت فقط برای آهنگ‌های شخصی و جامعه چک می‌شود
+    if ((practiceMode === 'song' || practiceMode === 'community') && totalNotes < 15) {
         earned = 0;
         xpStr = '0';
         key = 'result.too_short'; 
     } else {
+        // محاسبه پاداش بر اساس حالت بازی
         if (practiceMode === 'song') {
             if (acc >= 80) { earned = 25; key = 'result.reward_song_full'; xpStr = '+20'; }
             else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; xpStr = '+10'; }
             else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
             else { earned = -5; key = 'result.reward_penalty'; }
+        } else if (practiceMode === 'community') {
+            if (acc >= 25) { earned = 25; key = 'result.reward_song_full'; xpStr = '+20'; }
+            else { earned = 0; key = 'result.reward_none'; }
         } else {
+            // 👇 مراحل تستی (falling) و آموزشی (tutorial)
             if (acc >= 75) { earned = 15; key = 'result.reward_full'; xpStr = '+20'; }
             else if (acc >= 50) { earned = 10; key = 'result.reward_ok'; }
             else if (acc >= 25) { earned = 0; key = 'result.reward_none'; }
             else { earned = -5; key = 'result.reward_penalty'; }
         }
 
-        // پاداش کمبو (فقط برای آهنگ‌های بالای ۱۵ نت)
+        // 👇 پاداش کمبو حالا برای همه حالت‌ها (تستی، آموزشی، آهنگ) اعمال می‌شود
         if (maxCombo >= 5) {
             comboBonus = 5;
         }
         
-        // تخفیف فول کمبو (فقط برای آهنگ‌های بالای ۱۵ نت)
+        // 👇 تخفیف فول کمبو نیز برای همه حالت‌ها
         if (maxCombo > 0 && maxCombo === totalNotes) {
             gotDiscount = true;
         }
@@ -1419,17 +1429,17 @@ async function endFallingGame(){
         document.getElementById('resXp').innerText = xpStr;
 
         window._lastResult = {
-                    earned: totalEarnedDisplay, 
-                    key: key, 
-                    comboBonus: comboBonus, 
-                    gotDiscount: gotDiscount
-                };        
+            earned: totalEarnedDisplay, 
+            key: key, 
+            comboBonus: comboBonus, 
+            gotDiscount: gotDiscount
+        };        
         renderResultToken(window._lastResult);
         showView('result-view');
 
         const token = localStorage.getItem('pm_token');
         try {
-            // 👇 ارسال پاداش همراه با max_combo و total_notes
+            // ارسال اطلاعات به بک‌اند
             const res = await fetch(API_BASE_URL + '/api/users/game-reward', { 
                 method: 'POST', 
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, 
@@ -1456,7 +1466,7 @@ async function endFallingGame(){
                 }
             }
             
-            // 👇 ذخیره تاریخچه همراه با max_combo و total_notes
+            // ذخیره تاریخچه
             await fetch(API_BASE_URL + '/api/users/practice-history', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
@@ -2290,30 +2300,78 @@ async function deleteRandomAvatar(avatarUrl) {
 // ==========================================================
 let adInterval = null;
 
-async function buyVip() {
-    if (!confirm(t('vip.confirm'))) return;
+// ۱. تابع لود کردن بسته‌های VIP
+async function loadVipPackages() {
+    const grid = document.getElementById('vipPackagesGrid');
+    if (!grid) return;
+
+    // 👇 اصلاح شد: توکن شما در لوکال استوریج با نام pm_token ذخیره می‌شود
+    let userToken = localStorage.getItem('pm_token');
+
+    if (!userToken) {
+        grid.innerHTML = '<div style="color:#ef4444; grid-column: span 2; text-align:center;">خطا: توکن ورود یافت نشد. لطفا مجددا وارد شوید.</div>';
+        return;
+    }
+
+    try {
+        const res = await fetch(API_BASE_URL + '/api/users/vip-packages', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error(`خطای سرور: ${res.status}`);
+        }
+
+        const packages = await res.json();
+        grid.innerHTML = '';
+        
+        if (packages.length === 0) {
+            grid.innerHTML = '<div style="grid-column: span 2; text-align:center;">بسته‌ای یافت نشد.</div>';
+            return;
+        }
+
+        packages.forEach(pkg => {
+            const card = document.createElement('div');
+            card.className = 'pkg-card';
+            card.onclick = () => buyVip(pkg.id);
+            card.innerHTML = `
+                <div class="pkg-name" style="margin-bottom: 8px;">${pkg.name}</div>
+                <div class="pkg-price" style="font-weight:bold; color:#fbbf24; font-size: 16px;">${pkg.price}</div>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        console.error("خطا در دریافت بسته‌های VIP:", error);
+        grid.innerHTML = `<div style="color:#ef4444; grid-column: span 2; text-align:center;">خطا در بارگذاری: ${error.message}</div>`;
+    }
+}
+
+// تابع خرید
+async function buyVip(packageId, price, gateway) {
+    let gatewayName = gateway === 'paypal' ? 'PayPal' : 'درگاه بانکی';
+    if (!confirm(`آیا برای خرید این اشتراک به مبلغ ${price} از طریق ${gatewayName} موافقت می‌کنید؟`)) return;
     
     const token = localStorage.getItem('pm_token');
     try {
-        const res = await fetch(API_BASE_URL + '/api/users/buy-vip', {
+        const res = await fetch('/api/users/buy-vip', {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ package_id: packageId })
         });
         
         if (res.ok) {
-            const data = await res.json();
-            userTokens = data.new_balance;
-            document.getElementById('tokenDisplay').innerText = userTokens;
-            
             await fetchUserProfile(); 
             goToWallet(); 
-            
-            alert(t('vip.success'));
+            alert('✅ پرداخت با موفقیت انجام شد و اشتراک VIP فعال/تمدید گردید!');
         } else {
             const err = await res.json();
-            alert(err.detail || t('vip.error'));
+            alert(err.detail || 'خطا در خرید');
         }
-    } catch (e) { alert(t('msg.error_server')); }
+    } catch (e) { alert('خطا در ارتباط با سرور'); }
 }
 
 function showAd(onComplete) {

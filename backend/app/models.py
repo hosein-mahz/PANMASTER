@@ -27,7 +27,7 @@ class User(Base):
     last_discount_reset = Column(DateTime, nullable=True)
 
     # ===== تنظیمات =====
-    language = Column(String, default="fa", nullable=False)
+    language = Column(String, default="en", nullable=False)
     fall_speed = Column(Integer, default=200, nullable=False)        # 100-500
     note_size = Column(Float, default=1.0, nullable=False)           # 0.7-1.5
     font_family = Column(String, default="Vazirmatn", nullable=False)
